@@ -111,7 +111,7 @@ object ClientUtils : MinecraftInstance() {
     }
 
     fun finishTitle() {
-        Display.setTitle(LiquidBounce.CLIENT_NAME + " " + LiquidBounce.CLIENT_REAL_VERSION + " | 0716是作者的一个神秘数字哦"/* + " | " + LiquidBounce.DEV_SAYING */)
+        Display.setTitle(LiquidBounce.CLIENT_NAME + " " + LiquidBounce.CLIENT_REAL_VERSION + " | " + LiquidBounce.DEV_SAYING )
     }
 
     fun displayAlert(message: String) {
