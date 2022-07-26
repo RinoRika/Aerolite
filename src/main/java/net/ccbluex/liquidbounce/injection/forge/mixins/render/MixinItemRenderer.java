@@ -1,14 +1,9 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/UnlegitMC/FDPClient/
- */
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
-
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.render.AntiBlind;
+import net.ccbluex.liquidbounce.utils.timer.MSTimer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -28,11 +23,12 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(ItemRenderer.class)
 public abstract class MixinItemRenderer {
+    float delay = 0.0F;
+    MSTimer rotateTimer = new MSTimer();
+
     @Shadow
     private float prevEquippedProgress;
 
@@ -80,6 +76,7 @@ public abstract class MixinItemRenderer {
 
     /**
      * @author Liuli
+     * @reason 666
      */
     @Overwrite
     private void transformFirstPersonItem(float equipProgress, float swingProgress) {
@@ -96,6 +93,7 @@ public abstract class MixinItemRenderer {
 
     /**
      * @author Liuli
+     * @reason 666
      */
     @Overwrite
     public void renderItemInFirstPerson(float partialTicks) {
@@ -125,12 +123,123 @@ public abstract class MixinItemRenderer {
                     case DRINK:
                         this.performDrinking(abstractclientplayer, partialTicks);
                         this.transformFirstPersonItem(f, f1);
+
+                        if (LiquidBounce.moduleManager.getModule(Animations.class).getState() && animations.getRotateItems().get())
+                            rotateItemAnim();
                         break;
                     case BLOCK:
                         GL11.glTranslated(animations.getTranslateXValue().get(), animations.getTranslateYValue().get(), animations.getTranslateZValue().get());
                         switch (animations.getBlockingModeValue().get()) {
                             case "Akrien": {
                                 transformFirstPersonItem(f1, 0.0F);
+                                doBlockTransformations();
+                                break;
+                            }
+                            case "Normal": {
+                                this.transformFirstPersonItem(f + 0.1F, f1);
+                                if (animations.getRotateItems().get())
+                                    rotateItemAnim();
+
+                                this.doBlockTransformations();
+                                GlStateManager.translate(-0.5F, 0.2F, 0.0F);
+                                if (animations.getRotateItems().get())
+                                    rotateItemAnim();
+                                doBlockTransformations();
+                                break;
+                            }
+                            case "Remix": {
+                                this.transformFirstPersonItem(f, f1);
+                                if (animations.getRotateItems().get())
+                                    rotateItemAnim();
+                                this.func_178103_d();
+                                if (animations.getRotateItems().get())
+                                    rotateItemAnim();
+                                doBlockTransformations();
+                                break;
+                            }
+                            case "SmoothFloat": {
+                                this.func_178096_b(0.0f, 0.95f);
+                                GlStateManager.rotate(this.delay, 1.0F, 0.0F, 2.0F);
+                                if (this.rotateTimer.hasTimePassed(1)) {
+                                    ++this.delay;
+                                    this.delay = this.delay + animations.getSpeedRotate().get();
+                                    this.rotateTimer.reset();
+                                }
+                                if (this.delay > 360.0F) {
+                                    this.delay = 0.0F;
+                                }
+                                if (animations.getRotateItems().get())
+                                    rotateItemAnim();
+
+                                this.func_178103_d();
+                                GlStateManager.rotate(this.delay, 0.0F, 1.0F, 0.0F);
+                                if (animations.getRotateItems().get())
+                                    rotateItemAnim();
+                                doBlockTransformations();
+                                break;
+                            }
+                            case "Rotate360": {
+                                this.func_178096_b(0.0f, 0.95f);
+                                if (animations.getRotateItems().get())
+                                    rotateItemAnim();
+
+                                this.func_178103_d();
+                                GlStateManager.rotate(this.delay, 1.0F, 0.0F, 2.0F);
+                                if (this.rotateTimer.hasTimePassed(1)) {
+                                    ++this.delay;
+                                    this.delay = this.delay + animations.getSpeedRotate().get();
+                                    this.rotateTimer.reset();
+                                }
+                                if (this.delay > 360.0F) {
+                                    this.delay = 0.0F;
+                                }
+                                if (animations.getRotateItems().get())
+                                    rotateItemAnim();
+                                doBlockTransformations();
+                                break;
+                            }
+                            case "Tap2": {
+                                this.tap2(0.0f, f1);
+                                if (animations.getRotateItems().get())
+                                    rotateItemAnim();
+
+                                GlStateManager.scale(2f, 2f, 2f);
+                                this.func_178103_d();
+                                if (animations.getRotateItems().get())
+                                    rotateItemAnim();
+                                doBlockTransformations();
+                                break;
+                            }
+                            case "Zoom": {
+                                this.Zoom(0.0f, f1);
+                                if (animations.getRotateItems().get())
+                                    rotateItemAnim();
+
+                                this.func_178103_d();
+                                if (animations.getRotateItems().get())
+                                    rotateItemAnim();
+                                doBlockTransformations();
+                                break;
+                            }
+                            case "Tap1": {
+                                this.tap1(f, f1);
+                                if (animations.getRotateItems().get())
+                                    rotateItemAnim();
+
+                                this.func_178103_d();
+                                if (animations.getRotateItems().get())
+                                    rotateItemAnim();
+                                doBlockTransformations();
+                                break;
+                            }
+                            case "Stab": {
+                                this.stab(0.1f, f1);
+                                if (animations.getRotateItems().get())
+                                    rotateItemAnim();
+
+                                this.func_178103_d();
+                                if (animations.getRotateItems().get())
+                                    rotateItemAnim();
                                 doBlockTransformations();
                                 break;
                             }
@@ -255,11 +364,15 @@ public abstract class MixinItemRenderer {
                     case BOW:
                         this.transformFirstPersonItem(f, f1);
                         this.doBowTransformations(partialTicks, abstractclientplayer);
+                        if (LiquidBounce.moduleManager.getModule(Animations.class).getState() && animations.getRotateItems().get())
+                            rotateItemAnim();
                 }
             }else{
                 if (!animations.getSwingAnimValue().get())
                     this.doItemUsedTransformations(f1);
                 this.transformFirstPersonItem(f, f1);
+                if (LiquidBounce.moduleManager.getModule(Animations.class).getState() && animations.getRotateItems().get())
+                    rotateItemAnim();
             }
 
             this.renderItem(abstractclientplayer, this.itemToRender, ItemCameraTransforms.TransformType.FIRST_PERSON);
@@ -278,6 +391,119 @@ public abstract class MixinItemRenderer {
 
     private void doItemRenderGLScale(){
         GlStateManager.scale(animations.getItemScaleValue().get(), animations.getItemScaleValue().get(), animations.getItemScaleValue().get());
+    }
+
+    private void func_178103_d() {
+        GlStateManager.translate(-0.5F, 0.2F, 0.0F);
+        GlStateManager.rotate(30.0F, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(-80.0F, 1.0F, 0.0F, 0.0F);
+        GlStateManager.rotate(60.0F, 0.0F, 1.0F, 0.0F);
+    }
+
+    private void rotateItemAnim() {
+        if (animations.getTransformFirstPersonRotate().get().equalsIgnoreCase("RotateY")) {
+            GlStateManager.rotate(this.delay, 0.0F, 1.0F, 0.0F);
+        }
+        if (animations.getTransformFirstPersonRotate().get().equalsIgnoreCase("RotateXY")) {
+            GlStateManager.rotate(this.delay, 1.0F, 1.0F, 0.0F);
+        }
+
+        if (animations.getTransformFirstPersonRotate().get().equalsIgnoreCase("Custom")) {
+            GlStateManager.rotate(this.delay, animations.getCustomRotate1().get(), animations.getCustomRotate2().get(), animations.getCustomRotate3().get());
+        }
+
+        if (this.rotateTimer.hasTimePassed(1)) {
+            ++this.delay;
+            this.delay = this.delay + animations.getSpeedRotate().get();
+            this.rotateTimer.reset();
+        }
+        if (this.delay > 360.0F) {
+            this.delay = 0.0F;
+        }
+    }
+
+    private void tap1(float tap1, float tap2) {
+        GlStateManager.translate(0.56F, -0.52F, -0.71999997F);
+        GlStateManager.translate(0.0F, tap1 * -0.6F, 0.0F);
+        GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
+        float var3 = MathHelper.sin(tap2 * tap2 * (float) Math.PI);
+        float var4 = MathHelper.sin(MathHelper.sqrt_float(tap2) * (float) Math.PI);
+        GlStateManager.rotate(var3 * -40.0F, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(var4 * 0.0F, 0.0F, 0.0F, 1.0F);
+        GlStateManager.rotate(var4 * 0.0F, 1.0F, 0.0F, 0.0F);
+        doItemRenderGLScale();
+    }
+
+
+    private void func_178096_b(float p_178096_1_, float p_178096_2_) {
+        GlStateManager.translate(0.56F, -0.52F, -0.71999997F);
+        GlStateManager.translate(0.0F, p_178096_1_ * -0.6F, 0.0F);
+        GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
+        float var3 = MathHelper.sin(p_178096_2_ * p_178096_2_ * (float) Math.PI);
+        float var4 = MathHelper.sin(MathHelper.sqrt_float(p_178096_2_) * (float) Math.PI);
+        GlStateManager.rotate(var3 * -20.0F, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(var4 * -20.0F, 0.0F, 0.0F, 1.0F);
+        GlStateManager.rotate(var4 * -80.0F, 1.0F, 0.0F, 0.0F);
+        doItemRenderGLScale();
+    }
+
+    private void tap2(final float var2, final float swing) {
+        GlStateManager.translate(0.56F, -0.52F, -0.71999997F);
+        final float var3 = MathHelper.sin(swing * swing * 3.1415927f);
+        final float var4 = MathHelper.sin(MathHelper.sqrt_float(swing) * 3.1415927f);
+        GlStateManager.translate(0.56f, -0.42f, -0.71999997f);
+        GlStateManager.translate(0.1f * var4, -0.0f, -0.21999997f * var4);
+        GlStateManager.translate(0.0f, var2 * -0.15f, 0.0f);
+        GlStateManager.rotate(var3 * 45.0f, 0.0f, 1.0f, 0.0f);
+        doItemRenderGLScale();
+    }
+    private void stab(float var10, float var9) {
+        GlStateManager.translate(0.56F, -0.52F, -0.71999997F);
+        GlStateManager.translate(0.0F, 0.0F, 0.0F);
+        GlStateManager.rotate(45.0f, 0.0f, 1.0f, 0.0f);
+        float var11 = MathHelper.sin(var9 * var9 * (float) Math.PI);
+        float var12 = MathHelper.sin(MathHelper.sqrt_float(var9) * (float) Math.PI);
+        GlStateManager.rotate(var11 * 20.0F, 1.0F, 0.0F, 0.0F);
+        GlStateManager.rotate(var12 * 0.0F, 0.0F, 0.0f, 0.0F);
+        GlStateManager.rotate(var12 * -10.0F, 1.0F, 0.0F, -4.0F);
+        doItemRenderGLScale();
+    }
+
+    private void continuity(float var11, float var10) {
+        GlStateManager.translate(0.56F, -0.52F, -0.71999997F);
+        GlStateManager.translate(0.0F, 0.0F, 0.0F);
+        GlStateManager.rotate(45.0f, 0.0f, 1.0f, 0.0f);
+        float var12 = -MathHelper.sin(var10 * var10 * (float) Math.PI);
+        float var13 = MathHelper.cos(MathHelper.sqrt_float(var10) * (float) Math.PI);
+        float var14 = MathHelper.abs(MathHelper.sqrt_float(var11) * (float) Math.PI);
+        GlStateManager.rotate(var12 * var14 * 30.0F, 0.0F, 1.0F, 0.0F);
+        GlStateManager.rotate(var13 * 0.0F, 0.0F, 0.0f, 1.0F);
+        GlStateManager.rotate(var13 * 20.0F, 1.0F, 0.0F, 0.0F);
+        doItemRenderGLScale();
+    }
+
+    private void poke(final float var5, final float var6) {
+        GlStateManager.translate(0.56F, -0.52F, -0.71999997F);
+        GlStateManager.rotate(45.0f, 0.0f, 1.0f, 0.0f);
+        final float var7 = MathHelper.sin(var6 * var6 * 3.1415927f);
+        final float var8 = MathHelper.sin(MathHelper.sqrt_float(var6) * 3.1415927f);
+        GlStateManager.translate(0.56f, -0.42f, -0.71999997f);
+        GlStateManager.translate(0.1f * var8, -0.0f, -0.21999997f * var8);
+        GlStateManager.translate(0.0f, var5 * -0.15f, 0.0f);
+        GlStateManager.rotate(var7 * 0.0f, 0.0f, 1.0f, 0.0f);
+        doItemRenderGLScale();
+    }
+
+    private void Zoom(float p_178096_1_, float p_178096_2_) {
+        GlStateManager.translate(0.56F, -0.52F, -0.71999997F);
+        GlStateManager.translate(0.0F, p_178096_1_ * -0.6F, 0.0F);
+        GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
+        float var3 = MathHelper.sin(p_178096_2_ * p_178096_2_ * (float) Math.PI);
+        float var4 = MathHelper.sin(MathHelper.sqrt_float(p_178096_2_) * (float) Math.PI);
+        GlStateManager.rotate(var3 * -20.0F, 0.0F, 0.0F, 0.0F);
+        GlStateManager.rotate(var4 * -20.0F, 0.0F, 0.0F, 0.0F);
+        GlStateManager.rotate(var4 * -20.0F, 0.0F, 0.0F, 0.0F);
+        doItemRenderGLScale();
     }
 
     private void sigmaOld(float f) {
@@ -395,13 +621,51 @@ public abstract class MixinItemRenderer {
     /**
      * @author Liuli
      */
-    @Redirect(method="renderFireInFirstPerson", at=@At(value="INVOKE", target="Lnet/minecraft/client/renderer/GlStateManager;color(FFFF)V"))
-    private void renderFireInFirstPerson(float p_color_0_, float p_color_1_, float p_color_2_, float p_color_3_) {
+    @Overwrite
+    private void renderFireInFirstPerson(float partialTicks) {
         final AntiBlind antiBlind = LiquidBounce.moduleManager.getModule(AntiBlind.class);
-        if(p_color_3_ != 1.0f && antiBlind.getState()){
-            GlStateManager.color(p_color_0_, p_color_1_, p_color_2_, antiBlind.getFireEffectValue2().get());
+
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        float f = 1.0F;
+        if(antiBlind.getState() && antiBlind.getFireEffectValue().get()){
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 0.3F);
+            f = 0.7F;
         }else{
-            GlStateManager.color(p_color_0_, p_color_1_, p_color_2_, p_color_3_);
+            GlStateManager.color(1.0F, 1.0F, 1.0F, 0.9F);
         }
+        GlStateManager.depthFunc(519);
+        GlStateManager.depthMask(false);
+        GlStateManager.enableBlend();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+
+        for(int i = 0; i < 2; ++i) {
+            GlStateManager.pushMatrix();
+            TextureAtlasSprite textureatlassprite = this.mc.getTextureMapBlocks().getAtlasSprite("minecraft:blocks/fire_layer_1");
+            this.mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
+            float f1 = textureatlassprite.getMinU();
+            float f2 = textureatlassprite.getMaxU();
+            float f3 = textureatlassprite.getMinV();
+            float f4 = textureatlassprite.getMaxV();
+            float f5 = (0.0F - f) / 2.0F;
+            float f6 = f5 + f;
+            float f7 = 0.0F - f / 2.0F;
+            float f8 = f7 + f;
+            float f9 = -0.5F;
+            GlStateManager.translate((float)(-(i * 2 - 1)) * 0.24F, -0.3F, 0.0F);
+            GlStateManager.rotate((float)(i * 2 - 1) * 10.0F, 0.0F, 1.0F, 0.0F);
+            worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+            worldrenderer.pos(f5, f7, f9).tex(f2, f4).endVertex();
+            worldrenderer.pos(f6, f7, f9).tex(f1, f4).endVertex();
+            worldrenderer.pos(f6, f8, f9).tex(f1, f3).endVertex();
+            worldrenderer.pos(f5, f8, f9).tex(f2, f3).endVertex();
+            tessellator.draw();
+            GlStateManager.popMatrix();
+        }
+
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.disableBlend();
+        GlStateManager.depthMask(true);
+        GlStateManager.depthFunc(515);
     }
 }

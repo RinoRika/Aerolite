@@ -56,6 +56,9 @@ public class Fonts {
     @FontDetails(fontName = "Icons", fontSize = 50, fileName = "Icon.ttf")
     public static GameFontRenderer icon40;
 
+    @FontDetails(fontName = "Bangers", fontSize = 45, fileName = "Bangers.ttf")
+    public static GameFontRenderer fontBangers;
+
     @FontDetails(fontName = "Minecraft Font")
     public static final FontRenderer minecraftFont = Minecraft.getMinecraft().fontRendererObj;
 
