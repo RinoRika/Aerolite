@@ -33,7 +33,6 @@ class Criticals : Module() {
     val modeValue = ListValue("Mode", arrayOf(
         "Packet", "NewPacket", "LitePacket", "FixPacket", "MiPacket", "AAC5Packet", "AAC4Packet", "HPacket",
         "NCP", "NCP2", "Vanilla", "Vulcan",
-        "Kawaii", "NonCalc", "Invaild", "LowPhase",
         "Edit", "Edit2", "Hypixel", "HypixelTest",
         "AACNoGround", "NoGround", "Redesky",
         "VerusSmart", "MatrixSmart", "Blocksmc", "Minemora",
@@ -208,34 +207,8 @@ class Criticals : Module() {
                     }
                 }
 
-                "kawaii" -> {
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.00973333333333, z, false))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.001, z, false))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y - 0.01200000000007, z, false))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y - 0.0005, z, false))
-                }
-
-                "lowphase" -> {
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y - 0.0125, z, false))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.01275, z, false))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y - 0.00025, z, true))
-                }
-
-                "noncalc" -> {
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 1E-5, z, false))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 1E-7, z, false))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y - 1E-6, z, false))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y - 1E-4, z, false))
-                }
-
-                "invalid" -> {  // WTF
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 1E+27, z, false))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y - 1E+68, z, false))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 1E+41, z, false))
-                }
-
                 "hpacket" -> {
-                    // Hpacket ����
+                    // Hpacket
                     val hpv : DoubleArray
                     for (offset in doubleArrayOf(0.04132332, 0.023243243674, 0.01 ,0.0011).also { hpv = it }) {
                         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + offset, z, false))

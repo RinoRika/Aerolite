@@ -1,8 +1,6 @@
 package net.ccbluex.liquidbounce.cn.Fonts.newdropdown.utils.render;
 
 
-import lombok.Getter;
-import lombok.Setter;
 import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.utils.animations.Animation;
 import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.utils.animations.Direction;
 import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.utils.animations.impl.SmoothStepAnimation;
@@ -14,11 +12,10 @@ import org.lwjgl.input.Mouse;
  */
 public class Scroll {
 
-    @Getter
-    @Setter
     private float maxScroll = Float.MAX_VALUE, minScroll = 0, rawScroll;
     private float scroll;
     private Animation scrollAnimation = new SmoothStepAnimation(0, 0, Direction.BACKWARDS);
+
 
     public void onScroll(int ms) {
         scroll = (float) (rawScroll - scrollAnimation.getOutput());

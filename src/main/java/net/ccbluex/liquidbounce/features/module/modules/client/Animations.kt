@@ -10,13 +10,16 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 
+
 @ModuleInfo(name = "Animations", category = ModuleCategory.CLIENT, canEnable = false)
 object Animations : Module() {
     val blockingModeValue = ListValue(
         "BlockingMode", arrayOf(
             "Akrien", "Avatar", "ETB", "Exhibition", "Push", "Reverse",
             "Shield", "SigmaNew", "SigmaOld", "Slide", "SlideDown", "HSlide", "Swong", "VisionFX",
-            "Swank", "Jello", "Rotate", "Liquid", "None"
+            "Swank", "Jello", "Rotate", "Liquid",
+            "Test", "Tap1", "Tap2", "Stab", "Slide2", "Continuity", "Poke", "Zoom", "Normal", "Remix", "Rotate360", "SmoothFloat",
+            "None"
         ),
         "SlideDown"
     )
@@ -39,6 +42,37 @@ object Animations : Module() {
     val swingAnimValue = BoolValue("SwingAnim", false)
     val swingSpeedValue = FloatValue("SwingSpeed", 1f, 0.5f, 5.0f)
     val anythingBlockValue = BoolValue("AnythingBlock", false)
+
+    // transform rotation
+    val transformFirstPersonRotate =
+        ListValue("RotateMode", arrayOf("RotateY", "RotateXY", "Custom", "None"), "RotateY")
+
+    val RotateItems = BoolValue("RotateItems", false)
+    val SpeedRotate = FloatValue(
+        "RotateSpeed",
+        1f,
+        0f,
+        10f,
+    ).displayable { RotateItems.get() }
+    // custom item rotate
+    val customRotate1 = FloatValue(
+        "RotateXAxis",
+        0f,
+        -180f,
+        180f,
+    ).displayable { RotateItems.get() && transformFirstPersonRotate.get().equals("custom", ignoreCase = true) }
+    val customRotate2 = FloatValue(
+        "RotateYAxis",
+        0f,
+        -180f,
+        180f,
+    ).displayable { RotateItems.get() && transformFirstPersonRotate.get().equals("custom", ignoreCase = true) }
+    val customRotate3 = FloatValue(
+        "RotateZAxis",
+        0f,
+        -180f,
+        180f,
+    ).displayable { RotateItems.get() && transformFirstPersonRotate.get().equals("custom", ignoreCase = true) }
     val viewBobbingYawValue = FloatValue("ViewBobbingYaw", 0.1f, 0f, 0.5f)
 
     var flagRenderTabOverlay = false

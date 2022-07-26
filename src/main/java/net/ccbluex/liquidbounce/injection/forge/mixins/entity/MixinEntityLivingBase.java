@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
+import de.enzaxd.viaforge.ViaForge;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.JumpEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
@@ -25,7 +26,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -63,6 +66,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
     /**
      * @author CCBlueX
+     * @reason 114514
      */
     @Overwrite
     protected void jump() {
@@ -99,6 +103,13 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
                 jesus.getModeValue().equals("Legit")) {
             this.updateAITick();
         }
+    }
+
+    @ModifyConstant(method = "onLivingUpdate", constant = @Constant(doubleValue = 0.005D))
+    private double refactor1_9MovementThreshold(double constant) {
+        if (ViaForge.getInstance().getVersion() <= 47)
+            return 0.005D;
+        return 0.003D;
     }
 
     @Inject(method = "getLook", at = @At("HEAD"), cancellable = true)

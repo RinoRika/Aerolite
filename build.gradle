@@ -59,6 +59,14 @@ dependencies {
         exclude module: "slf4j-api"
     }
 
+    include 'org.yaml:snakeyaml:1.30'
+
+    implementation('com.github.half-cambodian-hacker-man:Koffee:d8cee73') {
+        exclude module: 'asm-commons'
+        exclude module: 'asm-tree'
+        exclude module: 'asm'
+    }
+
     annotationProcessor("org.spongepowered:mixin:0.7.11-SNAPSHOT")
 
     include "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
@@ -67,6 +75,7 @@ dependencies {
         exclude module: "jogl-all" // we use lwjgl
         exclude module: "gluegen-rt" // this is the library for joal
     }
+
     include("com.jagrosh:DiscordIPC:0.4")
     include("me.liuli:Elixir:1.2.1") {
         exclude module: "kotlin-stdlib"

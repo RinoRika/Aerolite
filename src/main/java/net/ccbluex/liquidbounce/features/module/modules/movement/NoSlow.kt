@@ -47,8 +47,9 @@ class NoSlow : Module() {
     //testvalue
     private val testValue = BoolValue("SendPacket", false)
 
-    // Soulsand
+    // Other Bypass
     val soulsandValue = BoolValue("Soulsand", false)
+    val liquidPushValue = BoolValue("LiquidPush", false)
     // Slowdown on teleport
     private val teleportValue = BoolValue("Teleport", false)
     private val teleportModeValue = ListValue("TeleportMode", arrayOf("Vanilla", "VanillaNoSetback", "Custom", "Decrease"), "Vanilla").displayable { teleportValue.get() }

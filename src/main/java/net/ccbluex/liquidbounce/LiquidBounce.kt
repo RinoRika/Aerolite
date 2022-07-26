@@ -10,10 +10,7 @@ import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.features.macro.MacroManager
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleManager
-import net.ccbluex.liquidbounce.features.special.AntiForge
-import net.ccbluex.liquidbounce.features.special.CombatManager
-import net.ccbluex.liquidbounce.features.special.DiscordRPC
-import net.ccbluex.liquidbounce.features.special.ServerSpoof
+import net.ccbluex.liquidbounce.features.special.*
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.file.config.ConfigManager
 import net.ccbluex.liquidbounce.launch.EnumLaunchFilter
@@ -44,14 +41,14 @@ object LiquidBounce {
     // Client information
     const val CLIENT_NAME = "Aerolite"
     const val COLORED_NAME = "§b§lAerolite"
-    const val BUILD_CODE = "20220710"                       //更完改
-    const val CLIENT_REAL_VERSION = "220710"                            //更完改
-    const val CLIENT_CREATOR = "AeroTeams"
+    const val BUILD_CODE = "20220714"                       //更完改
+    const val CLIENT_REAL_VERSION = "220714"                            //更完改
+    const val CLIENT_CREATOR = "AeroTeam"
     const val CLIENT_WEBSITE = "Aerolite.tk"
     const val MINECRAFT_VERSION = "1.8.9"
     const val REL_SAYING = "114514"
     const val CLIENT_DEV = "Stars&Packet"
-    const val DEV_SAYING = " "        //更完改
+    const val DEV_SAYING = "Reborn with love by stars"        //更完改
     const val IN_Dev_VERSION = false
 
     // Tasks
@@ -70,6 +67,7 @@ object LiquidBounce {
     lateinit var combatManager: CombatManager
     lateinit var macroManager: MacroManager
     lateinit var configManager: ConfigManager
+    lateinit var coreManager: CoreManager
     var category: ModuleCategory? = null
 
     // Some UI things
@@ -164,6 +162,8 @@ object LiquidBounce {
 
         combatManager = CombatManager()
         eventManager.registerListener(combatManager)
+        coreManager = CoreManager()
+        eventManager.registerListener(coreManager)
 
         GuiCapeManager.load()
 

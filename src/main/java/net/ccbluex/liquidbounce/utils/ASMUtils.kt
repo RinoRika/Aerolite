@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.utils
 
-import lombok.NonNull
 import org.jetbrains.annotations.NotNull
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter

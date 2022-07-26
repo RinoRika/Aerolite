@@ -276,7 +276,14 @@ class KillAura : Module() {
             if ((autoBlockValue.equals("Range") || autoBlockValue.equals("NCP")) && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.equals("AfterAttack")
                         || discoveredTargets.any { mc.thePlayer.getDistanceToEntityBox(it) > maxRange }) && canBlock) {
                 if (mc.thePlayer.getDistanceToEntityBox(target) < autoBlockRangeValue.get()) {
-                    startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
+                    try {
+                        startBlocking(
+                            target,
+                            interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange)
+                        )
+                    } catch (e: Exception) {
+                        // Fuck you
+                    }
                 }
             }
 
