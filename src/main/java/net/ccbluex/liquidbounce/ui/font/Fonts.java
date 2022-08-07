@@ -135,6 +135,7 @@ public class Fonts {
             initSingleFont("GoogleSans.ttf","assets/minecraft/Fonts/GoogleSans.ttf");
             initSingleFont("Hanabi.ttf","assets/minecraft/Fonts/Hanabi.ttf");
             initSingleFont("Tenacity.ttf","assets/minecraft/Fonts/Tenacity.ttf");
+            initSingleFont("Bangers.ttf","assets/minecraft/Fonts/Bangers.ttf");
 
         }catch(IOException e) {
             e.printStackTrace();
