@@ -6,11 +6,14 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.ClickGui
+import net.ccbluex.liquidbounce.launch.data.uichoser
+import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.inventory.GuiContainer
+import net.minecraft.client.gui.inventory.GuiEditSign
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.network.play.server.S2DPacketOpenWindow
@@ -38,7 +41,15 @@ class InvMove : Module() {
         mc.gameSettings.keyBindSprint)
 
 
+
     private fun updateStates() {
+        try {
+            if (System.getProperty("NoInvCrash").contains("true")) {
+                return
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         if (sneak.get()) {
             keys = listOf(
                 mc.gameSettings.keyBindForward,
@@ -58,11 +69,13 @@ class InvMove : Module() {
                 mc.gameSettings.keyBindJump,
                 mc.gameSettings.keyBindSprint)
         }
-        if (mc.currentScreen == ClickGui() || mc.currentScreen == DropdownClickGui()) {
-            keys.forEach(Consumer { k: KeyBinding -> k.pressed = GameSettings.isKeyDown(k) })
-        }
-        if (mc.currentScreen != null) {
-            keys.forEach(Consumer { k: KeyBinding -> k.pressed = GameSettings.isKeyDown(k) })
+        if (mc.currentScreen != uichoser() && mc.currentScreen != null) {
+            try {
+                keys.forEach(Consumer { k: KeyBinding -> k.pressed = GameSettings.isKeyDown(k) })
+            } catch (e: Exception) {
+                e.printStackTrace()
+                ClientUtils.logError("InvMove occurred a serious error.", e)
+            }
         }
     }
     private val delayTimer = MSTimer()

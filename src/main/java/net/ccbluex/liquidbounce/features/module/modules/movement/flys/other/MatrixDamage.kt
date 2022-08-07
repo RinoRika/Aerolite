@@ -9,8 +9,6 @@ import kotlin.math.*
 
 
 class MatrixDamage : FlyMode("MatrixDamage") {
-
-
     private val mode = ListValue("${valuePrefix}Mode", arrayOf("Stable","Test","Custom"), "Stable")
     private val warn = BoolValue("${valuePrefix}DamageWarn",true)
     private val timer = FloatValue("${valuePrefix}Timer", 1.0f, 0f, 2f)

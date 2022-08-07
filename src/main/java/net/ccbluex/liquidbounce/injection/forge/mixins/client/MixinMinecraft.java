@@ -124,11 +124,11 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     public void injectConstructor(GameConfiguration p_i45547_1_, CallbackInfo ci) {
-        try {
+   /*     try {
             ViaForge.getInstance().start();
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        } */
     }
 
     @Inject(method = "run", at = @At("HEAD"))

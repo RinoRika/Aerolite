@@ -3,6 +3,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.vulcan
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.client.settings.GameSettings
+import kotlin.math.abs
 
 class VulcanHop : SpeedMode("VulcanHop") {
 
@@ -13,17 +14,15 @@ class VulcanHop : SpeedMode("VulcanHop") {
             mc.timer.timerSpeed = 1.00f
             wasTimer = false
         }
-        if (Math.abs(mc.thePlayer.movementInput.moveStrafe) < 0.1f) {
-            mc.thePlayer.jumpMovementFactor = 0.0265f
-            mc.timer.timerSpeed = 1.1f
+        if (abs(mc.thePlayer.movementInput.moveStrafe) < 0.1f) {
+            mc.thePlayer.jumpMovementFactor = 0.026499f
         }else {
-            mc.thePlayer.jumpMovementFactor = 0.0245f
-            wasTimer = true
+            mc.thePlayer.jumpMovementFactor = 0.0244f
         }
         mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
 
-        if (MovementUtils.getSpeed() < 0.215f && !mc.thePlayer.onGround) {
-            MovementUtils.strafe(0.2136f)
+        if (MovementUtils.getSpeed() < 0.216f && !mc.thePlayer.onGround) {
+            MovementUtils.strafe(0.216f)
         }
         if (mc.thePlayer.onGround && MovementUtils.isMoving()) {
             mc.gameSettings.keyBindJump.pressed = false
@@ -31,11 +30,11 @@ class VulcanHop : SpeedMode("VulcanHop") {
             if (!mc.thePlayer.isAirBorne) {
                 return //Prevent flag with Fly
             }
-            mc.timer.timerSpeed = 1.25f
+            mc.timer.timerSpeed = 1.26f
             wasTimer = true
             MovementUtils.strafe()
-            if(MovementUtils.getSpeed() < 0.52f) {
-                MovementUtils.strafe(0.4845f)
+            if(MovementUtils.getSpeed() < 0.5f) {
+                MovementUtils.strafe(0.4849f)
             }
         }else if (!MovementUtils.isMoving()) {
             mc.timer.timerSpeed = 1.00f
