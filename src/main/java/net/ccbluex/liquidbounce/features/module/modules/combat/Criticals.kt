@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
-import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -25,15 +24,14 @@ import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.network.play.server.S0BPacketAnimation
-import net.minecraft.stats.StatList
 
 @ModuleInfo(name = "Criticals", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
 
     val modeValue = ListValue("Mode", arrayOf(
         "Packet", "NewPacket", "LitePacket", "FixPacket", "MiPacket", "AAC5Packet", "AAC4Packet", "HPacket",
-        "NCP", "NCP2", "Vanilla", "Vulcan",
-        "Edit", "Edit2", "Hypixel", "HypixelTest",
+        "NCP", "NCP2", "Vanilla", "Vulcan", "AntiCheat",
+        "Edit", "Edit2", "Hypixel",
         "AACNoGround", "NoGround", "Redesky",
         "VerusSmart", "MatrixSmart", "Blocksmc", "Minemora",
         "Motion", "Hover", "Custom"),
@@ -71,6 +69,8 @@ class Criticals : Module() {
     private var target = 0
     var jState = 0
     var aacLastState = false
+    var ticks = 0
+    var attacked = false
 
     override fun onEnable() {
         if (modeValue.equals("NoGround") && !badGroundValue.get()) {
@@ -227,9 +227,25 @@ class Criticals : Module() {
 
                 "blocksmc" -> {
                 //    if (!mc.thePlayer.onGround) return
-                    mc.thePlayer.sendQueue.addToSendQueue(C04PacketPlayerPosition(x, y + 0.003009028, z, false))
-                    mc.thePlayer.sendQueue.addToSendQueue(C04PacketPlayerPosition(x,y + 0.00010091981,z, true))
-                    mc.thePlayer.sendQueue.addToSendQueue(C04PacketPlayerPosition(x,y,z,false))
+                    if (mc.thePlayer.fallDistance in 0.12..1.0) return
+                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.03009028, z, false))
+                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x,y + 0.00010091981,z, true))
+                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.00114514, z, false))
+                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x,y,z,false))
+                }
+
+                "anticheat" -> {
+                    if (mc.thePlayer.onGround) {
+                        val values = doubleArrayOf(0.04, 0.0, 0.03, 0.0)
+                        for (d in values) mc.netHandler.addToSendQueue(
+                            C04PacketPlayerPosition(
+                                mc.thePlayer.posX,
+                                mc.thePlayer.posY + d,
+                                mc.thePlayer.posZ,
+                                d == 0.0
+                            )
+                        )
+                    }
                 }
 
                 "vulcan" -> {
@@ -287,26 +303,41 @@ class Criticals : Module() {
                     }
                 }
             }
+            attacked = true
             msTimer.reset()
         }
     }
 
     @EventTarget
-    fun onUpdate(event: MotionEvent) {
-        if (modeValue.equals("Hypixel") && event.eventState == EventState.POST && event.onGround && LiquidBounce.combatManager.inCombat) {
-            for (offset in doubleArrayOf(0.06, 0.01)) {
-                val random = Math.random() * 0.001
-                mc.thePlayer.sendQueue.addToSendQueue(
-                    C04PacketPlayerPosition(
-                        mc.thePlayer.posX,
-                        mc.thePlayer.posY + offset + random,
-                        mc.thePlayer.posZ,
-                        false
-                    )
-                )
+    fun onMotion(event: MotionEvent) {
+        if (LiquidBounce.combatManager.inCombat && target != null && attacked) {
+            when (modeValue.get().lowercase()) {
+                "hypixel" -> {
+                    if (event.eventState == EventState.PRE && mc.thePlayer.onGround && mc.thePlayer.posY % 1 == 0.0) {
+                        ticks++
+                        when (ticks) {
+                            1 -> {
+                                event.setY(event.getY() + 0.046875 + Math.random() / 100)
+                                event.setOnGround(false)
+                            }
+                            2 -> {
+                                event.setY(event.getY() + 0.0234375 + Math.random() / 100)
+                                event.setGround(false)
+                            }
+                            3 -> {
+                                attacked = false
+                                ticks = 0
+                            }
+                        }
+                    } else {
+                        attacked = false
+                        ticks = 0
+                    }
+                }
             }
         }
     }
+
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
@@ -324,9 +355,6 @@ class Criticals : Module() {
 
         if (packet is C03PacketPlayer) {
             when (modeValue.get().lowercase()) {
-                "hypixeltest" -> {
-                    packet.onGround = false
-                }
                 "redesky" -> {
                     val packetPlayer: C03PacketPlayer = packet as C03PacketPlayer
                     if(mc.thePlayer.onGround && canCrits) {

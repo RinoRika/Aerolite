@@ -5,12 +5,14 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.world
 
+import com.viaversion.viaversion.util.MathUtil
 import me.stars.utils.Renderer
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.modules.addit.utils.DisablerUtils
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.injection.access.StaticStorage
 import net.ccbluex.liquidbounce.ui.font.Fonts
@@ -44,6 +46,7 @@ import net.minecraft.util.*
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import java.security.SecureRandom
 import kotlin.math.*
 
 @ModuleInfo(name = "BlockFly", category = ModuleCategory.WORLD, keyBind = Keyboard.KEY_G)
@@ -138,7 +141,8 @@ class BlockFly : Module() {
             "AAC3.6.4",
             "AAC4.4Constant",
             "AAC4Jump",
-            "Verus"
+            "Verus",
+            "NCP"
         ), "Jump"
     )
     private val stopWhenBlockAboveValue = BoolValue("StopTowerWhenBlockAbove", true)
@@ -513,12 +517,35 @@ class BlockFly : Module() {
         mc.thePlayer.triggerAchievement(StatList.jumpStat)
     }
 
+    fun getRandomHypixelValues(): Double {
+        val secureRandom = SecureRandom()
+        var value = secureRandom.nextDouble() * (1.0 / System.currentTimeMillis())
+        for (i in 0 until DisablerUtils.getRandom(
+            DisablerUtils.getRandom(4.0, 6.0),
+            DisablerUtils.getRandom(8.0, 20.0)
+        ).toInt()) value *= 1.0 / System.currentTimeMillis()
+        return value
+    }
+
     private fun move() {
         when (towerModeValue.get().lowercase()) {
             "none" -> {
                 if (mc.thePlayer.onGround) {
                     fakeJump()
                     mc.thePlayer.motionY = 0.42
+                }
+            }
+            "vanilla" -> {
+                if (mc.thePlayer.onGround) {
+                    mc.thePlayer.motionY = 0.42
+                }
+            }
+            "ncp"-> {
+                if (mc.thePlayer.posY % 1 <= 0.00153598) {
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, Math.floor(mc.thePlayer.posY), mc.thePlayer.posZ)
+                    mc.thePlayer.motionY = 0.41998f - getRandomHypixelValues() / 2
+                } else if (mc.thePlayer.posY % 1 < 0.1 && !MovementUtils.isOnGround(0.0)) {
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, Math.floor(mc.thePlayer.posY), mc.thePlayer.posZ)
                 }
             }
             "jump" -> {

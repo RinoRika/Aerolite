@@ -12,11 +12,9 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot
-import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot2
 import net.ccbluex.liquidbounce.features.module.modules.misc.Teams
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.EntityUtils
-import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.*
 import net.ccbluex.liquidbounce.value.*
@@ -61,10 +59,10 @@ class FollowTargetHud : Module() {
         if (teams.isInYourTeam(entity)) {
             pre = "$pre§a[TEAM] "
         }
-        if (AntiBot2.isbot(entity)) {
+        if (AntiBot.isBot(entity)) {
             pre = "$pre§e[BOT] "
         }
-        if (!AntiBot2.isbot(entity) && !teams.isInYourTeam(entity)) {
+        if (!AntiBot.isBot(entity) && !teams.isInYourTeam(entity)) {
             pre = if (LiquidBounce.fileManager.friendsConfig.isFriend(entity.name)) {
                 "§b[Friend] §c"
             } else {

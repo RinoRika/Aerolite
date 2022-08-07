@@ -56,25 +56,6 @@ class ClickBlockEvent(val clickedBlock: BlockPos?, val enumFacing: EnumFacing?) 
  */
 class ClientShutdownEvent : Event()
 
-class PreUpdateEvent(var x: Double, var y: Double, var z: Double, var yaw: Float, var pitch: Float, var isSneaking: Boolean, var isOnGround: Boolean) : Event() {
-
-    fun getYaw(yaw: Float): Float {
-        return yaw
-    }
-
-    fun getPitch(pitch: Float): Float {
-        return pitch
-    }
-
-    companion object {
-        var YAW = 0f
-        var PITCH = 0f
-        var prevYAW = 0f
-        var prevPITCH = 0f
-        var SNEAKING = false
-        var OnGround = false
-    }
-}
 
 /**
  * Called when player jumps
@@ -97,8 +78,46 @@ class KeyEvent(val key: Int) : Event()
  */
 //class MotionEvent(val eventState: EventState) : Event()
 
-class MotionEvent(var eventstate: EventState, var x: Double, var y: Double, var z: Double, var yaw: Float, var pitch: Float, var onGround: Boolean) : CancellableEvent() {
+class MotionEvent(var eventstate: EventState, var x: Double, var y: Double, var z: Double, var yaw: Float, var pitch: Float, var onGround: Boolean) : Event() {
     var eventState: EventState = eventstate
+    @JvmName("setX1")
+    fun setX(xv: Double) {
+        x = xv
+    }
+    @JvmName("setY1")
+    fun setY(yv: Double) {
+        y = yv
+    }
+    @JvmName("setZ1")
+    fun setZ(zv: Double) {
+        z = zv
+    }
+    @JvmName("getX1")
+    fun getX(): Double {
+        return x
+    }
+    @JvmName("getY1")
+    fun getY(): Double {
+        return y
+    }
+    @JvmName("getZ1")
+    fun getZ(): Double {
+        return z
+    }
+    fun getGround(): Boolean {
+        return onGround
+    }
+    fun setGround(ground: Boolean) {
+        onGround = ground
+    }
+    @JvmName("getOnGround1")
+    fun getOnGround(): Boolean {
+        return onGround
+    }
+    @JvmName("setOnGround1")
+    fun setOnGround(ground: Boolean) {
+        onGround = ground
+    }
 }
 /**
  * Called in "onLivingUpdate" when the player is using a use item.

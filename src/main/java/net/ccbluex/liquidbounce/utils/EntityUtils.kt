@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Target.deadValue
 import net.ccbluex.liquidbounce.features.module.modules.client.Target.invisibleValue
 import net.ccbluex.liquidbounce.features.module.modules.client.Target.mobValue
 import net.ccbluex.liquidbounce.features.module.modules.client.Target.playerValue
-import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot2
+import net.ccbluex.liquidbounce.features.module.modules.misc.AntiBot
 import net.ccbluex.liquidbounce.features.module.modules.misc.Teams
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.minecraft.client.network.NetworkPlayerInfo
@@ -35,7 +35,7 @@ object EntityUtils : MinecraftInstance() {
             if (invisibleValue.get() || !entity.isInvisible()) {
                 if (playerValue.get() && entity is EntityPlayer) {
                     if (canAttackCheck) {
-                        if (AntiBot2.isbot(entity)) {
+                        if (AntiBot.isBot(entity)) {
                             return false
                         }
 

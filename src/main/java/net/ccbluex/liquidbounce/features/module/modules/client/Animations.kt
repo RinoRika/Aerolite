@@ -18,7 +18,6 @@ object Animations : Module() {
             "Akrien", "Avatar", "ETB", "Exhibition", "Push", "Reverse",
             "Shield", "SigmaNew", "SigmaOld", "Slide", "SlideDown", "HSlide", "Swong", "VisionFX",
             "Swank", "Jello", "Rotate", "Liquid",
-            "Test", "Tap1", "Tap2", "Stab", "Slide2", "Continuity", "Poke", "Zoom", "Normal", "Remix", "Rotate360", "SmoothFloat",
             "None"
         ),
         "SlideDown"

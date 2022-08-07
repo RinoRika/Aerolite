@@ -10,6 +10,8 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
+import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
@@ -40,8 +42,9 @@ class Velocity : Module() {
     private val velocityTickValue = IntegerValue("VelocityTick", 1, 0, 10).displayable { modeValue.equals("Tick") || modeValue.equals("OldSpartan")}
     private val modeValue = ListValue("Mode", arrayOf(
         "Simple", "Tick", "Cancel",
-        "Redesky1", "Redesky2", "Redesky3", "RedeskyClean",
+        "Redesky1", "Redesky2", "Redesky3", "Redesky4",
         "MatrixReduce", "MatrixSimple", "MatrixGround",
+        "AGC",
         "Reverse", "SmoothReverse",
         "Jump", "Legit",
         "Phase", "PacketPhase", "Glitch", "Spoof",
@@ -92,11 +95,27 @@ class Velocity : Module() {
 
     private var isMatrixOnGround = false
 
+    private var countingTicks = false
+    private var cancelTicks = 0
+    private var row = 0
+
     override val tag: String
         get() = "${modeValue.get()} ${horizontalValue.get()}% ${verticalValue.get()}%"
 
+    override fun onEnable() {
+        countingTicks = false
+        cancelTicks = 0
+        if (modeValue.equals("AGC")) {
+            ClientUtils.displayChatMessage("[Velocity] DON'T enable fly/speed/longjump when velocity enabled!!!!")
+        }
+    }
     override fun onDisable() {
         mc.thePlayer?.speedInAir = 0.02F
+    }
+
+    @EventTarget
+    fun onMotion(event: MotionEvent) {
+        if (countingTicks) cancelTicks++
     }
 
     @EventTarget
@@ -246,6 +265,17 @@ class Velocity : Module() {
                     packet.motionX = (packet.getMotionX() * horizontal).toInt()
                     packet.motionY = (packet.getMotionY() * vertical).toInt()
                     packet.motionZ = (packet.getMotionZ() * horizontal).toInt()
+                }
+                "agc" -> {
+                    row++
+                    if (MovementUtils.isMoving()) {
+                        if (row <= 2) event.setCancelled(true) else {
+                            countingTicks = !LiquidBounce.moduleManager[Speed::class.java]!!.state
+                            cancelTicks = 0
+                            row = 0
+                        }
+                    } else
+                        event.setCancelled(true)
                 }
                 "simple" -> {
                     //velocityInput = true
@@ -472,6 +502,12 @@ class Velocity : Module() {
         }
 
         when (modeValue.get().lowercase()) {
+            "agc" -> {
+                if (cancelTicks >= 3 && countingTicks) {
+                    mc.thePlayer.setVelocity(0.0, 0.0, 0.0)
+                    countingTicks = false
+                }
+            }
             "legit" -> {
                 if (pos == null || mc.thePlayer.hurtTime <= 0) {
                     return
