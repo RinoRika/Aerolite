@@ -41,14 +41,14 @@ object LiquidBounce {
     // Client information
     const val CLIENT_NAME = "Aerolite"
     const val COLORED_NAME = "§b§lAerolite"
-    const val BUILD_CODE = "20220807"                       //更完改
-    const val CLIENT_REAL_VERSION = "220807"                            //更完改
+    const val BUILD_CODE = "20220813"                       //更完改
+    const val CLIENT_REAL_VERSION = "220813"                            //更完改
     const val CLIENT_CREATOR = "AeroTeam"
     const val CLIENT_WEBSITE = "Aerolite.tk"
     const val MINECRAFT_VERSION = "1.8.9"
     const val REL_SAYING = "114514"
     const val CLIENT_DEV = "Stars&Packet"
-    const val DEV_SAYING = "Reborn with love by Stars"        //更完改
+    const val DEV_SAYING = "总比我只会copy好"        //更完改
     const val IN_Dev_VERSION = false
 
     // Tasks

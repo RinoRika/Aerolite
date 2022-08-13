@@ -31,8 +31,8 @@ import java.awt.Color
  */
 @ElementInfo(name = "Arraylist", blur = true)
 class Arraylist(
-    x: Double = 5.0,
-    y: Double = 5.0,
+    x: Double = 1.0,
+    y: Double = 1.0,
     scale: Float = 1F,
     side: Side = Side(Horizontal.RIGHT, Vertical.UP)
 ) : Element(x, y, scale, side) {
@@ -61,10 +61,10 @@ class Arraylist(
     private val backgroundColorRedValue = IntegerValue("Background-R", 0, 0, 255)
     private val backgroundColorGreenValue = IntegerValue("Background-G", 0, 0, 255)
     private val backgroundColorBlueValue = IntegerValue("Background-B", 0, 0, 255)
-    private val backgroundColorAlphaValue = IntegerValue("Background-Alpha", 100, 0, 255)
+    private val backgroundColorAlphaValue = IntegerValue("Background-Alpha", 20, 0, 255)
     private val backgroundExpand = IntegerValue("Background-Expand", 2, 0, 10)
     private val rainbowSpeed = IntegerValue("RainbowSpeed", 1, 1, 10)
-    private val rectValue = ListValue("Rect", arrayOf("None", "Left", "Right", "Outline", "Special", "Top"), "None")
+    private val rectValue = ListValue("Rect", arrayOf("None", "Left", "Right", "Outline", "Special", "Top"), "Right")
     private val caseValue = ListValue("Case", arrayOf("Upper", "Normal", "Lower"), "Normal")
     private val spaceValue = FloatValue("Space", 0F, 0F, 5F)
     private val textHeightValue = FloatValue("TextHeight", 11F, 1F, 20F)

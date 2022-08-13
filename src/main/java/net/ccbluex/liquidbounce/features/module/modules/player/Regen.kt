@@ -12,10 +12,12 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
+import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C03PacketPlayer
+import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.potion.Potion
@@ -23,14 +25,16 @@ import net.minecraft.potion.Potion
 @ModuleInfo(name = "Regen", category = ModuleCategory.PLAYER)
 class Regen : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "OldSpartan", "NewSpartan", "AAC4NoFire", "Matrix", "MatrixTimer", "Ghostly"), "Vanilla")
+    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "OldSpartan", "NewSpartan", "AAC4NoFire", "Matrix", "MatrixTimer", "Ghostly", "Mineland"), "Vanilla")
     private val healthValue = IntegerValue("Health", 18, 0, 20)
     private val foodValue = IntegerValue("Food", 18, 0, 20)
     private val speedValue = IntegerValue("Speed", 100, 1, 100)
     private val noAirValue = BoolValue("NoAir", false)
     private val potionEffectValue = BoolValue("PotionEffect", false)
+    private val sendPacketDelay = IntegerValue("SendPacketDelay", 3000, 1000, 5000).displayable { modeValue.equals("Mineland")}
 
     private var resetTimer = false
+    private var timer = MSTimer()
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
@@ -49,6 +53,14 @@ class Regen : Module() {
                 "vanilla" -> {
                     repeat(speedValue.get()) {
                         mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
+                    }
+                }
+
+                "mineland" -> {
+                    if (timer.hasTimePassed(sendPacketDelay.get().toLong())) {
+                        if (MovementUtils.isMoving()) PacketUtils.sendPacketNoEvent(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.onGround))
+                        else PacketUtils.sendPacketNoEvent(C03PacketPlayer(mc.thePlayer.onGround))
+                        timer.reset()
                     }
                 }
 

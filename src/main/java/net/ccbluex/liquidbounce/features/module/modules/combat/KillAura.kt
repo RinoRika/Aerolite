@@ -62,6 +62,7 @@ class KillAura : Module() {
     }
 
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
+    private val comboOneHit = BoolValue("ComboOneHit", false)
     private val combatDelayValue = BoolValue("1.9Combat", false)
 
     // Range
@@ -253,6 +254,8 @@ class KillAura : Module() {
         stopBlocking()
         RotationUtils.setTargetRotationReverse(RotationUtils.serverRotation, 0, 0)
     }
+
+
 
     /**
      * Motion event

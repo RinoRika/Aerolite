@@ -1,124 +1,167 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.DropdownClickGui
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.ClickGui
-import net.ccbluex.liquidbounce.launch.data.uichoser
-import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
+import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.inventory.GuiContainer
-import net.minecraft.client.gui.inventory.GuiEditSign
 import net.minecraft.client.settings.GameSettings
-import net.minecraft.client.settings.KeyBinding
+import net.minecraft.network.play.client.C03PacketPlayer
+import net.minecraft.network.play.client.C0BPacketEntityAction
+import net.minecraft.network.play.client.C0DPacketCloseWindow
+import net.minecraft.network.play.client.C16PacketClientStatus
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2EPacketCloseWindow
-import java.util.*
-import java.util.function.Consumer
+import org.lwjgl.input.Keyboard
 
 @ModuleInfo(name = "InvMove", category = ModuleCategory.MOVEMENT)
 class InvMove : Module() {
-    val mode = ListValue(
-        "Mode", arrayOf(
-            "Vanilla",
-            "Spoof",
-            "Delay"
-        ), "Spoof")
+
+    private val noDetectableValue = BoolValue("NoDetectable", false)
+    private val bypassValue = ListValue("Bypass", arrayOf("NoOpenPacket", "Blink", "None"), "None")
+    private val rotateValue = BoolValue("Rotate", true)
     private val noMoveClicksValue = BoolValue("NoMoveClicks", false)
-    private val keepOpen = BoolValue("KeepOpen", true)
-    private val sneak = BoolValue("Sneak", false)
-    private var keys = listOf(
-        mc.gameSettings.keyBindForward,
-        mc.gameSettings.keyBindBack,
-        mc.gameSettings.keyBindLeft,
-        mc.gameSettings.keyBindRight,
-        mc.gameSettings.keyBindJump,
-        mc.gameSettings.keyBindSprint)
+    val noSprintValue = ListValue("NoSprint", arrayOf("Real", "PacketSpoof", "None"), "None")
 
+    private val blinkPacketList = mutableListOf<C03PacketPlayer>()
+    var lastInvOpen = false
+        private set
+    var invOpen = false
+        private set
 
+    private fun updateKeyState() {
+        if (mc.currentScreen != null && mc.currentScreen !is GuiChat && (!noDetectableValue.get() || mc.currentScreen !is GuiContainer)) {
+            mc.gameSettings.keyBindForward.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindForward)
+            mc.gameSettings.keyBindBack.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindBack)
+            mc.gameSettings.keyBindRight.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindRight)
+            mc.gameSettings.keyBindLeft.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindLeft)
+            mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
+            mc.gameSettings.keyBindSprint.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSprint)
 
-    private fun updateStates() {
-        try {
-            if (System.getProperty("NoInvCrash").contains("true")) {
-                return
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        if (sneak.get()) {
-            keys = listOf(
-                mc.gameSettings.keyBindForward,
-                mc.gameSettings.keyBindBack,
-                mc.gameSettings.keyBindLeft,
-                mc.gameSettings.keyBindRight,
-                mc.gameSettings.keyBindJump,
-                mc.gameSettings.keyBindSprint,
-                mc.gameSettings.keyBindSneak
-            )
-        } else {
-            keys = listOf(
-                mc.gameSettings.keyBindForward,
-                mc.gameSettings.keyBindBack,
-                mc.gameSettings.keyBindLeft,
-                mc.gameSettings.keyBindRight,
-                mc.gameSettings.keyBindJump,
-                mc.gameSettings.keyBindSprint)
-        }
-        if (mc.currentScreen != uichoser() && mc.currentScreen != null) {
-            try {
-                keys.forEach(Consumer { k: KeyBinding -> k.pressed = GameSettings.isKeyDown(k) })
-            } catch (e: Exception) {
-                e.printStackTrace()
-                ClientUtils.logError("InvMove occurred a serious error.", e)
-            }
-        }
-    }
-    private val delayTimer = MSTimer()
-    @EventTarget
-    fun onMotion(event: MotionEvent) {
-        when (mode.get().lowercase(Locale.getDefault())) {
-            "spoof", "vanilla" -> if (event.eventState === EventState.PRE && mc.currentScreen is GuiContainer) {
-                updateStates()
-            }
-            "delay" -> if (event.eventState === EventState.PRE && mc.currentScreen is GuiContainer) {
-                if (delayTimer.hasTimePassed(100)) {
-                    updateStates()
-                    delayTimer.reset()
+            if (rotateValue.get()) {
+                if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+                    if (mc.thePlayer.rotationPitch > -90) {
+                        mc.thePlayer.rotationPitch -= 5
+                    }
+                }
+                if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
+                    if (mc.thePlayer.rotationPitch < 90) {
+                        mc.thePlayer.rotationPitch += 5
+                    }
+                }
+                if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
+                    mc.thePlayer.rotationYaw -= 5
+                }
+                if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
+                    mc.thePlayer.rotationYaw += 5
                 }
             }
         }
     }
 
     @EventTarget
+    fun onMotion(event: MotionEvent) {
+        updateKeyState()
+    }
+
+    @EventTarget
     fun onScreen(event: ScreenEvent) {
-        updateStates()
+        updateKeyState()
+    }
+
+    @EventTarget
+    fun onClick(event: ClickWindowEvent) {
+        if (noMoveClicksValue.get() && MovementUtils.isMoving()) {
+            event.cancelEvent()
+        }
     }
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
-    //    if (keepOpen.get() && (!mc.gameSettings.keyBindInventory.isKeyDown || !mc.gameSettings.keyBindInventory.isPressed || !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)
-    //                && (event.packet is S2EPacketCloseWindow || event.packet is C0DPacketCloseWindow))) event.cancelEvent()
-        if (mode.get().equals("spoof", ignoreCase = true)) {
-            if (event.packet is S2DPacketOpenWindow) {
-                event.cancelEvent()
+        val packet = event.packet
+
+        lastInvOpen = invOpen
+        if (packet is S2DPacketOpenWindow || (packet is C16PacketClientStatus && packet.status == C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT)) {
+            invOpen = true
+            if (noSprintValue.equals("PacketSpoof")) {
+                if (mc.thePlayer.isSprinting) {
+                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
+                }
+                if (mc.thePlayer.isSneaking) {
+                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SNEAKING))
+                }
             }
-            if (event.packet is S2EPacketCloseWindow) {
-                event.cancelEvent()
+        }
+        if (packet is S2EPacketCloseWindow || packet is C0DPacketCloseWindow) {
+            invOpen = false
+            if (noSprintValue.equals("PacketSpoof")) {
+                if (mc.thePlayer.isSprinting) {
+                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
+                }
+                if (mc.thePlayer.isSneaking) {
+                    mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SNEAKING))
+                }
+            }
+        }
+
+        when (bypassValue.get().lowercase()) {
+            "noopenpacket" -> {
+                if (packet is C16PacketClientStatus && packet.status == C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT) {
+                    event.cancelEvent()
+                }
+            }
+            "blink" -> {
+                if (packet is C03PacketPlayer) {
+                    if (lastInvOpen) {
+                        blinkPacketList.add(packet)
+                        event.cancelEvent()
+                    } else if (blinkPacketList.isNotEmpty()) {
+                        blinkPacketList.add(packet)
+                        event.cancelEvent()
+                        blinkPacketList.forEach {
+                            PacketUtils.sendPacketNoEvent(it)
+                        }
+                        blinkPacketList.clear()
+                    }
+                }
             }
         }
     }
 
     @EventTarget
-    fun onClick(event: ClickWindowEvent) {
-        if (noMoveClicksValue.get() && MovementUtils.isMoving())
-            event.cancelEvent()
+    fun onWorld(event: WorldEvent) {
+        blinkPacketList.clear()
+        invOpen = false
+        lastInvOpen = false
     }
 
-    override val tag: String
-        get() = mode.get()
+    override fun onDisable() {
+        if (!GameSettings.isKeyDown(mc.gameSettings.keyBindForward) || mc.currentScreen != null) {
+            mc.gameSettings.keyBindForward.pressed = false
+        }
+        if (!GameSettings.isKeyDown(mc.gameSettings.keyBindBack) || mc.currentScreen != null) {
+            mc.gameSettings.keyBindBack.pressed = false
+        }
+        if (!GameSettings.isKeyDown(mc.gameSettings.keyBindRight) || mc.currentScreen != null) {
+            mc.gameSettings.keyBindRight.pressed = false
+        }
+        if (!GameSettings.isKeyDown(mc.gameSettings.keyBindLeft) || mc.currentScreen != null) {
+            mc.gameSettings.keyBindLeft.pressed = false
+        }
+        if (!GameSettings.isKeyDown(mc.gameSettings.keyBindJump) || mc.currentScreen != null) {
+            mc.gameSettings.keyBindJump.pressed = false
+        }
+        if (!GameSettings.isKeyDown(mc.gameSettings.keyBindSprint) || mc.currentScreen != null) {
+            mc.gameSettings.keyBindSprint.pressed = false
+        }
+
+        blinkPacketList.clear()
+        lastInvOpen = false
+        invOpen = false
+    }
 }

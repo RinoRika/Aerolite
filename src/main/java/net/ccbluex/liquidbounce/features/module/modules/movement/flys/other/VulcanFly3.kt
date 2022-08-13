@@ -1,23 +1,16 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.flys.other
 
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
-import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
-import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.FloatValue
-import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.BlockPos
-import java.awt.Color
 import kotlin.math.sqrt
 
 class VulcanFly3 : FlyMode("Vulcan3") {
@@ -31,12 +24,10 @@ class VulcanFly3 : FlyMode("Vulcan3") {
     private var startX = 0.0
     private var startZ = 0.0
     private var startY = 0.0
-    private var fail = false
 
     override fun onEnable() {
         vticks = 0
         doCancel = false
-        fail = false
         if(mc.thePlayer.posY % 1 != 0.0) {
             fly.state = false
             ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cPlease stand on a solid block to fly!")
@@ -54,20 +45,19 @@ class VulcanFly3 : FlyMode("Vulcan3") {
 
     override fun onDisable() {
         mc.timer.timerSpeed = 1.0f
-        fail = false
         if (!isSuccess) {
             mc.thePlayer.setPosition(startX, startY, startZ)
-            ClientUtils.displayChatMessage("[VulcanFly] Failed to fly. You'd better not try again!")
+            ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cFly attempt Failed...")
+            ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cIf it keeps happen, DONT use it again in CURRENT gameplay")
         }
     }
 
     override fun onUpdate(event: UpdateEvent) {
         when(stage) {
             FlyStage.FLYING -> {
-                if (fail) return
                 isSuccess = false
 
-                MovementUtils.stop()
+                MovementUtils.resetMotion(true)
 
                 MovementUtils.strafe(timerValue.get())
                 doCancel = true
@@ -81,7 +71,7 @@ class VulcanFly3 : FlyMode("Vulcan3") {
                     val underBlock2 = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, fixedY - 1, mc.thePlayer.posZ)) ?: return
                     if(underBlock2.isFullBlock) {
                         stage = FlyStage.WAIT_APPLY
-                        MovementUtils.stop()
+                        MovementUtils.resetMotion(true)
                         mc.thePlayer.jumpMovementFactor = 0.00f
                         doCancel = false
                         mc.thePlayer.onGround = false
@@ -100,20 +90,20 @@ class VulcanFly3 : FlyMode("Vulcan3") {
                         mc.thePlayer.setPosition(fixedX, fixedY, fixedZ)
                         mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY , mc.thePlayer.posZ, true))
                         doCancel = true
+                        ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §aWaiting for landing...")
                     } else {
-                        stage = FlyStage.FAILED
+                        ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cYou can only land on a solid block!")
                     }
                 }
             }
             FlyStage.WAIT_APPLY -> {
-                if (fail) return
                 vticks++
                 doCancel = false
                 if(vticks == 60) {
-                    stage = FlyStage.FAILED
+                    ClientUtils.displayChatMessage("§8[§c§lVulcan-Fly§8] §cSeems took a long time! Please turn off the Fly manually")
                 }
                 mc.timer.timerSpeed = 1f
-                MovementUtils.stop()
+                MovementUtils.resetMotion(true)
                 mc.thePlayer.jumpMovementFactor = 0.00f
                 val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
                 if(mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(0.0, -10.0, 0.0)).isEmpty() && mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(0.0, -12.0, 0.0)).isEmpty()) {
@@ -123,18 +113,12 @@ class VulcanFly3 : FlyMode("Vulcan3") {
                 }
                 doCancel = true
             }
-            FlyStage.FAILED -> {
-                ClientUtils.displayChatMessage("[VulcanFly] Failed to fly. You'd better not try again!")
-                ClientUtils.displayChatMessage("[VulcanFly] You can close the module now.")
-                fail = true
-                isSuccess = false
-            }
         }
     }
 
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if (fail) return
+
         if(packet is C03PacketPlayer) {
             if(doCancel) {
                 event.cancelEvent()
@@ -147,6 +131,7 @@ class VulcanFly3 : FlyMode("Vulcan3") {
                             +(packet.y-mc.thePlayer.posY)*(packet.y-mc.thePlayer.posY)
                             +(packet.z-mc.thePlayer.posZ)*(packet.z-mc.thePlayer.posZ)) < 1.4) {
                     isSuccess = true
+                    fly.state = false
                     return
                 }
             }
@@ -158,53 +143,6 @@ class VulcanFly3 : FlyMode("Vulcan3") {
 
     enum class FlyStage {
         FLYING,
-        WAIT_APPLY,
-        FINISHING,
-        FAILED
+        WAIT_APPLY
     }
-
-    @EventTarget
-    fun onRender2D(event: Render2DEvent) {
-        val scaledRes = ScaledResolution(mc)
-        val preWidth = if (stage == FlyStage.FLYING) 1 else if (stage == FlyStage.WAIT_APPLY) 3 else if (stage == FlyStage.FINISHING) 4 else 0
-        val width = preWidth.toFloat() / 5f * 60f
-        Fonts.font40.drawCenteredString(
-            bowStatus,
-            scaledRes.scaledWidth / 2f,
-            scaledRes.scaledHeight / 2f + 14f,
-            -1,
-            true
-        )
-        RenderUtils.drawRect(
-            scaledRes.scaledWidth / 2f - 31f,
-            scaledRes.scaledHeight / 2f + 25f,
-            scaledRes.scaledWidth / 2f + 31f,
-            scaledRes.scaledHeight / 2f + 29f,
-            -0x60000000
-        )
-        RenderUtils.drawRect(
-            scaledRes.scaledWidth / 2f - 30f,
-            scaledRes.scaledHeight / 2f + 26f,
-            scaledRes.scaledWidth / 2f - 30f + width,
-            scaledRes.scaledHeight / 2f + 28f,
-            statusColor
-        )
-    }
-
-    private val bowStatus: String
-        get() = when (stage) {
-            FlyStage.FLYING -> "Boosting!"
-            FlyStage.WAIT_APPLY -> "Landing..."
-            FlyStage.FINISHING -> "Finished!"
-            FlyStage.FAILED -> "FAILED"
-        }
-    private val statusColor: Color
-        get() {
-            return when (stage) {
-                FlyStage.FLYING -> Color.blue
-                FlyStage.WAIT_APPLY -> Color.yellow
-                FlyStage.FINISHING -> Color.green
-                FlyStage.FAILED -> Color.red
-            }
-        }
 }

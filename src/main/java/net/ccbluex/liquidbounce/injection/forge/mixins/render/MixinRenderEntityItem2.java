@@ -28,9 +28,6 @@ public abstract class MixinRenderEntityItem2 extends Render<EntityItem> {
     @Shadow
     protected abstract int func_177078_a(final ItemStack p0);
     
-    @Shadow
-    protected abstract boolean shouldBob();
-    
     @Inject(method = "doRender", at = @At("HEAD"))
     private void injectChamsPre(CallbackInfo callbackInfo) {
         final Chams chams = (Chams) LiquidBounce.moduleManager.getModule(Chams.class);

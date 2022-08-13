@@ -31,7 +31,7 @@ class Criticals : Module() {
     val modeValue = ListValue("Mode", arrayOf(
         "Packet", "NewPacket", "LitePacket", "FixPacket", "MiPacket", "AAC5Packet", "AAC4Packet", "HPacket",
         "NCP", "NCP2", "Vanilla", "Vulcan", "AntiCheat",
-        "Edit", "Edit2", "Hypixel",
+        "Edit", "Edit2", "Hypixel", "Mineland",
         "AACNoGround", "NoGround", "Redesky",
         "VerusSmart", "MatrixSmart", "Blocksmc", "Minemora",
         "Motion", "Hover", "Custom"),
@@ -207,6 +207,18 @@ class Criticals : Module() {
                     }
                 }
 
+                "mineland"->{
+                    val ru = RandomUtils.getRandom(4.0E-6, 4.0E-4)
+                    val doubleArray = arrayOf(0.01008 + ru, 0.007349825 + ru, 0.0012 + ru)
+                    val n = doubleArray.size
+                    var n2 = 0
+                    while (n2 < n) {
+                        val offset = doubleArray[n2]
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + offset, z, false))
+                        ++n2
+                    }
+                }
+
                 "hpacket" -> {
                     // Hpacket
                     val hpv : DoubleArray
@@ -250,7 +262,7 @@ class Criticals : Module() {
 
                 "vulcan" -> {
                     counter++
-                    if(counter > attackTimesValue.get()) {
+                    if(counter >= attackTimesValue.get()) {
                         sendCriticalPacket(yOffset = 0.2, ground = false)
                         sendCriticalPacket(yOffset = 0.1216, ground = false)
                         counter = 0

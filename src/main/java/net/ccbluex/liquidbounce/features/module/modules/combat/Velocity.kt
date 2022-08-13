@@ -312,6 +312,10 @@ class Velocity : Module() {
                     if (horizontal == 0.0 && vertical == 0.0) {
                         event.cancelEvent()
                         return
+                    } else {
+                        packet.motionX *= (horizontal / 100.0).toInt()
+                        packet.motionY *= (vertical / 100.0).toInt()
+                        packet.motionZ *= (horizontal / 100.0).toInt()
                     }
                 }
 
