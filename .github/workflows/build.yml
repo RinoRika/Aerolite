@@ -21,4 +21,4 @@ jobs:
         id: vars
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Build
-        run: chmod +x gradlew
+        run: chmod +x gradlew && ./gradlew setupCiWorkspace && ./gradlew build
