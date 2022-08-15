@@ -38,6 +38,7 @@
     "gui.MixinGuiSpectator",
     "gui.MixinServerListEntryNormal",
     "network.MixinC00Handshake",
+    "network.MixinC08PacketPlayerBlockPlacement",
     "network.MixinC17PacketCustomPayload",
     "network.MixinNetHandlerPlayClient",
     "network.MixinNetworkManager",

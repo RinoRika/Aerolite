@@ -43,7 +43,7 @@ public abstract class MixinGuiIngameForge extends MixinGuiInGame {
                 GlStateManager.popMatrix();
                 GlStateManager.pushMatrix();
                 GlStateManager.scale(2.8F, 2.8F, 2.8F);
-                Fonts.font35.drawString(this.displayedSubTitle, (float)(-Fonts.font35.getStringWidth(this.displayedSubTitle) / 2), -45.0F, 16777215 | l, true);
+                Fonts.font35.drawString(this.displayedSubTitle, (float)(-Fonts.font35.getStringWidth(this.displayedSubTitle) / 2), -47.0F, 16777215 | l, true);
                 GlStateManager.popMatrix();
                 GlStateManager.disableBlend();
                 GlStateManager.popMatrix();
