@@ -12,7 +12,8 @@ repositories {
     mavenCentral()
     maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
     maven { url = "https://jitpack.io/" }
-    maven { url = "https://repo.getfdp.today/" }
+    maven { url = "https://maven.minecraftforge.net/" }
+    maven { url = "https://jitpack.io/" }
     maven {
         url = "https://maven.pkg.github.com/jcefmaven/jcefmaven/"
         credentials {
@@ -77,7 +78,7 @@ dependencies {
     }
 
     include("com.jagrosh:DiscordIPC:0.4")
-    include("me.liuli:Elixir:1.2.1") {
+    include("com.github.CCBlueX:Elixir:1.2.4") {
         exclude module: "kotlin-stdlib"
         exclude module: "authlib"
     }
