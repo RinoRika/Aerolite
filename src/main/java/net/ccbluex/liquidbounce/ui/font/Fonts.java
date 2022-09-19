@@ -32,6 +32,9 @@ public class Fonts {
     @FontDetails(fontName = "GoogleSans", fontSize = 35, fileName = "GoogleSans.ttf")
     public static GameFontRenderer gs35;
 
+
+    @FontDetails(fontName = "Jello", fontSize = 35, fileName = "Jello.ttf")
+    public static GameFontRenderer fontJello;
     @FontDetails(fontName = "GoogleSans", fontSize = 35, fileName = "GoogleSans.ttf")
     public static GameFontRenderer gs15;
 

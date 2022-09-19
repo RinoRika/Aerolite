@@ -46,6 +46,7 @@ import java.util.List;
 
 import static java.lang.Math.*;
 import static net.ccbluex.liquidbounce.utils.RenderUtil.color;
+import static net.ccbluex.liquidbounce.utils.RenderUtil.drawText;
 import static org.lwjgl.opengl.GL11.*;
 
 public final class RenderUtils extends MinecraftInstance {
@@ -352,6 +353,33 @@ public final class RenderUtils extends MinecraftInstance {
         drawTexturedRect(x, y - 9, width, 9, "paneltop");
         drawTexturedRect(x, y + height, width, 9, "panelbottom");
     }
+    public static void drawTopShadow(float x, float y, float width, float height) {
+        drawTexturedRect(x, y, width, 9, "paneltop");
+    }
+    public static void drawBottomShadow(float x, float y, float width, float height) {
+        drawTexturedRect(x, y, width, 9, "panelbottom");
+    }
+    public static void drawLeftShadow(float x, float y, float width, float height) {
+        drawTexturedRect(x, y, 9, height-0.5f, "panelleft");
+    }
+    public static void drawRightShadow(float x, float y , float width, float height){
+        drawTexturedRect(x-5f, y, 9, height-0.5f, "panelright");
+    }
+
+    public static void drawcircleshadow(float x, float y, float width, float height) {
+        drawTexturedRect(x,y,width,height,"shadow");
+    }
+
+
+    public static void drawTenaRect(float x,float y,float width, float height) {
+        drawTexturedRect(x,y,width,height,"rect-test");
+        drawTexturedRect(x,y,width,height,"tenacity-rect");
+
+    }
+
+    public static void drawShadowedRect(float x,float y,float width,float height) {
+        drawTexturedRect(x,y,width,height,"rect");
+    }
 
 
     public static void drawFilledCircle2(final float xx, final float yy, final float radius, final Color color) {
@@ -437,10 +465,10 @@ public final class RenderUtils extends MinecraftInstance {
                     drawFilledCircleNoGL(0, 0, 0.7, c.hashCode(), quality);
 
                     if (distanceFromPlayer < 4)
-                        drawFilledCircleNoGL(0, 0, 1.4, new Color(c.getRed(), c.getGreen(), c.getBlue(), 50).hashCode(), quality);
+                        Fonts.fontBangers.drawString("CRIT!",0, 0, new Color(c.getRed(), c.getGreen(), c.getBlue(), 50).hashCode());
 
                     if (distanceFromPlayer < 20)
-                        drawFilledCircleNoGL(0, 0, 2.3, new Color(c.getRed(), c.getGreen(), c.getBlue(), 30).hashCode(), quality);
+                        Fonts.fontBangers.drawString("CRIT!",0, 0, new Color(c.getRed(), c.getGreen(), c.getBlue(), 50).hashCode());
 
                     GL11.glScalef(0.8F, 0.8F, 0.8F);
                     GL11.glPopMatrix();
@@ -988,6 +1016,8 @@ public final class RenderUtils extends MinecraftInstance {
         glDisable(GL_BLEND);
         glDisable(GL_LINE_SMOOTH);
     }
+
+
 
     public static void drawLoadingCircle(float x, float y) {
         for (int i = 0; i < 4; i++) {

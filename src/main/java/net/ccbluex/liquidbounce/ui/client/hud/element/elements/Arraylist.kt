@@ -19,6 +19,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.Render
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.renderer.GlStateManager
@@ -52,6 +53,7 @@ class Arraylist(
     private val rectColorBlueAlpha = IntegerValue("Rect-Alpha", 255, 0, 255)
     private val saturationValue = FloatValue("Random-Saturation", 0.9f, 0f, 1f)
     private val brightnessValue = FloatValue("Random-Brightness", 1f, 0f, 1f)
+    private val RainbowAlpha = IntegerValue("RainbowAlpha",100,0,255)
     private val tagsValue = ListValue("TagsStyle", arrayOf("-", "|", "()", "[]", "<>", ">", "->", "=", "Space", "None"), "Space")
     private val shadow = BoolValue("ShadowText", false)
     private val rectblur = BoolValue("RectBlur", false)
@@ -66,11 +68,12 @@ class Arraylist(
     private val backgroundExpand = IntegerValue("Background-Expand", 2, 0, 10)
     private val rainbowSpeed = IntegerValue("RainbowSpeed", 1, 1, 10)
     private val rectValue = ListValue("Rect", arrayOf("None", "Left", "Right", "Outline", "Special", "Top"), "Right")
+    private val jelloblur = BoolValue("JelloBlur",false)
     private val caseValue = ListValue("Case", arrayOf("Upper", "Normal", "Lower"), "Normal")
     private val spaceValue = FloatValue("Space", 0F, 0F, 5F)
     private val textHeightValue = FloatValue("TextHeight", 11F, 1F, 20F)
     private val textYValue = FloatValue("TextY", 1F, 0F, 20F)
-    private val fontValue = FontValue("Font", Fonts.font40)
+    private val fontValue = FontValue("Font", Fonts.fontJello)
 
     private var x2 = 0
     private var y2 = 0F
@@ -159,7 +162,7 @@ class Arraylist(
                         if (rectMode.equals("right", true)) -3F else 0F,
                         yPos + textHeight,
                         when (backgroundColorMode.lowercase()) {
-                            "rainbow" -> ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()).rgb
+                            "rainbow" -> ColorUtils.rainbowWithAlpha(backgroundColorAlphaValue.get()).rgb
                             "random" -> moduleColor
                             "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
                             "slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), index * 30 * rainbowSpeed.get(), saturationValue.get(), brightnessValue.get()).rgb
@@ -167,9 +170,7 @@ class Arraylist(
                             else -> backgroundCustomColor.rgb
                         }
                     )
-                    if(rectblur.equals(true)){
-                        RenderUtils.drawShadow(rectX - backgroundExpand.get(), yPos, 150f, textHeight)
-                    }
+
 
                     val mName = changeCase(getModuleName(module))
                     val mTag = changeCase(getModuleTag(module))
@@ -236,6 +237,20 @@ class Arraylist(
                                 }
                             }
                         }
+                    }
+                    if(rectblur.equals(true)) {
+                        RenderUtils.drawRightShadow(5F, yPos - 1F, 0F + 1F,
+                            yPos + textHeight - (yPos - 1F))
+                        RenderUtils.drawLeftShadow(xPos - 12, yPos+0.5f, xPos - 2 - (xPos - 3), yPos + textHeight - yPos +0.5f)
+                        if (module != modules[0]) {
+                            RenderUtils.drawBottomShadow(xPos - 5 - (modules[index - 1].width - module.width), yPos, xPos - 2f - (xPos - 3 - (modules[index - 1].width - module.width)), yPos + 1 - yPos)
+                            if (module == modules[modules.size - 1]) {
+                                RenderUtils.drawBottomShadow(xPos - 3, yPos + textHeight, 0.0F - (xPos - 3) + 2f, yPos + textHeight + 1 - (yPos + textHeight))
+                            }
+                        }
+                    }
+                    if(jelloblur.equals(true)){
+                        RenderUtils.drawcircleshadow(rectX - backgroundExpand.get(), yPos-5f, module.width.toFloat() +5f, textHeight + 8f)
                     }
                 }
             }

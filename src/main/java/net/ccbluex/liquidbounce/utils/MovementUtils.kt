@@ -64,6 +64,11 @@ object MovementUtils : MinecraftInstance() {
         return Math.sqrt(motionX * motionX + motionZ * motionZ)
     }
 
+    fun getSpeedWithPotionEffects(speed: Double) =
+        mc.thePlayer.getActivePotionEffect(Potion.moveSpeed)?.let {
+            speed * (1 + (it.amplifier + 1) * 0.2)
+        } ?: speed
+
     fun getPredictionYaw(x: Double, z: Double): Float {
         if (mc.thePlayer == null) {
             lastX = -999999.0
