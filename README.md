@@ -1,6 +1,13 @@
-# LMFAO
-某些skid大神真的给我笑嘻嘻了 照抄还揽我人气是吧^^ \
-咱就说看不懂代码就别弄,有些奇怪名字的功能都是抄水影的,只是因为名字太长所以简化了一下 \
-哥们直接拷贝过来就算了,名字那么明显我也不说了,还整个中文翻译^^ 看英文都能给你看蒙也不知道你这中文是给谁找存在感LOL \
-嘴上说着别人skid,自己skid的比别人还多,什么道德高人 \
-没这能力可以去用fdp,lb+,劳资还有点自己的东西,你算什么东西
+# For the bright future!
+Thanks for supporting Aerolite!But sadly,Aerolite will not update any more.\
+On this section of the road,I learnt a lot.Maybe happy, maybe disappointed.\
+And now,it's time for me to work.I am bad at Chinese,oh noooo...\
+Also,I hope you can be better,both the students and the workers.Best wishes!\
+Destined goodbye.
+# Other
+By the way,pay attention to my bilibili channel!\
+I will upload something interesting.\
+https://b23.tv/SEfjqTs
+# How about Packet?
+His computer was broken.Maybe he will restart the project when he fix it.\
+At that time,don't call me again.

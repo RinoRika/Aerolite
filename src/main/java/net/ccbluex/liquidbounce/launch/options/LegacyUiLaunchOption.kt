@@ -25,16 +25,6 @@ object LegacyUiLaunchOption : LaunchOption() {
     lateinit var clickGuiConfig: ClickGuiConfig
 
     override fun start() {
-        // check update
-        Thread {
-            val get = HttpUtils.get("https://api.github.com/repos/UnlegitMC/FDPClient/releases/latest")
-
-            val jsonObj = JsonParser()
-                .parse(get).asJsonObject
-
-            val latestVersion = jsonObj.get("tag_name").asString
-
-        }.start()
 
         LiquidBounce.mainMenu = GuiMainMenu()
         LiquidBounce.moduleManager.registerModule(ClickGUIModule())
