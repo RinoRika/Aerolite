@@ -88,7 +88,7 @@ class GuiBackground(val prevGui: GuiScreen) : GuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        mc.textureManager.bindTexture(ResourceLocation("main/game.png"))
+        mc.textureManager.bindTexture(ResourceLocation("aerolite/main/game.png"))
         drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width.toFloat(), height.toFloat())
 
         mc.fontRendererObj.drawCenteredString("%ui.background%", this.width / 2F, height / 8F + 5F, 4673984, true)

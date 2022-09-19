@@ -1,6 +1,7 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
@@ -18,13 +19,14 @@ import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import java.awt.geom.FlatteningPathIterator
 import java.text.DecimalFormat
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
 @ElementInfo(name = "Targets")
 class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
-    private val modeValue = ListValue("Mode", arrayOf("Novoline", "Hreith", "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity", "Test", "Exhibition", "Chill"), "Test")
+    private val modeValue = ListValue("Mode", arrayOf("Novoline", "Hreith", "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity", "Test", "Exhibition", "Chill","ZeroDay","Jello","Moon","NewAero"), "Test")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2"), "New2")
     private val animSpeedValue = IntegerValue("AnimSpeed", 10, 5, 20)
     private val hpAnimTypeValue = EaseUtils.getEnumEasingList("HpAnimType")
@@ -47,6 +49,11 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     private val globalAnimSpeed = FloatValue("Global-AnimSpeed", 3F, 1F, 9F)
     private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F)
     private val fontValue = FontValue("Font", Fonts.tc40)
+    private val NewAeroRainStart1 = FloatValue("RainStart1",0.5f,0.00f,1.0f)
+    private val NewAeroRainStop1 = FloatValue("RainStop1",0.75f,0.00f,1.0f)
+    private val NewAeroRainStart2 = FloatValue("RainStart2",0.75f,0.00f,1.0f)
+    private val NewAeroRainStop2 = FloatValue("RainStop2",0.90f,0.00f,1.0f)
+    private val newAeroBarRainbow = BoolValue("BarRainbow", false)
 
     private var prevTarget: EntityLivingBase? = null
     private var displayPercent = 0f
@@ -151,6 +158,10 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             "tenacity" -> drawTenacity(prevTarget!!)
             "exhibition" -> drawExhi(prevTarget!!)
             "chill" -> drawChill(prevTarget!!)
+            "zeroday" -> drawZeroDay(prevTarget!!)
+            "jello" -> drawJello(prevTarget!!)
+            "moon" -> drawMoon(prevTarget!!)
+            "newaero" -> drawNewAero(prevTarget!!)
         }
 
         return getTBorder()
@@ -189,6 +200,21 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         RenderUtils.drawRect(33F, 18F, hpPos, 25F, color)
         font.drawString("❤", 33, 30, Color.RED.rgb)
         font.drawString(decimalFormat.format(getHealth(target)), 43, 30, Color.WHITE.rgb)
+    }
+
+    private fun drawNewAero(target: EntityLivingBase) {
+        val font = Fonts.gs40
+        val hpPos = 33F + ((getHealth(target) / target.maxHealth * 10000).roundToInt() / 100)
+        val hurtPercent = target.hurtPercent
+        RenderUtils.drawGradientSidewaysH(0.0,0.0,140.0,40.0,ColorUtils.hslRainbow(1, NewAeroRainStart1.get(),NewAeroRainStop1.get(),300,1500,0.7f,1f).rgb,ColorUtils.hslRainbow(1, NewAeroRainStart2.get(),NewAeroRainStop2.get(),300,1500,0.7f,1f).rgb)
+        GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
+        RenderUtils.drawHead(target.skin,1,3,30,30, 240f)
+        RenderUtils.drawShadow(0f,0f,140f,40f)
+
+        font.drawString(target.name,35,4,Color.white.rgb)
+        font.drawString("Health: "+target.health.roundToInt(),35,15,Color.WHITE.rgb)
+        font.drawString("Armor: "+target.totalArmorValue,35,26,Color.WHITE.rgb)
+        RenderUtils.drawRoundedCornerRect(0f,38f,hpPos + 3f,40f,2f, if (newAeroBarRainbow.get()) ColorUtils.rainbow().rgb else Color.WHITE.rgb)
     }
 
     private fun drawHreith(target: EntityLivingBase) {
@@ -469,6 +495,41 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         }
     }
 
+    private fun drawJello(target: EntityLivingBase){
+        val font  = fontValue.get()
+
+        //Rect(采用rect+啥shadow设计)
+        RenderUtils.drawRect(0f,0f,150f,50f,Color(255,255,255,100).rgb)
+        RenderUtils.drawShadow(0f,0f,150f,50f)
+        GL11.glColor4f(1f,1f,1f,1f)
+        RenderUtils.quickDrawHead(target.skin,5,5,30,30)
+        RenderUtils.drawShadow(5f,5f,30f,30f)
+
+        //HealthBar(采用其他其他targets的绘制方法)
+        val barLength = 150 -7f
+        RenderUtils.drawRoundedCornerRect(10f,40f,7+((easingHP / target.maxHealth)* barLength),45f,2f,Color(255,255,255,255).rgb)
+        RenderUtils.drawRoundedCornerRect(10f,40f,7+((target.health / target.maxHealth) * barLength),45f,2f,Color(255,255,255,100).rgb)
+        font.drawString("${target.name}",50,10,Color(255,255,255,255).rgb)
+
+        //Info(自写)
+        font.drawString("Health:"+"${target.health}", 50,20,Color(255,255,255,255).rgb)
+        font.drawString("HurtTime:"+"${target.hurtTime}",50,30,Color(255,255,255,255).rgb)
+    }
+
+    private fun drawMoon(target: EntityLivingBase){
+        val font = fontValue.get()
+        //别说skid辣真的是自己写的
+        //RECT
+        RenderUtils.drawRoundedCornerRect(0f,0f,150f,50f,5f,Color(0,0,0,0).rgb)
+        RenderUtils.drawBorder(0f,0f,150f,50f,4f,Color.WHITE.rgb)
+        RenderUtils.quickDrawHead(target.skin, 5, 5, 40,40)
+        Fonts.tc45.drawString(target.name,50,5,Color.WHITE.rgb)
+        Fonts.gs35.drawString("${target.health.toInt()} health",50,20,Color.WHITE.rgb)
+        RenderUtils.drawRoundedCornerRect(50f,35f,7+((easingHP / target.maxHealth)* (150-7f)) + 3f,45f,1.5f,Color.WHITE.rgb)
+        RenderUtils.drawRoundedCornerRect(50f,35f,7+((target.health / target.maxHealth) * (150-7f)) + 3f,45f,1.5f,Color(0,0,0,0).rgb)
+
+    }
+
     private fun drawZamorozka(target: EntityLivingBase) {
         val font = fontValue.get()
 
@@ -575,6 +636,28 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         val time = System.currentTimeMillis()
         val x = RandomUtils.nextInt(-50, 50)
         val y = RandomUtils.nextInt(-50, 50)
+    }
+
+    private fun drawZeroDay(target: EntityLivingBase){
+        val font = fontValue.get()
+        val size = 38
+        RenderUtils.drawRect(0f,0f,150f,50f,Color(30,30,30,255).rgb)
+        RenderUtils.drawShadow(0f,0f,150f,50f)
+        RenderUtils.quickDrawHead(target.skin,0,0,size,size)
+        GL11.glPopMatrix()
+        font.drawString("${target.name}",48,8,Color.WHITE.rgb)
+        RenderUtils.drawRect(0f, 45f, 0f + (easingHP / target.maxHealth)*79f, 50f,  ColorUtils.skyRainbow(0,100f,0f,5.0.toDouble()).rgb)
+        RenderUtils.drawCircle(50f,25f,4f,Color.WHITE.rgb)
+        RenderUtils.drawCircle(100f,25f,4f,Color.YELLOW.rgb)
+
+        //judge health
+        if(mc.thePlayer.health > target.health){
+            font.drawString("Winning",48,18,Color.WHITE.rgb)
+        }else if(mc.thePlayer.health == target.health){
+            font.drawString("Same LOL",48,18,Color.WHITE.rgb)
+        }else{
+            font.drawString("Losing",48,18,Color.WHITE.rgb)
+        }
     }
 
     private fun drawRiseNew(target: EntityLivingBase) {
@@ -785,18 +868,18 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         RenderUtils.quickDrawHead(target.skin, 5, 5, 32, 32)
 
         // info text
-            if (target.isDead) {
-                font.drawString(target.name, 40, 5, Color.WHITE.rgb)
-                "DIED".also {
-                    font.drawString(it, 40 + additionalWidth - font.getStringWidth(it), 5, Color.RED.rgb)
-                }
-            } else {
-                font.drawString(target.name, 40, 5, Color.WHITE.rgb)
-                "$hp HP".also {
-                    font.drawString(it, 40 + additionalWidth - font.getStringWidth(it), 5, Color.LIGHT_GRAY.rgb)
-                }
+        if (target.isDead) {
+            font.drawString(target.name, 40, 5, Color.WHITE.rgb)
+            "DIED".also {
+                font.drawString(it, 40 + additionalWidth - font.getStringWidth(it), 5, Color.RED.rgb)
             }
-            RenderUtils.drawRect(40f, yPos + 9, 40 + (target.totalArmorValue / 20F) * additionalWidth, yPos + 13, Color(77, 128, 255).rgb)
+        } else {
+            font.drawString(target.name, 40, 5, Color.WHITE.rgb)
+            "$hp HP".also {
+                font.drawString(it, 40 + additionalWidth - font.getStringWidth(it), 5, Color.LIGHT_GRAY.rgb)
+            }
+        }
+        RenderUtils.drawRect(40f, yPos + 9, 40 + (target.totalArmorValue / 20F) * additionalWidth, yPos + 13, Color(77, 128, 255).rgb)
     }
 
     private fun drawTenacity(target: EntityLivingBase) {
@@ -856,6 +939,10 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             "arris" -> Border(0F, 0F, 120F, 40F)
             "tenacity" -> Border(0F, 0F, 120F, 40F)
             "exhibition" -> Border(0F, 0F, 136F.coerceAtLeast(50F + Fonts.font35.getStringWidth("123456789")), 45F)
+            "zeroday" -> Border(0F, 0F, 150F, 50F)
+            "jello" -> Border(0F, 0F, 150F, 50F)
+            "moon" -> Border(0F, 0F, 150F, 50F)
+            "newaero" -> Border(0F, 0F, 140F, 40F)
             else -> null
         }
     }

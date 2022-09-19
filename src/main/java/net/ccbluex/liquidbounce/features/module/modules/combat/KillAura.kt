@@ -110,6 +110,7 @@ class KillAura : Module() {
     private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla"), "AfterTick").displayable { autoBlockValue.equals("Range") }
     private val interactAutoBlockValue = BoolValue("InteractAutoBlock", true).displayable { autoBlockValue.equals("Range") }
     private val blockRateValue = IntegerValue("BlockRate", 100, 1, 100).displayable { autoBlockValue.equals("Range") }
+    private val noBadPacketsValue = BoolValue("NoBadPackets", true)
 
     // Raycast
     private val raycastValue = BoolValue("RayCast", true)
@@ -212,6 +213,8 @@ class KillAura : Module() {
     private var attackDelay = 0L
     private var clicks = 0
 
+    private var packetSent = false
+
     // Container Delay
     private var containerOpen = -1L
 
@@ -250,6 +253,7 @@ class KillAura : Module() {
         clicks = 0
         canSwing = false
         swingTimer.reset()
+        packetSent = false
 
         stopBlocking()
         RotationUtils.setTargetRotationReverse(RotationUtils.serverRotation, 0, 0)
@@ -265,16 +269,23 @@ class KillAura : Module() {
         if (mc.thePlayer.isRiding) {
             return
         }
-
+        if (event.eventState == EventState.POST) {
+            packetSent = false
+        }
         if (attackTimingValue.equals("All") || attackTimingValue.equals("Both") ||
             (attackTimingValue.equals("Pre") && event.eventState == EventState.PRE) ||
             (attackTimingValue.equals("Post") && event.eventState == EventState.POST)) {
             runAttackLoop()
         }
-        val target = this.target ?: discoveredTargets.first()
+        val target = this.target?: discoveredTargets.first()
+
+        if (discoveredTargets.isEmpty()) return
         if (blockTimingValue.equals("Both") ||
             (blockTimingValue.equals("Pre") && event.eventState == EventState.PRE) ||
             (blockTimingValue.equals("Post") && event.eventState == EventState.POST)) {
+            if (packetSent && noBadPacketsValue.get()) {
+                return
+            }
             // AutoBlock
             if ((autoBlockValue.equals("Range") || autoBlockValue.equals("NCP")) || autoBlockValue.equals("AAC") && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.equals("AfterAttack")
                         || discoveredTargets.any { mc.thePlayer.getDistanceToEntityBox(it) > maxRange }) && canBlock) {
@@ -282,10 +293,9 @@ class KillAura : Module() {
                     try {
                         startBlocking(
                             target,
-                            interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange)
+                            interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) <  maxRange)
                         )
                     } catch (e: Exception) {
-                        // Fuck you
                     }
                 }
             }
@@ -761,11 +771,15 @@ class KillAura : Module() {
         if (!autoBlockPacketValue.equals("Vanilla") && (mc.thePlayer.isBlocking || blockingStatus)) {
             mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
             blockingStatus = false
+            if (noBadPacketsValue.get()) {
+                packetSent = true
+            }
         }
 
         // Attack target
         runSwing()
 
+        packetSent = true
         mc.netHandler.addToSendQueue(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
 
         if (keepSprintValue.get()) {
@@ -963,6 +977,19 @@ class KillAura : Module() {
             return
         }
 
+        if (blockingStatus) {
+            return
+        }
+
+        if (packetSent && noBadPacketsValue.get()) {
+            return
+        }
+
+        if (interact) {
+            mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, interactEntity.positionVector))
+            mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, C02PacketUseEntity.Action.INTERACT))
+        }
+
         if (autoBlockValue.equals("NCP")) {
             mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, null, 0.0f, 0.0f, 0.0f))
             blockingStatus = true
@@ -974,19 +1001,12 @@ class KillAura : Module() {
                 mc.playerController.interactWithEntitySendPacket(mc.thePlayer, target)
                 mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
             }
-        }
-
-        if (blockingStatus) {
             return
-        }
-
-        if (interact) {
-            mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, interactEntity.positionVector))
-            mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, C02PacketUseEntity.Action.INTERACT))
         }
 
         mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
         blockingStatus = true
+        packetSent = true
     }
 
     /**
@@ -994,8 +1014,12 @@ class KillAura : Module() {
      */
     private fun stopBlocking() {
         if (blockingStatus) {
+            if (packetSent && noBadPacketsValue.get()) {
+                return
+            }
             mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, if (MovementUtils.isMoving()) BlockPos(-1, -1, -1) else BlockPos.ORIGIN, EnumFacing.DOWN))
             blockingStatus = false
+            packetSent = true
         }
     }
 

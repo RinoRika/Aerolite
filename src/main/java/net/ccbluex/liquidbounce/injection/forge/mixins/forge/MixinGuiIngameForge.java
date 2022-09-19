@@ -39,11 +39,11 @@ public abstract class MixinGuiIngameForge extends MixinGuiInGame {
                 GlStateManager.pushMatrix();
                 GlStateManager.scale(3.0F, 3.0F, 3.0F);
                 int l = opacity << 24 & -16777216;
-                Fonts.font35.drawString(this.displayedTitle, (float)(-Fonts.font35.getStringWidth(this.displayedTitle) / 2), -55.0F, 16777215 | l, true);
+                mc.fontRendererObj.drawString(this.displayedTitle, (float)(-Fonts.font35.getStringWidth(this.displayedTitle) / 2), -55.0F, 16777215 | l, true);
                 GlStateManager.popMatrix();
                 GlStateManager.pushMatrix();
                 GlStateManager.scale(2.8F, 2.8F, 2.8F);
-                Fonts.font35.drawString(this.displayedSubTitle, (float)(-Fonts.font35.getStringWidth(this.displayedSubTitle) / 2), -47.0F, 16777215 | l, true);
+                mc.fontRendererObj.drawString(this.displayedSubTitle, (float)(-Fonts.font35.getStringWidth(this.displayedSubTitle) / 2), -47.0F, 16777215 | l, true);
                 GlStateManager.popMatrix();
                 GlStateManager.disableBlend();
                 GlStateManager.popMatrix();

@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import com.google.common.collect.Iterables
 import com.google.common.collect.Lists
+import com.sun.org.apache.xpath.internal.operations.Bool
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
@@ -56,9 +57,10 @@ class ScoreboardElement(
     private val rectColorBlueValue = IntegerValue("Rect-B", 255, 0, 255)
     private val rectColorBlueAlpha = IntegerValue("Rect-Alpha", 255, 0, 255)
 
+    private val rectBlurSet = BoolValue("RectExpandBlur", true)
     private val rainbowBarValue = BoolValue("RainbowBar", false)
     private val shadowValue = BoolValue("Shadow", false)
-    private val serverValue = ListValue("ServerIp", arrayOf("None", "ClientName", "Website"), "Website")
+    private val serverValue = ListValue("ServerIp", arrayOf("None", "ClientName", "Website", "Funny"), "Website")
     private val noPointValue = BoolValue("NoPoints", false)
     private val fontValue = FontValue("Font", Fonts.minecraftFont)
 
@@ -74,7 +76,7 @@ class ScoreboardElement(
 
         val rectColorMode = rectColorModeValue.get()
         val rectCustomColor = Color(rectColorRedValue.get(), rectColorGreenValue.get(), rectColorBlueValue.get(),
-                rectColorBlueAlpha.get()).rgb
+            rectColorBlueAlpha.get()).rgb
 
         val worldScoreboard: Scoreboard = mc.theWorld.scoreboard
         var currObjective: ScoreObjective? = null
@@ -117,6 +119,7 @@ class ScoreboardElement(
             Gui.drawRect(l1 - 2, -3, 5, -2, ColorUtils.rainbow().rgb)
         }
         Gui.drawRect(l1 - 2, -2, 5, maxHeight + fontRenderer.FONT_HEIGHT, backColor)
+        RenderUtils.drawShadow(l1 - 2f, -2f, 5f - (l1 - 2f), maxHeight + fontRenderer.FONT_HEIGHT.toFloat() + 2f)
 
         scoreCollection.forEachIndexed { index, score ->
             val team = scoreboard.getPlayersTeam(score.playerName)
@@ -130,7 +133,7 @@ class ScoreboardElement(
             GlStateManager.resetColor()
 
             var listColor = textColor
-            if (!serverValue.equals("none")) {
+            if (!serverValue.equals("none") && !serverValue.get().equals("Funny")) {
                 for (domain in allowedDomains) {
                     if (name.contains(domain, true)) {
                         name = when (serverValue.get().lowercase()) {
@@ -142,6 +145,12 @@ class ScoreboardElement(
                         break
                     }
                 }
+            }
+            if (serverValue.get().equals("Funny")) {
+                if (name.contains("BlocksMC.net", true)) name = "StaffMC.net"
+                else if (name.contains("mc.hypixel.net", true)) name = "mc.lagpixel.net"
+                else if (name.contains("play.pika", true)) name = "RunningmanNetwork.net"
+                    listColor = ColorUtils.rainbow().rgb
             }
 
             fontRenderer.drawString(name, l1.toFloat(), height.toFloat(), listColor, shadowValue.get())
@@ -170,7 +179,9 @@ class ScoreboardElement(
                     else -> rectCustomColor
                 }
                 RenderUtils.drawRect(2F, if (index == scoreCollection.size - 1) -2F else height.toFloat(), 5F, if (index == 0) fontRenderer.FONT_HEIGHT.toFloat() else height.toFloat() + fontRenderer.FONT_HEIGHT * 2F, rectColor)
-
+                if(rectBlurSet.equals(true)){
+                    RenderUtils.drawShadow(2F, if (index == scoreCollection.size - 1) -2F else height.toFloat(), 3F, if (index == 0) fontRenderer.FONT_HEIGHT.toFloat() else height.toFloat() + fontRenderer.FONT_HEIGHT * 2F - if (index == scoreCollection.size - 1) -2F else height.toFloat())
+                }
 
             }
         }
@@ -179,8 +190,8 @@ class ScoreboardElement(
     }
 
     private fun backgroundColor() = Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(),
-            backgroundColorBlueValue.get(), backgroundColorAlphaValue.get())
+        backgroundColorBlueValue.get(), backgroundColorAlphaValue.get())
 
     private fun textColor() = Color(textRedValue.get(), textGreenValue.get(),
-            textBlueValue.get())
+        textBlueValue.get())
 }

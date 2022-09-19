@@ -26,6 +26,29 @@ object MovementUtils : MinecraftInstance() {
         if(y) mc.thePlayer.motionY = 0.0
     }
 
+    fun getXZDist(speed: Float, cYaw: Float): DoubleArray? {
+        val arr = DoubleArray(2)
+        val yaw: Double = getDirectionRotation(cYaw, mc.thePlayer.moveStrafing, mc.thePlayer.moveForward)
+        arr[0] = -Math.sin(yaw) * speed
+        arr[1] = Math.cos(yaw) * speed
+        return arr
+    }
+
+    fun getRawDirection(yaw: Float): Float {
+        return getRawDirectionRotation(yaw, mc.thePlayer.moveStrafing, mc.thePlayer.moveForward)
+    }
+
+    fun getDirectionRotation(yaw: Float, pStrafe: Float, pForward: Float): Double {
+        var rotationYaw = yaw
+        if (pForward < 0f) rotationYaw += 180f
+        var forward = 1f
+        if (pForward < 0f) forward = -0.5f else if (pForward > 0f) forward = 0.5f
+        if (pStrafe > 0f) rotationYaw -= 90f * forward
+        if (pStrafe < 0f) rotationYaw += 90f * forward
+        return Math.toRadians(rotationYaw.toDouble())
+    }
+
+
     val EntityPlayerSP.direction: Double
         get() {
             var rotationYaw = this.rotationYaw

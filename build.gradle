@@ -9,11 +9,10 @@ plugins {
 
 repositories {
     mavenLocal()
+    maven { url = "http://maven.aliyun.com/nexus/content/groups/public/" }
     mavenCentral()
     maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
     maven { url = "https://jitpack.io/" }
-    maven { url = "https://maven.minecraftforge.net/" }
-    maven { url = "https://fdpclient.club/" }
     maven { url = "https://lss233.littleservice.cn/repositories/minecraft/" }
 }
 

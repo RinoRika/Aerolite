@@ -88,6 +88,22 @@ class MotionEvent(var eventstate: EventState, var x: Double, var y: Double, var 
     fun setY(yv: Double) {
         y = yv
     }
+    @JvmName("setYaw1")
+    fun setYaw(y: Double) {
+        x = y
+    }
+    @JvmName("setPitch1")
+    fun setPitch(p: Double) {
+        y = p
+    }
+    @JvmName("getYaw1")
+    fun getYaw(): Float {
+        return yaw
+    }
+    @JvmName("getPitch1")
+    fun getPitch(): Float {
+        return pitch
+    }
     @JvmName("setZ1")
     fun setZ(zv: Double) {
         z = zv

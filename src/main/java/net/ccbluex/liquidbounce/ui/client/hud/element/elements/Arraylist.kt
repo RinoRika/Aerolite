@@ -54,6 +54,7 @@ class Arraylist(
     private val brightnessValue = FloatValue("Random-Brightness", 1f, 0f, 1f)
     private val tagsValue = ListValue("TagsStyle", arrayOf("-", "|", "()", "[]", "<>", ">", "->", "=", "Space", "None"), "Space")
     private val shadow = BoolValue("ShadowText", false)
+    private val rectblur = BoolValue("RectBlur", false)
     private val split = BoolValue("SplitName", false)
     private val slideInAnimation = BoolValue("SlideInAnimation", true)
     private val noRenderModules = BoolValue("NoRenderModules", true)
@@ -69,7 +70,7 @@ class Arraylist(
     private val spaceValue = FloatValue("Space", 0F, 0F, 5F)
     private val textHeightValue = FloatValue("TextHeight", 11F, 1F, 20F)
     private val textYValue = FloatValue("TextY", 1F, 0F, 20F)
-    private val fontValue = FontValue("Font", Fonts.font35)
+    private val fontValue = FontValue("Font", Fonts.font40)
 
     private var x2 = 0
     private var y2 = 0F
@@ -166,6 +167,9 @@ class Arraylist(
                             else -> backgroundCustomColor.rgb
                         }
                     )
+                    if(rectblur.equals(true)){
+                        RenderUtils.drawShadow(rectX - backgroundExpand.get(), yPos, 150f, textHeight)
+                    }
 
                     val mName = changeCase(getModuleName(module))
                     val mTag = changeCase(getModuleTag(module))
@@ -295,11 +299,10 @@ class Arraylist(
                         }
 
                         when {
-                            rectMode.equals("left", true) -> RenderUtils.drawRect(0F,
-                                yPos - 1, 3F, yPos + textHeight, rectColor)
+                            rectMode.equals("left", true) ->
+                                RenderUtils.drawRect(0F, yPos - 1, 3F, yPos + textHeight, rectColor)
                             rectMode.equals("right", true) ->
-                                RenderUtils.drawRect(xPos + module.width + 2, yPos, xPos + module.width + 2 + 3,
-                                    yPos + textHeight, rectColor)
+                                RenderUtils.drawRect(xPos + module.width + 2, yPos, xPos + module.width + 2 + 3, yPos + textHeight, rectColor)
                         }
                     }
                 }

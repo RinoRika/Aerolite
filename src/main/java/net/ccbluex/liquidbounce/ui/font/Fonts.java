@@ -32,8 +32,14 @@ public class Fonts {
     @FontDetails(fontName = "GoogleSans", fontSize = 35, fileName = "GoogleSans.ttf")
     public static GameFontRenderer gs35;
 
-    @FontDetails(fontName = "GoogleSans2", fontSize = 40, fileName = "GoogleSans.ttf")
+    @FontDetails(fontName = "GoogleSans", fontSize = 35, fileName = "GoogleSans.ttf")
+    public static GameFontRenderer gs15;
+
+    @FontDetails(fontName = "GoogleSans", fontSize = 40, fileName = "GoogleSans.ttf")
     public static GameFontRenderer gs40;
+
+    @FontDetails(fontName = "GoogleSans", fontSize = 60, fileName = "GoogleSans.ttf")
+    public static GameFontRenderer gs60;
 
     @FontDetails(fontName = "PR", fontSize = 35, fileName = "PR.ttf")
     public static GameFontRenderer poppinsBold20;
@@ -49,6 +55,9 @@ public class Fonts {
 
     @FontDetails(fontName = "Tenacity", fontSize = 45, fileName = "Tenacity.ttf")
     public static GameFontRenderer tc45;
+
+    @FontDetails(fontName = "Tenacity", fontSize = 50, fileName = "Tenacity.ttf")
+    public static GameFontRenderer tc50;
 
     @FontDetails(fontName = "Icons", fontSize = 40, fileName = "Icon.ttf")
     public static GameFontRenderer icon30;

@@ -33,7 +33,7 @@ class Criticals : Module() {
         "NCP", "NCP2", "Vanilla", "Vulcan", "AntiCheat",
         "Edit", "Edit2", "Hypixel", "Mineland",
         "AACNoGround", "NoGround", "Redesky",
-        "VerusSmart", "MatrixSmart", "Blocksmc", "Minemora",
+        "VerusSmart", "MatrixSmart", "Blocksmc", "Minemora", "HVH",
         "Motion", "Hover", "Custom"),
         "packet")
     // Other Lists
@@ -139,6 +139,11 @@ class Criticals : Module() {
                     }
                 }
 
+                "hvh" -> {
+                    sendCriticalPacket(yOffset = 0.05250000001304, ground = false)
+                    sendCriticalPacket(yOffset = 0.00150000001304, ground = false)
+                }
+
                 "ncp2" -> {
                     mc.thePlayer.sendQueue.addToSendQueue(C04PacketPlayerPosition(x, y + 0.11, z, false))
                     mc.thePlayer.sendQueue.addToSendQueue(C04PacketPlayerPosition(x, y + 0.1100013579, z, false))
@@ -238,11 +243,8 @@ class Criticals : Module() {
                 }
 
                 "blocksmc" -> {
-                //    if (!mc.thePlayer.onGround) return
-                    if (mc.thePlayer.fallDistance in 0.12..1.0) return
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.03009028, z, false))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x,y + 0.00010091981,z, true))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.00114514, z, false))
+                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x,y + 0.001091981,z, true))
+                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.000114514, z, false))
                     mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x,y,z,false))
                 }
 
@@ -368,7 +370,7 @@ class Criticals : Module() {
         if (packet is C03PacketPlayer) {
             when (modeValue.get().lowercase()) {
                 "redesky" -> {
-                    val packetPlayer: C03PacketPlayer = packet as C03PacketPlayer
+                    val packetPlayer: C03PacketPlayer = packet
                     if(mc.thePlayer.onGround && canCrits) {
                         packetPlayer.y += 0.000001
                         packetPlayer.onGround = false

@@ -61,7 +61,7 @@ class Armor(x: Double = -8.0, y: Double = 57.0, scale: Float = 1F,
                 }
                 val stack = mc.thePlayer.inventory.armorInventory[index] ?: continue
                 RenderUtils.drawGradientSidewaysV(x.toDouble(), 0.0,x.toDouble() + 18 ,17.0,colorall,Color(140,140,140,40).rgb)
-                Fonts.gs35.drawStringWithShadow(((stack.maxDamage - stack.itemDamage)).toString(),x.toFloat() + 4f,20f,colorall)
+                Fonts.gs15.drawStringWithShadow(((stack.maxDamage - stack.itemDamage)).toString(),x.toFloat() + 4f,20f,colorall)
                 RenderUtils.drawRect(x.toFloat(),25f,x.toFloat() + 18f,26f,Color(140,140,140,220).rgb)
                 RenderUtils.drawRect(x.toFloat(),25f,x.toFloat() + (18f * (stack.maxDamage - stack.itemDamage) / stack.maxDamage),26f,colorall)
                 renderItem.renderItemIntoGUI(stack, x + 1, y)

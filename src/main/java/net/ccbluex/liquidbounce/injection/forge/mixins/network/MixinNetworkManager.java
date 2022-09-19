@@ -106,7 +106,7 @@ public abstract class MixinNetworkManager {
         cir.cancel();
     }
 
-    @Redirect(method = "checkDisconnected", at = @At(value = "INVOKE", target = "Lorg/apache/logging/log4j/Logger;warn(Ljava/lang/String;)V"))
+    @Redirect(method = "checkDisconnected", at = @At(value = "INVOKE", target = "Lorg/apache/logging/log4j/Logger;warn(Ljava/lang/String;)V"), remap = false)
     public void checkDisconnectedLoggerWarn(Logger instance, String s) {
         if(!LiquidBounce.moduleManager.getModule(SilentDisconnect.class).getState()) {
             instance.warn(s); // it will spam "handleDisconnection() called twice" in console if SilentDisconnect is enabled

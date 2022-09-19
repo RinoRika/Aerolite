@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Text.Companion.HO
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.Render
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -20,17 +21,22 @@ import java.awt.Color
 
 
 // Session Info Reloaded by Stars
-@ElementInfo(name = "Session")
+@ElementInfo(name = "Session", blur = true)
 class Session : Element() {
-    private val modeValue = ListValue("Mode", arrayOf("Normal", "Hreith"), "Normal")
+    private val modeValue = ListValue("Mode", arrayOf("Normal", "Hreith", "NightSense"), "Normal")
     private val textredValue = IntegerValue("HreithTextRed", 255, 0, 255)
     private val textgreenValue = IntegerValue("HreithTextGreen", 255, 0, 255)
     private val textblueValue = IntegerValue("HreithTextBlue", 255, 0, 255)
-    private val textalphaValue = IntegerValue("HreithTextBlue", 255, 0, 255)
+    private val NtextblueValue = IntegerValue("NightTextRed", 255, 0, 255)
+    private val NtextgreenValue = IntegerValue("NightTextGreen", 255, 0, 255)
+    private val NtextredValue = IntegerValue("NightTextBlue", 255, 0, 255)
     private val backgroundredValue = IntegerValue("HreithbackgroundRed",0,0,255)
     private val backgroundgreenValue = IntegerValue("HreithbackgroundGreen",0,0,255)
     private val backgroundblueValue = IntegerValue("HreithbackgroundBlue",0,0,255)
     private val bordervalue = BoolValue("HreithSessionBorder", false)
+    private val NlineredValue = IntegerValue("NightSenseLineRed", 255, 0, 255)
+    private val NlinegreenValue = IntegerValue("NightSenseLineGreen", 255, 0, 255)
+    private val NlineblueValue = IntegerValue("NightSenseLineBlue",255,0,255)
 
     var s=0;
     var m=0
@@ -154,6 +160,16 @@ class Session : Element() {
                 RenderUtils.drawBorder(0f, 0f, 189f, 80f, 3f, ColorUtils.rainbow().rgb)
             }
         }
+        if(modeValue.get().equals("NightSense")){
+            RenderUtils.drawRect(0.0f,0.0f,170.0f,80.0f, Color(backgroundredValue.get(),backgroundgreenValue.get(),backgroundblueValue.get(),bgAlphaValue.get()).rgb)
+            RenderUtils.drawShadow(0.0f,0.0f,170.0f,80.0f)
+            RenderUtils.drawRect(0.0f,0.0f,170.0f,-1.0f,Color(NlineredValue.get(),NlinegreenValue.get(),NlineblueValue.get()).rgb)
+            Fonts.tc50.drawString("Session State                    ", 5F, 7F, Color(NtextredValue.get(),NtextgreenValue.get(),NtextblueValue.get()).rgb)
+            Fonts.tc45.drawString("PlayerTime                        ${HOUR_FORMAT.format(System.currentTimeMillis())}",5F,25f,Color(textredValue.get(), textgreenValue.get(), textblueValue.get(), 255).rgb)
+            Fonts.tc45.drawString("HurtTime                                  ${mc.thePlayer.hurtTime}",5F,38f,Color(textredValue.get(), textgreenValue.get(), textblueValue.get(), 255).rgb)
+            Fonts.tc45.drawString("Speed                                       ${bps}",5F,50f,Color(textredValue.get(), textgreenValue.get(), textblueValue.get(), 255).rgb)
+            Fonts.tc45.drawString("PlayerKills                                ${LiquidBounce.combatManager.getTotalPlayed()}",5F, 64f, Color(textredValue.get(), textgreenValue.get(), textblueValue.get(), 255).rgb)
+        }
         return getBorderSize()
     }
 
@@ -161,6 +177,7 @@ class Session : Element() {
         return when (modeValue.get()) {
             "Normal" -> Border(0f, -1f, 180f, 105f)
             "Hreith" -> Border(0f,0f,189f,80f)
+            "NightSense" -> Border(0f, 0f, 189f, 80f)
             else -> null
         }
     }

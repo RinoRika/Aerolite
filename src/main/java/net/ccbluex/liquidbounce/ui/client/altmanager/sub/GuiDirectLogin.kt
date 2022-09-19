@@ -32,7 +32,7 @@ class GuiDirectLogin(private val prevGui: GuiScreen) : GuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        mc.textureManager.bindTexture(ResourceLocation("main/game.png"))
+        mc.textureManager.bindTexture(ResourceLocation("aerolite/main/game.png"))
         drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width.toFloat(), height.toFloat())
 
         drawCenteredString(mc.fontRendererObj, "%ui.alt.directLogin%", width / 2, 34, 0xffffff)

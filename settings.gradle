@@ -1,7 +1,8 @@
 pluginManagement {
 	repositories {
-		mavenCentral()
 		gradlePluginPortal()
+		mavenCentral()
+		maven { url = "http://maven.aliyun.com/nexus/content/groups/public/"}
 		maven { url = "https://maven.minecraftforge.net/" }
 		maven { url = "https://jitpack.io/" }
 		maven { url = "https://repo.spongepowered.org/repository/maven-public/" }

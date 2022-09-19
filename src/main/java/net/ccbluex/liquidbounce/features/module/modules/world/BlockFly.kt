@@ -71,7 +71,7 @@ class BlockFly : Module() {
     private val autoBlockValue = ListValue("AutoBlock", arrayOf("Spoof", "LiteSpoof", "Switch", "OFF"), "LiteSpoof")
 
     // Basic stuff
-    private val sprintValue = ListValue("Sprint", arrayOf("Always", "Dynamic", "OnGround", "OffGround", "OFF", "Spoof1", "Spoof2"), "Always")
+    private val sprintValue = ListValue("Sprint", arrayOf("Always", "Dynamic", "OnGround", "OffGround", "OFF"), "Always")
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
     private val searchValue = BoolValue("Search", true)
     private val downValue = BoolValue("Down", true)
@@ -246,6 +246,7 @@ class BlockFly : Module() {
 
     //Other
     private var doSpoof = false
+    val changetimer = MSTimer()
 
     /**
      * Enable module
@@ -259,6 +260,13 @@ class BlockFly : Module() {
         lastGroundY = mc.thePlayer.posY.toInt()
         lastPlace = 2
         clickDelay = TimeUtils.randomDelay(extraClickMinDelayValue.get(), extraClickMaxDelayValue.get())
+
+        if (mc.thePlayer == null) return;
+        if (sprintValue.get().equals("Hypixel", true)) {
+            mc.thePlayer.isSprinting = false;
+            mc.thePlayer.motionX *= 1.19;
+            mc.thePlayer.motionZ *= 1.19;
+        }
     }
 
     /**
@@ -276,14 +284,19 @@ class BlockFly : Module() {
             when (timerModeValue.get().lowercase()) {
                 "static" -> mc.timer.timerSpeed = timerValue.get()
                 "dynamic" -> {
-                    val changetimer = MSTimer()
-                    if (changetimer.hasTimePassed(10)) mc.timer.timerSpeed = firstTimerValue.get()
+                    mc.timer.timerSpeed = firstTimerValue.get()
                     if (changetimer.hasTimePassed(timerChangeDelayValue.get().toLong())) {
                         mc.timer.timerSpeed = lastTimerValue.get()
                         changetimer.reset()
                     }
                 }
             }
+        }
+        if (sprintValue.get().equals("Hypixel", true)) {
+            if (mc.thePlayer.onGround) ;
+            mc.thePlayer.setSprinting(false);
+            mc.thePlayer.motionX *= 1.19;
+            mc.thePlayer.motionZ *= 1.19;
         }
         if (towerStatus || mc.thePlayer.isCollidedHorizontally) {
             canSameY = false
@@ -368,16 +381,7 @@ class BlockFly : Module() {
             clickTimer.reset()
         }
 
-        if (sprintValue.get().equals("Spoof1")) {
-            mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
-            mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SNEAKING))
-            mc.thePlayer.isSprinting = true
-        }
-        if (sprintValue.get().equals("Spoof2")) {
-            PacketUtils.sendPacketNoEvent(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
-            PacketUtils.sendPacketNoEvent(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SNEAKING))
-            mc.thePlayer.isSprinting = true
-        } else mc.thePlayer.isSprinting = canSprint
+        mc.thePlayer.isSprinting = canSprint
 
 
         shouldGoDown = downValue.get() && GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) && blocksAmount > 1
@@ -1216,12 +1220,12 @@ class BlockFly : Module() {
 
     val canSprint: Boolean
         get() = MovementUtils.isMoving() && when (sprintValue.get().lowercase()) {
-            "always", "dynamic" -> true
+            "always", "dynamic", "hypixel" -> true
             "onground" -> mc.thePlayer.onGround
             "offground" -> !mc.thePlayer.onGround
             else -> false
         }
 
     override val tag: String
-        get() = if (towerStatus) { "Towering" } else if (!mc.thePlayer.onGround && mc.thePlayer.fallDistance > 1.1) { "Falling" } else { "Moving" }
+        get() = if (towerStatus) { "Towering" } else { "Moving" }
 }

@@ -47,7 +47,7 @@ class PacketFixer : Module() {
     }
 
     @EventTarget
-    private fun onPacket(event: PacketEvent) {
+    fun onPacket(event: PacketEvent) {
         if (mc.thePlayer == null || mc.theWorld == null) return
 
         val packet = event.packet

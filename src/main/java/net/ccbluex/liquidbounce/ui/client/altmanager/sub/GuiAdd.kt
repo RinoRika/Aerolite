@@ -33,7 +33,7 @@ class GuiAdd(private val prevGui: GuiAltManager) : GuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        mc.textureManager.bindTexture(ResourceLocation("main/game.png"))
+        mc.textureManager.bindTexture(ResourceLocation("aerolite/main/game.png"))
         drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width.toFloat(), height.toFloat())
         drawCenteredString(mc.fontRendererObj, "%ui.alt.add%", width / 2, 34, 0xffffff)
         drawCenteredString(mc.fontRendererObj, if (status == null) "" else status, width / 2, height / 4 + 60, 0xffffff)

@@ -153,8 +153,18 @@ object ColorUtils {
         return Color.getHSBColor((abs(((((System.currentTimeMillis() - startTime).toInt() + index * indexOffset) / timeSplit.toFloat()) % 2) - 1) * (bigest - lowest)) + lowest, saturation, brightness)
     }
 
+    fun rainbowTest(
+        saturation: Float = HUD.rainbowSaturationValue.get(),
+        brightness: Float = HUD.rainbowBrightnessValue.get()
+    ): Color{
+        var hue = System.currentTimeMillis() % 6000 / 6000f
+        hue = (240.0f + 60.0f * hue) / 360.0f
+        return Color.getHSBColor(hue, saturation, brightness)
+    }
+
     fun rainbow(): Color {
-        return hslRainbow(1)
+        return if (!HUD.rainbow2.get()) hslRainbow(1)
+        else rainbowTest()
     }
 
     fun rainbow(index: Int): Color {
