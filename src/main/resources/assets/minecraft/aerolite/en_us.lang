@@ -71,7 +71,7 @@ ui.alt.randomAltField=Rule of random alts
 
 ui.scaffold.blocks=Blocks > %d
 
-notify.module.title=Toggled
+notify.module.title=§a
 notify.module.enable=Enabled §a%s
 notify.module.disable=Disabled §c%s
 
