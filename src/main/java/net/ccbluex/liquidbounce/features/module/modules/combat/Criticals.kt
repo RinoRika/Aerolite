@@ -29,9 +29,9 @@ import net.minecraft.network.play.server.S0BPacketAnimation
 class Criticals : Module() {
 
     val modeValue = ListValue("Mode", arrayOf(
-        "Packet", "NewPacket", "LitePacket", "FixPacket", "MiPacket", "AAC5Packet", "AAC4Packet", "HPacket",
+        "Packet", "LitePacket", "AAC5Packet", "AAC4Packet", "HPacket", "NewPacket",
         "NCP", "NCP2", "Vanilla", "Vulcan", "AntiCheat",
-        "Edit", "Edit2", "Hypixel", "Mineland",
+        "Edit", "Hypixel", "Mineland",
         "AACNoGround", "NoGround", "Redesky",
         "VerusSmart", "MatrixSmart", "Blocksmc", "Minemora", "HVH",
         "Motion", "Hover", "Custom"),
@@ -150,6 +150,12 @@ class Criticals : Module() {
                     mc.thePlayer.sendQueue.addToSendQueue(C04PacketPlayerPosition(x, y + 0.00114514, z, false))
                 }
 
+                "newpacket" -> {
+                    sendPacket(0.0,false)
+                    sendPacket(RandomUtils.nextDouble(0.01,0.06), false)
+                    sendPacket(0.0,false)
+                }
+
                 "matrixsmart" -> {
                     counter++
                     if (counter > 3) {
@@ -160,26 +166,6 @@ class Criticals : Module() {
                         sendCriticalPacket(ground = true)
                         counter = 0
                     }
-                }
-
-                "newpacket" -> {
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.05250000001304, z, true))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.00150000001304, z, false))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.01400000001304, z, false))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.00150000001304, z, false))
-                    mc.thePlayer.onCriticalHit(entity)
-                }
-
-                "fixpacket" -> {
-                    sendCriticalPacket(yOffset = 0.104080378093037,ground = false)
-                    sendCriticalPacket(yOffset = 0.105454222033912,ground = false)
-                    sendCriticalPacket(yOffset = 0.102888018147468,ground = false)
-                    sendCriticalPacket(yOffset = 0.099634532004642,ground = false)
-                }
-
-                "mipacket" -> {
-                    sendCriticalPacket(yOffset = 0.0625, ground = false)
-                    sendCriticalPacket(ground = false)
                 }
 
                 "ncp" -> {
@@ -387,12 +373,6 @@ class Criticals : Module() {
                         }
                     }
                 }
-                "edit2" -> {
-                    if (readyCrits) {
-                        packet.onGround = false
-                        readyCrits = false
-                    }
-                }
                 "noground" -> packet.onGround = false
                 "aacnoGround" -> {
                     if(rsNofallValue.get()&&mc.thePlayer.fallDistance>0){
@@ -584,7 +564,7 @@ class Criticals : Module() {
     override val tag: String
         get() = "${modeValue.get()} ${delayValue.get()}"
 
-    fun sendPacket(y: Double, ground: Boolean) {
+    private fun sendPacket(y: Double = 0.0, ground: Boolean) {
         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + y, mc.thePlayer.posZ, ground))
     }
 }

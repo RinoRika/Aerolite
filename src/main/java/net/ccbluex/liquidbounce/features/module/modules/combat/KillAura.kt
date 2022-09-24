@@ -27,6 +27,7 @@ import net.minecraft.item.ItemAxe
 import net.minecraft.item.ItemPickaxe
 import net.minecraft.item.ItemSword
 import net.minecraft.network.play.client.*
+import net.minecraft.potion.Potion
 import net.minecraft.util.*
 import net.minecraft.world.WorldSettings
 import org.lwjgl.input.Keyboard
@@ -62,7 +63,6 @@ class KillAura : Module() {
     }
 
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
-    private val comboOneHit = BoolValue("ComboOneHit", false)
     private val combatDelayValue = BoolValue("1.9Combat", false)
 
     // Range
@@ -88,12 +88,11 @@ class KillAura : Module() {
     private val discoverRangeValue = FloatValue("DiscoverRange", 6f, 0f, 15f)
 
     // Modes
-    private val priorityValue = ListValue("Priority", arrayOf("Health", "Distance", "Fov", "LivingTime", "Armor", "HurtResistantTime"), "Distance")
+    private val priorityValue = ListValue("Priority", arrayOf("Health", "Distance", "Fov", "LivingTime", "Armor","Hurttime", "HurtResistantTime", "HealthAbsorption", "RegenAmplifier"), "Distance")
     private val targetModeValue = ListValue("TargetMode", arrayOf("Single", "Switch", "Multi"), "Single")
 
     // Bypass
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
-    private val alwaysSwing = BoolValue("RealisticSwing", false).displayable { swingValue.equals("Normal") }
     private val attackTimingValue = ListValue("AttackTiming", arrayOf("All", "Pre", "Post", "Both"), "All")
     private val keepSprintValue = BoolValue("KeepSprint", true)
 
@@ -225,6 +224,9 @@ class KillAura : Module() {
 
     // Fake block status
     var blockingStatus = false
+
+    // other
+    private var noC07 = false
 
     val displayBlocking: Boolean
         get() = blockingStatus || (autoBlockValue.equals("Fake") && canFakeBlock)
@@ -389,8 +391,9 @@ class KillAura : Module() {
         // Update target
         updateTarget()
 
-        if (discoveredTargets.isEmpty()) {
+        if (discoveredTargets.isEmpty() && noC07) {
             stopBlocking()
+            noC07 = false
             return
         }
 
@@ -440,13 +443,6 @@ class KillAura : Module() {
 
         if (attackTimingValue.equals("All")) {
             runAttackLoop()
-        }
-
-        if (mc.thePlayer.getDistance(target!!.posX, target!!.posY, target!!.posZ) - 0.5657 > rangeValue.get().toDouble()) {
-            if (alwaysSwing.get() && swingValue.equals("Normal")) {
-                mc.netHandler.addToSendQueue(C0APacketAnimation())
-                return
-            }
         }
     }
 
@@ -716,6 +712,9 @@ class KillAura : Module() {
             "livingtime" -> discoveredTargets.sortBy { -it.ticksExisted } // Sort by existence
             "armor" -> discoveredTargets.sortBy { it.totalArmorValue } // Sort by armor
             "hurtresistanttime" -> discoveredTargets.sortBy { it.hurtResistantTime } // Sort by armor
+            "hurttime" -> discoveredTargets.sortBy { it.hurtTime } // Sort by hurt time
+            "healthabsorption" -> discoveredTargets.sortBy { it.health + it.absorptionAmount } // Sort by full health with absorption effect
+            "regenamplifier" -> discoveredTargets.sortBy { if (it.isPotionActive(Potion.regeneration)) it.getActivePotionEffect(Potion.regeneration).amplifier else -1 }
         }
 
         inRangeDiscoveredTargets.clear()
@@ -973,6 +972,8 @@ class KillAura : Module() {
      * Start blocking
      */
     private fun startBlocking(interactEntity: Entity, interact: Boolean) {
+        noC07 = true
+
         if (autoBlockValue.equals("Range") && mc.thePlayer.getDistanceToEntityBox(interactEntity)> autoBlockRangeValue.get()) {
             return
         }

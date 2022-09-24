@@ -13,7 +13,6 @@ import io.netty.handler.timeout.ReadTimeoutHandler;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
-import net.ccbluex.liquidbounce.features.module.modules.misc.SilentDisconnect;
 import net.ccbluex.liquidbounce.features.special.ProxyManager;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
@@ -106,10 +105,10 @@ public abstract class MixinNetworkManager {
         cir.cancel();
     }
 
-    @Redirect(method = "checkDisconnected", at = @At(value = "INVOKE", target = "Lorg/apache/logging/log4j/Logger;warn(Ljava/lang/String;)V"), remap = false)
+  /*  @Redirect(method = "checkDisconnected", at = @At(value = "INVOKE", target = "Lorg/apache/logging/log4j/Logger;warn(Ljava/lang/String;)V"), remap = false)
     public void checkDisconnectedLoggerWarn(Logger instance, String s) {
         if(!LiquidBounce.moduleManager.getModule(SilentDisconnect.class).getState()) {
             instance.warn(s); // it will spam "handleDisconnection() called twice" in console if SilentDisconnect is enabled
         }
-    }
+    } */
 }

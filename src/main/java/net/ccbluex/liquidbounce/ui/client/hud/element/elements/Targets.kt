@@ -17,16 +17,18 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.awt.geom.FlatteningPathIterator
 import java.text.DecimalFormat
+import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
 @ElementInfo(name = "Targets")
 class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
-    private val modeValue = ListValue("Mode", arrayOf("Novoline", "Hreith", "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity", "Test", "Exhibition", "Chill","ZeroDay","Jello","Moon","NewAero"), "Test")
+    private val modeValue = ListValue("Mode", arrayOf("Novoline", "Hreith", "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity", "Test", "Exhibition", "Chill","ZeroDay","Jello","NewAero"), "Test")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2"), "New2")
     private val animSpeedValue = IntegerValue("AnimSpeed", 10, 5, 20)
     private val hpAnimTypeValue = EaseUtils.getEnumEasingList("HpAnimType")
@@ -48,7 +50,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     private val riseFadeTimeValue = IntegerValue("Rise-FadeTime", 10, 5, 40)
     private val globalAnimSpeed = FloatValue("Global-AnimSpeed", 3F, 1F, 9F)
     private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F)
-    private val fontValue = FontValue("Font", Fonts.tc40)
+    private val fontValue = FontValue("Font", Fonts.gs40)
     private val NewAeroRainStart1 = FloatValue("RainStart1",0.5f,0.00f,1.0f)
     private val NewAeroRainStop1 = FloatValue("RainStop1",0.75f,0.00f,1.0f)
     private val NewAeroRainStart2 = FloatValue("RainStart2",0.75f,0.00f,1.0f)
@@ -88,6 +90,9 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     private fun getColor(color: Color) = ColorUtils.reAlpha(color, color.alpha / 255F * (1F - getFadeProgress()))
     private fun getColor(color: Int) = getColor(Color(color))
     fun getFadeProgress() = animProgress
+
+    val shadowOpaque: Color
+        get() = ColorUtils.reAlpha(ColorUtils.rainbow(), 1F - animProgress)
 
     override fun drawElement(partialTicks: Float): Border? {
         var target = LiquidBounce.combatManager.target
@@ -160,7 +165,6 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             "chill" -> drawChill(prevTarget!!)
             "zeroday" -> drawZeroDay(prevTarget!!)
             "jello" -> drawJello(prevTarget!!)
-            "moon" -> drawMoon(prevTarget!!)
             "newaero" -> drawNewAero(prevTarget!!)
         }
 
@@ -207,8 +211,12 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         val hpPos = 33F + ((getHealth(target) / target.maxHealth * 10000).roundToInt() / 100)
         val hurtPercent = target.hurtPercent
         RenderUtils.drawGradientSidewaysH(0.0,0.0,140.0,40.0,ColorUtils.hslRainbow(1, NewAeroRainStart1.get(),NewAeroRainStop1.get(),300,1500,0.7f,1f).rgb,ColorUtils.hslRainbow(1, NewAeroRainStart2.get(),NewAeroRainStop2.get(),300,1500,0.7f,1f).rgb)
+        RoundedUtil.drawRound(-1.0f, -1.0f, 141.0f, 41.0f, 1.5f, ColorUtils.rainbow())
+
+        GL11.glPushMatrix()
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
-        RenderUtils.drawHead(target.skin,1,3,30,30, 240f)
+        RenderUtils.quickDrawHead(target.skin,1,3,30,30)
+        GL11.glPopMatrix()
         RenderUtils.drawShadow(0f,0f,140f,40f)
 
         font.drawString(target.name,35,4,Color.white.rgb)
@@ -514,20 +522,6 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         //Info(自写)
         font.drawString("Health:"+"${target.health}", 50,20,Color(255,255,255,255).rgb)
         font.drawString("HurtTime:"+"${target.hurtTime}",50,30,Color(255,255,255,255).rgb)
-    }
-
-    private fun drawMoon(target: EntityLivingBase){
-        val font = fontValue.get()
-        //别说skid辣真的是自己写的
-        //RECT
-        RenderUtils.drawRoundedCornerRect(0f,0f,150f,50f,5f,Color(0,0,0,0).rgb)
-        RenderUtils.drawBorder(0f,0f,150f,50f,4f,Color.WHITE.rgb)
-        RenderUtils.quickDrawHead(target.skin, 5, 5, 40,40)
-        Fonts.tc45.drawString(target.name,50,5,Color.WHITE.rgb)
-        Fonts.gs35.drawString("${target.health.toInt()} health",50,20,Color.WHITE.rgb)
-        RenderUtils.drawRoundedCornerRect(50f,35f,7+((easingHP / target.maxHealth)* (150-7f)) + 3f,45f,1.5f,Color.WHITE.rgb)
-        RenderUtils.drawRoundedCornerRect(50f,35f,7+((target.health / target.maxHealth) * (150-7f)) + 3f,45f,1.5f,Color(0,0,0,0).rgb)
-
     }
 
     private fun drawZamorozka(target: EntityLivingBase) {
@@ -941,9 +935,9 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             "exhibition" -> Border(0F, 0F, 136F.coerceAtLeast(50F + Fonts.font35.getStringWidth("123456789")), 45F)
             "zeroday" -> Border(0F, 0F, 150F, 50F)
             "jello" -> Border(0F, 0F, 150F, 50F)
-            "moon" -> Border(0F, 0F, 150F, 50F)
             "newaero" -> Border(0F, 0F, 140F, 40F)
             else -> null
         }
     }
+
 }

@@ -162,7 +162,7 @@ class Arraylist(
                         if (rectMode.equals("right", true)) -3F else 0F,
                         yPos + textHeight,
                         when (backgroundColorMode.lowercase()) {
-                            "rainbow" -> ColorUtils.rainbowWithAlpha(backgroundColorAlphaValue.get()).rgb
+                            "rainbow" -> ColorUtils.rainbow().rgb
                             "random" -> moduleColor
                             "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
                             "slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), index * 30 * rainbowSpeed.get(), saturationValue.get(), brightnessValue.get()).rgb
@@ -176,7 +176,7 @@ class Arraylist(
                     val mTag = changeCase(getModuleTag(module))
                     fontRenderer.drawString(mName, xPos - if (rectMode.equals("right", true)) 3 else 0, yPos + textY,
                         when (colorMode.lowercase()) {
-                            "rainbow" -> ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()).rgb
+                            "rainbow" -> ColorUtils.rainbow().rgb
                             "random" -> moduleColor
                             "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
                             "slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), index * 30 * rainbowSpeed.get(), saturationValue.get(), brightnessValue.get()).rgb
@@ -186,7 +186,7 @@ class Arraylist(
 
                     fontRenderer.drawString(mTag, xPos - (if (rectMode.equals("right", true)) 3 else 0) + fontRenderer.getStringWidth(mName), yPos + textY,
                         ColorUtils.reverseColor(when (tagColorModeValue.get().lowercase()) {
-                            "rainbow" -> ColorUtils.reverseColor(ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()))
+                            "rainbow" -> ColorUtils.reverseColor(ColorUtils.rainbow())
                             "random" -> Color(moduleColor)
                             "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble())
                             "slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), index * 30 * rainbowSpeed.get(), saturationValue.get(), brightnessValue.get())
@@ -196,7 +196,7 @@ class Arraylist(
 
                     if (!rectMode.equals("none", true)) {
                         val rectColor = when (rectColorMode.lowercase()) {
-                            "rainbow" -> ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()).rgb
+                            "rainbow" -> ColorUtils.rainbow().rgb
                             "random" -> moduleColor
                             "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
                             "slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), index * 30 * rainbowSpeed.get(), saturationValue.get(), brightnessValue.get()).rgb

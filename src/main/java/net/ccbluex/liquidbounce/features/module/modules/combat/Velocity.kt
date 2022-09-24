@@ -43,7 +43,7 @@ class Velocity : Module() {
     private val modeValue = ListValue("Mode", arrayOf(
         "Simple", "Tick", "Cancel",
         "Redesky1", "Redesky2", "Redesky3", "Redesky4",
-        "MatrixReduce", "MatrixSimple", "MatrixGround",
+        "Matrix", "MatrixTest", "MatrixTest2",
         "AGC",
         "Reverse", "SmoothReverse",
         "Jump", "Legit",
@@ -184,28 +184,6 @@ class Velocity : Module() {
                     reverseHurt = false
                 }
             }
-            "matrixreduce" -> {
-                if (mc.thePlayer.hurtTime > 0) {
-                    if (mc.thePlayer.onGround) {
-                        if (mc.thePlayer.hurtTime <= 6) {
-                            mc.thePlayer.motionX *= 0.70
-                            mc.thePlayer.motionZ *= 0.70
-                        }
-                        if (mc.thePlayer.hurtTime <= 5) {
-                            mc.thePlayer.motionX *= 0.80
-                            mc.thePlayer.motionZ *= 0.80
-                        }
-                    } else if (mc.thePlayer.hurtTime <= 10) {
-                        mc.thePlayer.motionX *= 0.60
-                        mc.thePlayer.motionZ *= 0.60
-                    }
-                }
-            }
-
-            "matrixground" -> {
-                isMatrixOnGround = mc.thePlayer.onGround && !mc.gameSettings.keyBindJump.isKeyDown
-                if (isMatrixOnGround) mc.thePlayer.onGround = false
-            }
 
             "glitch" -> {
                 mc.thePlayer.noClip = velocityInput
@@ -322,23 +300,21 @@ class Velocity : Module() {
                 "cancel" -> {
                     event.cancelEvent()
                 }
-                "matrixsimple" -> {
-                    packet.motionX = (packet.getMotionX() * 0.36).toInt()
-                    packet.motionZ = (packet.getMotionZ() * 0.36).toInt()
-                    if (mc.thePlayer.onGround) {
-                        packet.motionX = (packet.getMotionX() * 0.9).toInt()
-                        packet.motionZ = (packet.getMotionZ() * 0.9).toInt()
-                    }
+
+                "matrix" -> {
+                    packet.motionX = (packet.getMotionX() * -0.3).toInt()
+                    packet.motionZ = (packet.getMotionZ() * -0.3).toInt()
                 }
 
-                "matrixground" -> {
-                    packet.motionX = (packet.getMotionX() * 0.36).toInt()
-                    packet.motionZ = (packet.getMotionZ() * 0.36).toInt()
-                    if (isMatrixOnGround) {
-                        packet.motionY = (-628.7).toInt()
-                        packet.motionX = (packet.getMotionX() * 0.6).toInt()
-                        packet.motionZ = (packet.getMotionZ() * 0.6).toInt()
-                    }
+                "matrixtest2" -> {
+                    packet.motionX = (packet.getMotionX() * -0.26).toInt()
+                    packet.motionZ = (packet.getMotionZ() * 0.18).toInt()
+                    packet.motionY = (packet.getMotionY() * 0.85).toInt()
+                }
+
+                "matrixtest" -> {
+                    event.cancelEvent()
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX + packet.motionX / - 24000.0, mc.thePlayer.posY + packet.motionY / -24000.0, mc.thePlayer.posZ + packet.motionZ / 8000.0, false))
                 }
 
                 "reverse", "smoothreverse", "aaczero" -> velocityInput = true
@@ -419,7 +395,7 @@ class Velocity : Module() {
                     packet.motionX = 0
                     packet.motionZ = 0
                     for (i in 0..redeCount) {
-                    //    mc.thePlayer.sendQueue.addToSendQueue(C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK))
+                        //    mc.thePlayer.sendQueue.addToSendQueue(C02PacketUseEntity(target, C02PacketUseEntity.Action.ATTACK))
                         mc.thePlayer.sendQueue.addToSendQueue(C0APacketAnimation())
                     }
                     if (!mc.thePlayer.onGround) {

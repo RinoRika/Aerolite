@@ -71,7 +71,7 @@ class BlockFly : Module() {
     private val autoBlockValue = ListValue("AutoBlock", arrayOf("Spoof", "LiteSpoof", "Switch", "OFF"), "LiteSpoof")
 
     // Basic stuff
-    private val sprintValue = ListValue("Sprint", arrayOf("Always", "Dynamic", "OnGround", "OffGround", "OFF"), "Always")
+    private val sprintValue = ListValue("Sprint", arrayOf("Always", "Dynamic", "OnGround", "OffGround", "Hypixel", "OFF"), "Always")
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
     private val searchValue = BoolValue("Search", true)
     private val downValue = BoolValue("Down", true)
@@ -115,7 +115,7 @@ class BlockFly : Module() {
     private val zitterStrengthValue = FloatValue("ZitterStrength", 0.072f, 0.05f, 0.2f).displayable { !zitterModeValue.equals("OFF") }
 
     // Game
-    private val bypassValue = ListValue("BypassMode", arrayOf("Normal", "Verus"), "Verus")
+    private val bypassValue = BoolValue("C03Spoof" ,true)
     private val timerModeValue = ListValue("TimerMode", arrayOf("Static", "Dynamic"), "Static")
     private val timerValue = FloatValue("StaticTimer", 1f, 0.1f, 5f).displayable {timerModeValue.equals("Static")}
     private val timerChangeDelayValue = IntegerValue("TimerChangeDelay", 1000, 50, 10000).displayable {timerModeValue.equals("Dynamic")}
@@ -335,47 +335,47 @@ class BlockFly : Module() {
                 PacketUtils.sendPacketNoEvent(c08)
             }
             repeat(extraClickCountValue.get()) {
-            when (extraClickValue.get().lowercase()) {
-                "emptyc08" -> sendPacket(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getStackInSlot(slot)))
-                "afterplace" -> {
-                    if (afterPlaceC08 != null) {
-                        if (mc.thePlayer.getDistanceSqToCenter(lastPlaceBlock) < 10) {
-                            sendPacket(afterPlaceC08!!)
-                        } else {
-                            afterPlaceC08 = null
+                when (extraClickValue.get().lowercase()) {
+                    "emptyc08" -> sendPacket(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getStackInSlot(slot)))
+                    "afterplace" -> {
+                        if (afterPlaceC08 != null) {
+                            if (mc.thePlayer.getDistanceSqToCenter(lastPlaceBlock) < 10) {
+                                sendPacket(afterPlaceC08!!)
+                            } else {
+                                afterPlaceC08 = null
+                            }
+                        }
+                    }
+                    "raytrace" -> {
+                        val rayTraceInfo = mc.thePlayer.rayTraceWithServerSideRotation(5.0)
+                        if (BlockUtils.getBlock(rayTraceInfo.blockPos) != Blocks.air) {
+                            val blockPos = rayTraceInfo.blockPos
+                            val hitVec = rayTraceInfo.hitVec
+                            val directionVec = rayTraceInfo.sideHit.directionVec
+                            val targetPos = rayTraceInfo.blockPos.add(directionVec.x, directionVec.y, directionVec.z)
+                            if (mc.thePlayer.entityBoundingBox.intersectsWith(
+                                    Blocks.stone.getSelectedBoundingBox(
+                                        mc.theWorld,
+                                        targetPos
+                                    )
+                                )
+                            ) {
+                                sendPacket(
+                                    C08PacketPlayerBlockPlacement(
+                                        blockPos,
+                                        rayTraceInfo.sideHit.index,
+                                        mc.thePlayer.inventory.getStackInSlot(slot),
+                                        (hitVec.xCoord - blockPos.x.toDouble()).toFloat(),
+                                        (hitVec.yCoord - blockPos.y.toDouble()).toFloat(),
+                                        (hitVec.zCoord - blockPos.z.toDouble()).toFloat()
+                                    )
+                                )
+                            } else {
+                                sendPacket(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getStackInSlot(slot)))
+                            }
                         }
                     }
                 }
-                "raytrace" -> {
-                    val rayTraceInfo = mc.thePlayer.rayTraceWithServerSideRotation(5.0)
-                    if (BlockUtils.getBlock(rayTraceInfo.blockPos) != Blocks.air) {
-                        val blockPos = rayTraceInfo.blockPos
-                        val hitVec = rayTraceInfo.hitVec
-                        val directionVec = rayTraceInfo.sideHit.directionVec
-                        val targetPos = rayTraceInfo.blockPos.add(directionVec.x, directionVec.y, directionVec.z)
-                        if (mc.thePlayer.entityBoundingBox.intersectsWith(
-                                Blocks.stone.getSelectedBoundingBox(
-                                    mc.theWorld,
-                                    targetPos
-                                )
-                            )
-                        ) {
-                            sendPacket(
-                                C08PacketPlayerBlockPlacement(
-                                    blockPos,
-                                    rayTraceInfo.sideHit.index,
-                                    mc.thePlayer.inventory.getStackInSlot(slot),
-                                    (hitVec.xCoord - blockPos.x.toDouble()).toFloat(),
-                                    (hitVec.yCoord - blockPos.y.toDouble()).toFloat(),
-                                    (hitVec.zCoord - blockPos.z.toDouble()).toFloat()
-                                )
-                            )
-                        } else {
-                            sendPacket(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getStackInSlot(slot)))
-                        }
-                    }
-                }
-            }
             }
             clickDelay = TimeUtils.randomDelay(extraClickMinDelayValue.get(), extraClickMaxDelayValue.get())
             clickTimer.reset()
@@ -440,7 +440,7 @@ class BlockFly : Module() {
         val packet = event.packet
 
         //Verus
-        if (packet is C03PacketPlayer && bypassValue.equals("Verus")) {
+        if (packet is C03PacketPlayer && bypassValue.get()) {
             if (doSpoof) {
                 packet.onGround = true
             }
@@ -1074,17 +1074,17 @@ class BlockFly : Module() {
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
         if (markValue.get()) {
-                    for (i in 0 until (expandLengthValue.get() + 1)) {
-                        val blockPos = BlockPos(mc.thePlayer.posX + if (mc.thePlayer.horizontalFacing == EnumFacing.WEST) -i else if (mc.thePlayer.horizontalFacing == EnumFacing.EAST) i else 0, mc.thePlayer.posY - (if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5) { 0.0 } else { 1.0 }) - (if (shouldGoDown) { 1.0 } else { 0.0 }), mc.thePlayer.posZ + if (mc.thePlayer.horizontalFacing == EnumFacing.NORTH) -i else if (mc.thePlayer.horizontalFacing == EnumFacing.SOUTH) i else 0)
-                        val placeInfo = get(blockPos)
-                        if (BlockUtils.isReplaceable(blockPos) && placeInfo != null) {
-                            val rainbow = markRainbowValue.get()
-                            RenderUtils.drawBlockBox(blockPos, if (rainbow) net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow() else Color.BLUE, true, true, 0.8f)
-                            break
-                        }
-                    }
+            for (i in 0 until (expandLengthValue.get() + 1)) {
+                val blockPos = BlockPos(mc.thePlayer.posX + if (mc.thePlayer.horizontalFacing == EnumFacing.WEST) -i else if (mc.thePlayer.horizontalFacing == EnumFacing.EAST) i else 0, mc.thePlayer.posY - (if (mc.thePlayer.posY == mc.thePlayer.posY.toInt() + 0.5) { 0.0 } else { 1.0 }) - (if (shouldGoDown) { 1.0 } else { 0.0 }), mc.thePlayer.posZ + if (mc.thePlayer.horizontalFacing == EnumFacing.NORTH) -i else if (mc.thePlayer.horizontalFacing == EnumFacing.SOUTH) i else 0)
+                val placeInfo = get(blockPos)
+                if (BlockUtils.isReplaceable(blockPos) && placeInfo != null) {
+                    val rainbow = markRainbowValue.get()
+                    RenderUtils.drawBlockBox(blockPos, if (rainbow) net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow() else Color.BLUE, true, true, 0.8f)
+                    break
+                }
             }
         }
+    }
 
     /**
      * Search for placeable block

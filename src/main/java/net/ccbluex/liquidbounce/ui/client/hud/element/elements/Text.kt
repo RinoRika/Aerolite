@@ -153,7 +153,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
         val fontRenderer = fontValue.get()
 
         val rectColor = when (rectColorModeValue.get().lowercase()) {
-            "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(), indexOffset = 100 * rainbowSpeed.get()).rgb
+            "rainbow" -> ColorUtils.rainbow().rgb
             "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
             "anotherrainbow" -> ColorUtils.fade(Color(rectRedValue.get(), rectGreenValue.get(), rectBlueValue.get(), rectAlphaValue.get()), 100, rainbowIndex.get()).rgb
             else -> Color(rectRedValue.get(), rectGreenValue.get(), rectBlueValue.get(), rectAlphaValue.get()).rgb
@@ -170,7 +170,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
         }
 
         fontRenderer.drawString(displayText, 0F, 0F, when (colorModeValue.get().lowercase()) {
-            "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(), indexOffset = 100 * rainbowSpeed.get()).rgb
+            "rainbow" -> ColorUtils.rainbow().rgb
             "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
             "anotherrainbow" -> ColorUtils.fade(color, 100, rainbowIndex.get()).rgb
             else -> color.rgb

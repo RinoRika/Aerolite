@@ -100,6 +100,42 @@ public final class RenderUtils extends MinecraftInstance {
         glEndList();
     }
 
+    public static void newDrawRect(float left, float top, float right, float bottom, int color)
+    {
+        if (left < right)
+        {
+            float i = left;
+            left = right;
+            right = i;
+        }
+
+        if (top < bottom)
+        {
+            float j = top;
+            top = bottom;
+            bottom = j;
+        }
+
+        float f3 = (float)(color >> 24 & 255) / 255.0F;
+        float f = (float)(color >> 16 & 255) / 255.0F;
+        float f1 = (float)(color >> 8 & 255) / 255.0F;
+        float f2 = (float)(color & 255) / 255.0F;
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.color(f, f1, f2, f3);
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION);
+        worldrenderer.pos((double)left, (double)bottom, 0.0D).endVertex();
+        worldrenderer.pos((double)right, (double)bottom, 0.0D).endVertex();
+        worldrenderer.pos((double)right, (double)top, 0.0D).endVertex();
+        worldrenderer.pos((double)left, (double)top, 0.0D).endVertex();
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+    }
+
     public static int Astolfo(int var2, float st, float bright) {
         double currentColor = Math.ceil(System.currentTimeMillis() + (long) (var2 * 130)) / 6;
         return Color.getHSBColor((double) ((float) ((currentColor %= 360.0) / 360.0)) < 0.5 ? -((float) (currentColor / 360.0)) : (float) (currentColor / 360.0), st, bright).getRGB();
@@ -465,10 +501,10 @@ public final class RenderUtils extends MinecraftInstance {
                     drawFilledCircleNoGL(0, 0, 0.7, c.hashCode(), quality);
 
                     if (distanceFromPlayer < 4)
-                        Fonts.fontBangers.drawString("CRIT!",0, 0, new Color(c.getRed(), c.getGreen(), c.getBlue(), 50).hashCode());
+                        drawFilledCircleNoGL(0, 0, 1.4, new Color(c.getRed(), c.getGreen(), c.getBlue(), 50).hashCode(), quality);
 
                     if (distanceFromPlayer < 20)
-                        Fonts.fontBangers.drawString("CRIT!",0, 0, new Color(c.getRed(), c.getGreen(), c.getBlue(), 50).hashCode());
+                        drawFilledCircleNoGL(0, 0, 2.3, new Color(c.getRed(), c.getGreen(), c.getBlue(), 30).hashCode(), quality);
 
                     GL11.glScalef(0.8F, 0.8F, 0.8F);
                     GL11.glPopMatrix();
