@@ -57,6 +57,8 @@ class ScoreboardElement(
     private val rectColorBlueValue = IntegerValue("Rect-B", 255, 0, 255)
     private val rectColorBlueAlpha = IntegerValue("Rect-Alpha", 255, 0, 255)
 
+
+
     private val rectBlurSet = BoolValue("RectExpandBlur", true)
     private val rainbowBarValue = BoolValue("RainbowBar", false)
     private val shadowValue = BoolValue("Shadow", false)

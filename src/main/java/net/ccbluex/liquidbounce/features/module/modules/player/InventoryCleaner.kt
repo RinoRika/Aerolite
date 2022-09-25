@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.modules.world.ChestStealer
 import net.ccbluex.liquidbounce.injection.access.IItemStack
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.InventoryUtils
@@ -86,6 +87,12 @@ class InventoryCleaner : Module() {
     private val openInventory: Boolean
         get() = mc.currentScreen !is GuiInventory && simulateInventory.get()
 
+    private fun checkChestStealer(): Boolean {
+        val cs = LiquidBounce.moduleManager[ChestStealer::class.java]!!
+        return cs.isMoving
+    }
+
+
     /**
      * means of simulating inventory
      */
@@ -130,6 +137,7 @@ class InventoryCleaner : Module() {
             }
             return
         }
+        if (checkChestStealer()) return
 
         if (!InventoryUtils.CLICK_TIMER.hasTimePassed(delay) || (mc.currentScreen !is GuiInventory && invOpenValue.get())) {
             return
@@ -461,6 +469,7 @@ class InventoryCleaner : Module() {
      * @return True if it is unable to move the item
      */
     private fun move(item: Int, isArmorSlot: Boolean): Boolean {
+        if (checkChestStealer()) return false
         if (item == -1) {
             return false
         } else if (!isArmorSlot && item < 9 && hotbarValue.get() && mc.currentScreen !is GuiInventory) {

@@ -98,6 +98,8 @@ class ChestStealer : Module() {
 
     private var contentReceived = 0
 
+    var isMoving = false
+
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
         if (!chestTimer.hasTimePassed(chestValue.get().toLong())) {
@@ -146,6 +148,7 @@ class ChestStealer : Module() {
 
                     move(screen, slot)
                 } while (delayTimer.hasTimePassed(nextDelay) && items.isNotEmpty())
+                isMoving = false
                 return
             }
 
@@ -157,6 +160,7 @@ class ChestStealer : Module() {
                     (!onlyItemsValue.get() || slot.stack.item !is ItemBlock) && (!inventoryCleaner.state || inventoryCleaner.isUseful(slot.stack, -1))) {
                     move(screen, slot)
                 }
+                isMoving = false
             }
         } else if (autoCloseValue.get() && screen.inventorySlots.windowId == contentReceived && autoCloseTimer.hasTimePassed(nextCloseDelay)) {
             mc.thePlayer.closeScreen()
@@ -165,7 +169,7 @@ class ChestStealer : Module() {
     }
 
     @EventTarget
-    private fun onPacket(event: PacketEvent) {
+    fun onPacket(event: PacketEvent) {
         val packet = event.packet
 
         if (packet is S30PacketWindowItems) {
@@ -178,6 +182,7 @@ class ChestStealer : Module() {
     }
 
     private fun move(screen: GuiChest, slot: Slot) {
+        isMoving = true
         screen.handleMouseClick(slot, slot.slotNumber, 0, 1)
         delayTimer.reset()
         nextDelay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())

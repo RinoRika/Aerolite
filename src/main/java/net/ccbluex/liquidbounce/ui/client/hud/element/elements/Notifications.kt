@@ -41,7 +41,7 @@ class Notifications(
     /**
      * Example notification for CustomHUD designer
      */
-    private val exampleNotification = Notification("Notification", "Example Notification.", NotifyType.INFO)
+    private val exampleNotification = Notification("§b", "Example Notification.", NotifyType.INFO)
 
     /**
      * Draw element
@@ -172,7 +172,7 @@ class Notification(
         RenderUtils.drawRect(-15F, 0F, width.toFloat(), height.toFloat(), Color(0, 0, 0, alpha))
         RenderUtils.drawRect(-15F, height - 1F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), height.toFloat(), type.renderColor)
         RenderUtils.drawImage(pn,imX,5,10,10)// ͼƬ
-        RenderUtils.drawShadow(-15F, 0F, width.toFloat(), height.toFloat() - 1.1f)
+        RenderUtils.drawShadow(-15F, 0.1f, width.toFloat() + 15f, height.toFloat() - 0.1f)
         font.drawString("$title $content", 4F, 7F, Color.WHITE.rgb, false)// ��
 
         return false
