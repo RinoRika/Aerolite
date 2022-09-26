@@ -71,6 +71,7 @@ class InventoryCleaner : Module() {
     private val nbtWeaponPriority = FloatValue("NBTWeaponPriority", 0f, 0f, 5f).displayable { !nbtGoalValue.equals("NONE") }
     private val ignoreVehiclesValue = BoolValue("IgnoreVehicles", false)
     private val onlyPositivePotionValue = BoolValue("OnlyPositivePotion", false)
+    private val stopWhenChestStealer = BoolValue("StopWhenGUI", false)
 //    private val ignoreDurabilityUnder = FloatValue("IgnoreDurabilityUnder", 0.3f, 0f, 1f)
 
     private val items = arrayOf("None", "Ignore", "Sword", "Bow", "Pickaxe", "Axe", "Food", "Block", "Water", "Gapple", "Pearl", "Potion")
@@ -89,7 +90,8 @@ class InventoryCleaner : Module() {
 
     private fun checkChestStealer(): Boolean {
         val cs = LiquidBounce.moduleManager[ChestStealer::class.java]!!
-        return cs.isMoving
+        return if (stopWhenChestStealer.get()) cs.isMoving
+        else false
     }
 
 
