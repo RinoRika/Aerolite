@@ -192,7 +192,7 @@ class BlockFly : Module() {
 
     // Visuals
     private val counterDisplayValue = BoolValue("Counter", true)
-    private val counterModeValue = ListValue("CounterMode", arrayOf("LBP", "Drama", "Sigma", "Novoline", "Simple", "Advanced"), "lbp").displayable { counterDisplayValue.get() }
+    private val counterModeValue = ListValue("CounterMode", arrayOf("LBP", "Drama", "Sigma", "Novoline", "Simple", "Advanced","Rounded"), "lbp").displayable { counterDisplayValue.get() }
     private val blurValue = BoolValue("Advanced Blur", false).displayable { counterDisplayValue.get() && counterModeValue.equals("Advanced") }
     private val blurStrength = FloatValue("Blur Strength", 1f, 0f, 30f).displayable { counterDisplayValue.get() && counterModeValue.equals("Advanced") }
     private val redValue = IntegerValue("Red", 255, 0, 255).displayable { counterDisplayValue.get() && counterModeValue.equals("Drama") }
@@ -867,7 +867,9 @@ class BlockFly : Module() {
         val scaledResolution = ScaledResolution(mc)
         val info = getBlocksAmount2().toString() + " blocks"
         val info2 = getBlocksAmount2().toString()
+        val info3 = getBlocksAmount2().toString() + "Blocks Left"
         val infoWidth = Fonts.gs40.getStringWidth(info)
+        val info3Width = Fonts.gs40.getStringWidth(info3)
         val height = event.scaledResolution.scaledHeight
         val width = event.scaledResolution.scaledWidth
         if (counterDisplayValue.get()) {
@@ -921,6 +923,19 @@ class BlockFly : Module() {
                     renderItemStack(mc.thePlayer.inventory.mainInventory[slot], 0, 0)
                     Renderer.disableStandardItemLighting()
                     Fonts.font40.drawCenteredString(info2, width / 2.0f+3/2, height * 0.80f+5, Color(255,255,255,180).rgb, false)
+                }
+                "Rounded" -> {
+                    RenderUtils.drawRoundedCornerRect(
+                        (scaledResolution.scaledWidth / 2 - info3Width / 2 - 10).toFloat(),
+                        (scaledResolution.scaledHeight - 57).toFloat(),
+                        (scaledResolution.scaledWidth / 2 + info3Width / 2 + 10).toFloat(),
+                        (scaledResolution.scaledHeight - 77).toFloat(),
+                        2.5f,
+                        Color(0.25f, 0.25f, 0.25f, progress).rgb)
+                    Fonts.font35.drawCenteredString(
+                        info3, scaledResolution.scaledWidth / 2 + 0.1f,
+                        (scaledResolution.scaledHeight - 70).toFloat(), Color(1f, 1f, 1f, 0.8f * progress).rgb, false
+                    )
                 }
                 "simple" -> {
                     Fonts.minecraftFont.drawString(getBlocksAmount2().toString() + "", (scaledResolution.scaledWidth / 2 - infoWidth / 2 - 1).toFloat(), (scaledResolution.scaledHeight / 2 - 36).toFloat(), -0x1000000, false)

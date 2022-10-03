@@ -156,6 +156,9 @@ class Arraylist(
 
                     val rectX = xPos - if (rectMode.equals("right", true)) 5 else 2
                     blur(rectX - backgroundExpand.get(), yPos, if (rectMode.equals("right", true)) -3F else 0F, yPos + textHeight)
+                    if(rectblur.equals(true)) {
+                        RenderUtils.drawcircleshadow(rectX - backgroundExpand.get() - 35f, yPos-35f, module.width.toFloat() +70f, 70f)
+                    }
                     RenderUtils.drawRect(
                         rectX - backgroundExpand.get(),
                         yPos,
@@ -238,17 +241,7 @@ class Arraylist(
                             }
                         }
                     }
-                    if(rectblur.equals(true)) {
-                        RenderUtils.drawRightShadow(5F, yPos - 1F, 0F + 1F,
-                            yPos + textHeight - (yPos - 1F))
-                        RenderUtils.drawLeftShadow(xPos - 12, yPos+0.5f, xPos - 2 - (xPos - 3), yPos + textHeight - yPos +0.5f)
-                        if (module != modules[0]) {
-                            RenderUtils.drawBottomShadow(xPos - 5 - (modules[index - 1].width - module.width), yPos, xPos - 2f - (xPos - 3 - (modules[index - 1].width - module.width)), yPos + 1 - yPos)
-                            if (module == modules[modules.size - 1]) {
-                                RenderUtils.drawBottomShadow(xPos - 3, yPos + textHeight, 0.0F - (xPos - 3) + 2f, yPos + textHeight + 1 - (yPos + textHeight))
-                            }
-                        }
-                    }
+
                     if(jelloblur.equals(true)){
                         RenderUtils.drawcircleshadow(rectX - backgroundExpand.get(), yPos-5f, module.width.toFloat() +5f, textHeight + 8f)
                     }

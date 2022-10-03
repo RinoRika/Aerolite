@@ -405,6 +405,9 @@ public final class RenderUtils extends MinecraftInstance {
     public static void drawcircleshadow(float x, float y, float width, float height) {
         drawTexturedRect(x,y,width,height,"shadow");
     }
+    public static void drawBigcircleshadow(float x, float y, float width, float height) {
+        drawTexturedRect(x,y,width,height,"a");
+    }
 
 
     public static void drawTenaRect(float x,float y,float width, float height) {
