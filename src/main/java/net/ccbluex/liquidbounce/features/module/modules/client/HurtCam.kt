@@ -34,10 +34,6 @@ class HurtCam : Module() {
 
     private var hurt = 0L
 
-    override fun onEnable() {
-        LiquidBounce.hud.addNotification(Notification("HurtCam", "Loaded HurtCam Successfully!", NotifyType.SUCCESS))
-    }
-
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
         if (hurt == 0L) return
@@ -53,8 +49,8 @@ class HurtCam : Module() {
         val width = event.scaledResolution.scaledWidth_double
         val height = event.scaledResolution.scaledHeight_double
 
-        RenderUtils.drawGradientSidewaysH(0.0, 0.0, width, fpsHeightValue.get().toDouble(), color1.rgb, color.rgb)
-        RenderUtils.drawGradientSidewaysH(0.0, height - fpsHeightValue.get(), width, height, color.rgb, color1.rgb)
+        RenderUtils.drawGradientSidewaysV(0.0, 0.0, width, fpsHeightValue.get().toDouble(), color1.rgb, color.rgb)
+        RenderUtils.drawGradientSidewaysV(0.0, height - fpsHeightValue.get(), width, height, color.rgb, color1.rgb)
     }
 
     @EventTarget

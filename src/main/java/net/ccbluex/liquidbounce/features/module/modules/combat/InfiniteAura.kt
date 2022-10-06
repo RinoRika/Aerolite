@@ -47,7 +47,6 @@ class InfiniteAura : Module() {
     private val colorBlueValue = IntegerValue("ColorBlue", 255, 0, 255).displayable { pathRenderValue.get() && !colorRainbowValue.get() }
     private val colorAlphaValue = IntegerValue("ColorAlpha", 150, 0, 255).displayable { pathRenderValue.get() }
     private val colorRainbowValue = BoolValue("Rainbow", false).displayable { pathRenderValue.get() }
-    private val timerSpeedValue = FloatValue("Timer", 1F,0.1F,10F)
 
     private val timer = MSTimer()
     private var points = mutableListOf<Vec3>()
@@ -59,7 +58,6 @@ class InfiniteAura : Module() {
 
     override fun onEnable() {
         timer.reset()
-        mc.timer.timerSpeed = timerSpeedValue.get()
         points.clear()
     }
 

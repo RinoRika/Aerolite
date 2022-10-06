@@ -97,7 +97,7 @@ open class Module() : MinecraftInstance(), Listenable {
             onToggle(value)
 
             // Play sound and add notification
-            if (!LiquidBounce.isStarting) {
+            if (!LiquidBounce.isStarting && Modules.showNotification.get()) {
                 if (value) {
                     Modules.playSound(true)
                     LiquidBounce.hud.addNotification(Notification("%notify.module.title%", LanguageManager.getAndFormat("notify.module.enable", localizedName), NotifyType.SUCCESS))

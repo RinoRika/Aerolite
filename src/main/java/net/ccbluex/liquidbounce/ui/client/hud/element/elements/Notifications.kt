@@ -1,8 +1,3 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/UnlegitMC/FDPClient/
- */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.LiquidBounce
@@ -12,115 +7,97 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.render.BlurUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
+import net.ccbluex.liquidbounce.utils.render.GLUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.FontValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.minecraft.client.gui.FontRenderer
-import net.minecraft.util.ResourceLocation
+import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 import java.awt.Color
-import net.ccbluex.liquidbounce.features.module.modules.exploit.Disabler
-import kotlin.math.max
+import java.math.BigDecimal
 
 /**
  * CustomHUD Notification element
  */
-@ElementInfo(name = "Notifications", blur = true)
-class Notifications(
-    x: Double = 0.0,
-    y: Double = 0.0,
-    scale: Float = 1F,
-    side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)
-) : Element(x, y, scale, side) {
-
-    private val backGroundAlphaValue = IntegerValue("BackGroundAlpha", 165, 0, 255)
-    private val fontValue = FontValue("Font", Fonts.font35)
-
+@ElementInfo(name = "Notifications")
+class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,
+                    side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)) : Element(x, y, scale, side) {
     /**
      * Example notification for CustomHUD designer
      */
-    private val exampleNotification = Notification("§b", "Example Notification.", NotifyType.INFO)
+    private val exampleNotification = Notification("Notification", "This is an example notification.", NotifyType.INFO)
 
     /**
      * Draw element
      */
     override fun drawElement(partialTicks: Float): Border? {
-        // bypass java.util.ConcurrentModificationException
-        LiquidBounce.hud.notifications.map { it }.forEachIndexed { index, notify ->
+        val notifications = mutableListOf<Notification>()
+        //FUCK YOU java.util.ConcurrentModificationException
+        for ((index, notify) in LiquidBounce.hud.notifications.withIndex()) {
             GL11.glPushMatrix()
 
-            if (notify.drawNotification(index, fontValue.get(), backGroundAlphaValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale)) {
-                LiquidBounce.hud.notifications.remove(notify)
+            if (notify.drawNotification(index)) {
+                notifications.add(notify)
             }
 
             GL11.glPopMatrix()
         }
+        for (notify in notifications) {
+            LiquidBounce.hud.notifications.remove(notify)
+        }
 
         if (mc.currentScreen is GuiHudDesigner) {
-            if (!LiquidBounce.hud.notifications.contains(exampleNotification)) {
+            if (!LiquidBounce.hud.notifications.contains(exampleNotification))
                 LiquidBounce.hud.addNotification(exampleNotification)
-            }
 
             exampleNotification.fadeState = FadeState.STAY
             exampleNotification.displayTime = System.currentTimeMillis()
 //            exampleNotification.x = exampleNotification.textLength + 8F
 
-            return Border(-exampleNotification.width.toFloat(), -exampleNotification.height.toFloat(), 0F, 0F)
+            return Border(-exampleNotification.width.toFloat() + 80, -exampleNotification.height.toFloat()-24.5f, 80F, -24.5F)
         }
 
         return null
     }
 
-    override fun drawBoarderBlur(blurRadius: Float) {}
 }
 
-class Notification(
-    val title: String,
-    val content: String,
-    val type: NotifyType,
-    val time: Int = 1000,
-    val animeTime: Int = 300
-) {
-    var width = 0 // coerceAtLease Helper
-    val height = 20
-
+class Notification(val title: String, val content: String, val type: NotifyType, val time: Int = 2000, val animeTime: Int = 500) {
+    val height = 30
     var fadeState = FadeState.IN
     var nowY = -height
+    var string = ""
     var displayTime = System.currentTimeMillis()
     var animeXTime = System.currentTimeMillis()
     var animeYTime = System.currentTimeMillis()
+    val width = Fonts.font32.getStringWidth(content) + 56
 
     /**
      * Draw notification
      */
-    fun drawNotification(index: Int, font: FontRenderer, alpha: Int, blurRadius: Float, x: Float, y: Float, scale: Float): Boolean {
-        this.width = 0.coerceAtLeast(font.getStringWidth(this.title + this.content) + 12) //�߿�����Ӧ����
-        val realY = -(index+1) * height
-        val imX = -10
+    fun drawNotification(index: Int): Boolean {
+        val realY = -(index + 1) * (height + 10)
         val nowTime = System.currentTimeMillis()
-        var transY = nowY.toDouble()
-
-        // Y-Axis Animation
+        //Y-Axis Animation
         if (nowY != realY) {
             var pct = (nowTime - animeYTime) / animeTime.toDouble()
-            if (pct> 1) {
+            if (pct > 1) {
                 nowY = realY
                 pct = 1.0
             } else {
                 pct = EaseUtils.easeOutExpo(pct)
             }
-            transY += (realY - nowY) * pct
+            GL11.glTranslated(0.0, (realY - nowY) * pct, 0.0)
         } else {
             animeYTime = nowTime
         }
+        GL11.glTranslated(0.0, nowY.toDouble(), 0.0)
 
-        // X-Axis Animation
+        //X-Axis Animation
         var pct = (nowTime - animeXTime) / animeTime.toDouble()
         when (fadeState) {
             FadeState.IN -> {
-                if (pct> 1) {
+                if (pct > 1) {
                     fadeState = FadeState.STAY
                     animeXTime = nowTime
                     pct = 1.0
@@ -130,60 +107,63 @@ class Notification(
 
             FadeState.STAY -> {
                 pct = 1.0
-                if ((nowTime - animeXTime)> time) {
+                if ((nowTime - animeXTime) > time) {
                     fadeState = FadeState.OUT
                     animeXTime = nowTime
                 }
             }
 
             FadeState.OUT -> {
-                if (pct> 1) {
+                if (pct > 1) {
                     fadeState = FadeState.END
                     animeXTime = nowTime
                     pct = 1.0
                 }
-                pct = 1 - EaseUtils.easeInExpo(pct)
+                pct = 1 - EaseUtils.easeOutExpo(pct)
             }
 
             FadeState.END -> {
                 return true
             }
         }
-
-        val pn = ResourceLocation(when(type.name) {
-            "SUCCESS" -> "aerolite/noti/SUCCESS.png"
-            "ERROR" -> "aerolite/noti/ERROR.png"
-            "WARNING" -> "aerolite/noti/WARNING.png"
-            "INFO" -> "aerolite/noti/INFO.png"
-            else -> "aerolite/error/error1.png"
-        })
-
-        val transX = width - (width * pct) - width
-        GL11.glTranslated(transX, transY, 0.0)
-
-        if (blurRadius != 0f) {
-            BlurUtils.draw((x + transX).toFloat() * scale, (y + transY).toFloat() * scale, width * scale, height * scale, blurRadius)
+        if (type.toString() == "SUCCESS") {
+            string = "a"
         }
+        if (type.toString() == "ERROR") {
+            string = "B"
+        }
+        if (type.toString() == "WARNING") {
+            string = "D"
+        }
+        if (type.toString() == "INFO") {
+            string = "C"
+        }
+        GL11.glScaled(pct,pct,pct)
+        var displayingTime = BigDecimal(((time - time * ((nowTime - displayTime) / (animeTime * 2F + time))) / 1000).toDouble()).setScale(1, BigDecimal.ROUND_HALF_UP)
+        GL11.glTranslatef(-width.toFloat()/2 , -height.toFloat()/2, 0F)
+        RenderUtils.drawShadow(0F, 0F, width.toFloat(), height.toFloat())
+        RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), Color(63, 63, 63, 100))
+        RenderUtils.drawGradientSidewaysV(0.0, height - 1.7,
+            (width * ((nowTime - displayTime) / (animeTime * 2F + time))).toDouble(), height.toDouble(), ColorUtils.rainbow().rgb, ColorUtils.rainbow(1).rgb)
+        Fonts.font37.drawStringWithShadow(title, 27F, 6F, Color.WHITE.rgb)
+        Fonts.font32.drawStringWithShadow(content + " (" + displayingTime.toString() + "s)", 27F, 17.3F, Color.WHITE.rgb)
+        RenderUtils.drawFilledCircle(13, 15, 8.5F, Color(0,0,0,70))
+        Fonts.Nicon80.drawString(string, 4.5f, 8f, Color.WHITE.rgb)
+        RenderUtils.drawCircle(12.7f,15.1f,9.0f, 0, 360)
+        GlStateManager.resetColor()
 
-        // draw notify
-//        GL11.glPushMatrix()
-//        GL11.glEnable(GL11.GL_SCISSOR_TEST)
-//        GL11.glScissor(width-(width*pct).toFloat(),0F, width.toFloat(),height.toFloat())
-        RenderUtils.drawRect(-15F, 0F, width.toFloat(), height.toFloat(), Color(0, 0, 0, alpha))
-        RenderUtils.drawRect(-15F, height - 1F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), height.toFloat(), type.renderColor)
-        RenderUtils.drawImage(pn,imX,5,10,10)// ͼƬ
-        RenderUtils.drawShadow(-15F, 0.1f, width.toFloat() + 15f, height.toFloat() - 0.1f)
-        font.drawString("$title $content", 4F, 7F, Color.WHITE.rgb, false)// ��
 
         return false
     }
 }
 
-enum class NotifyType(var renderColor: Int) {
-    SUCCESS(Color(0,255,0,255).rgb),
-    ERROR(Color(255,0,0,255).rgb),
-    WARNING(Color(255,255,0,255).rgb),
-    INFO(Color(0,255,255,255).rgb);
+enum class NotifyType(var icon: String) {
+    SUCCESS("check-circle"),
+    ERROR("close-circle"),
+    WARNING("warning"),
+    INFO("information");
 }
 
+
 enum class FadeState { IN, STAY, OUT, END }
+

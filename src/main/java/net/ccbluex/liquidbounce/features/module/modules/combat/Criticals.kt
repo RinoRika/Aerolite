@@ -31,7 +31,7 @@ class Criticals : Module() {
     val modeValue = ListValue("Mode", arrayOf(
         "Packet", "LitePacket", "AAC5Packet", "AAC4Packet", "HPacket", "NewPacket",
         "NCP", "NCP2", "Vanilla", "Vulcan", "AntiCheat",
-        "Edit", "Hypixel", "Mineland",
+        "Edit", "Hypixel", "Mineland", "Edit2",
         "AACNoGround", "NoGround", "Redesky",
         "VerusSmart", "MatrixSmart", "Blocksmc", "Minemora", "HVH",
         "Motion", "Hover", "Custom"),
@@ -63,7 +63,6 @@ class Criticals : Module() {
 
     // Critical Checks
     private var canCrits = true
-    private var readyCrits = false
     private var counter = 0
 
     private var target = 0
@@ -71,6 +70,7 @@ class Criticals : Module() {
     var aacLastState = false
     var ticks = 0
     var attacked = false
+    var c03changed = false
 
     override fun onEnable() {
         if (modeValue.equals("NoGround") && !badGroundValue.get()) {
@@ -81,6 +81,7 @@ class Criticals : Module() {
             mc.thePlayer.motionZ *= 0
         }
         jState = 0
+        c03changed = false
     }
 
     override fun onDisable() {
@@ -343,6 +344,13 @@ class Criticals : Module() {
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
 
+        if (!mc.thePlayer.onGround || mc.thePlayer.isOnLadder || mc.thePlayer.isInWeb || mc.thePlayer.isInWater ||
+            mc.thePlayer.isInLava || mc.thePlayer.ridingEntity != null ||
+            !msTimer.hasTimePassed(delayValue.get().toLong())) {
+            c03changed = false
+            return
+        }
+
         if (packet is S08PacketPlayerPosLook) {
             flagTimer.reset()
             if (s08FlagValue.get()) {
@@ -352,6 +360,22 @@ class Criticals : Module() {
 
         if(s08FlagValue.get() && !flagTimer.hasTimePassed(s08DelayValue.get().toLong()))
             return
+
+        if (packet is C04PacketPlayerPosition && modeValue.get().equals("Edit2")) {
+            if (!c03changed) {
+                val ru = RandomUtils.getRandom(4.0E-7, 4.0E-5)
+                val doubleArray = arrayOf(0.007017625 + ru, 0.006102874 + ru, 0.02 + ru, 0.04 + ru)
+                val n = doubleArray.size
+                var n2 = 0
+                while (n2 < n) {
+                    val offset = doubleArray[n2]
+                    packet.y = offset
+                    packet.onGround = false
+                    c03changed = true
+                    ++n2
+                }
+            }
+        }
 
         if (packet is C03PacketPlayer) {
             when (modeValue.get().lowercase()) {
@@ -544,6 +568,7 @@ class Criticals : Module() {
                     }
                 }
             }
+            msTimer.reset()
         }
         if (packet is S0BPacketAnimation) {
             if (packet.animationType == 4 && packet.entityID == target) {

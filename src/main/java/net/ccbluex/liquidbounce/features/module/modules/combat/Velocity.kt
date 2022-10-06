@@ -93,8 +93,6 @@ class Velocity : Module() {
 
     private var redeCount = 24
 
-    private var isMatrixOnGround = false
-
     private var countingTicks = false
     private var cancelTicks = 0
     private var row = 0

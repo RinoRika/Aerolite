@@ -71,9 +71,9 @@ ui.alt.randomAltField=Rule of random alts
 
 ui.scaffold.blocks=Blocks > %d
 
-notify.module.title=§r
-notify.module.enable=Enabled §a%s
-notify.module.disable=Disabled §c%s
+notify.module.title=Information
+notify.module.enable=Feature %s has been §aenabled.§r
+notify.module.disable=Feature %s has been §cdisabled.§r
 
 module.category.combat=Combat
 module.category.player=Player

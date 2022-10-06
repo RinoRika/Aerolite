@@ -15,6 +15,7 @@ import net.minecraft.util.ResourceLocation
 object Modules : Module() {
     val toggleIgnoreScreenValue = BoolValue("ToggleIgnoreScreen", false)
     private val toggleSoundValue = ListValue("ToggleSound", arrayOf("None", "Click", "Custom"), "Click")
+    val showNotification = BoolValue("ShowNotification", true)
 
     override fun onEnable() {
         LiquidBounce.hud.addNotification(Notification("ModuleConfig", "Reset Module Config!", NotifyType.SUCCESS))

@@ -49,7 +49,6 @@ object Fucker : Module() {
     private val surroundingsValue = BoolValue("Surroundings", true)
     private val noHitValue = BoolValue("NoHit", false)
     private val bypassValue = BoolValue("Bypass", false)
-    private val bmcBypassValue = BoolValue("BMC3BedTimer", false)
 
     /**
      * VALUES
@@ -68,10 +67,6 @@ object Fucker : Module() {
     }
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (bmcBypassValue.get())
-            mc.timer.timerSpeed = 0.1F
-        else
-            mc.timer.timerSpeed = 1.0F
         if (noHitValue.get()) {
             val killAura = LiquidBounce.moduleManager[KillAura::class.java]!!
 

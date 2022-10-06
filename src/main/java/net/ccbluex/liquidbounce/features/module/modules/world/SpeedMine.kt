@@ -15,8 +15,9 @@ import kotlin.jvm.internal.Intrinsics
 
 @ModuleInfo("SpeedMine", ModuleCategory.WORLD)
 class SpeedMine : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("Hypixel","Packet"),"Hypixel")
-    private val breakSpeedValue = FloatValue("BreakSpeed", 1.2F, 1F, 1.5F)
+    private val modeValue = ListValue("Mode", arrayOf("Hypixel", "Packet", "CustomPacket", "Instant"),"Hypixel")
+    private val breakSpeedValue = FloatValue("BreakSpeed", 1.2F, 1F, 1.5F).displayable { modeValue.get().equals("Hypixel") }
+    private val packetAdd = FloatValue("PacketMP", 0.1f, 0.01f, 0.2f).displayable { modeValue.get().equals("CustomPacket") }
     private var bzs = false
     private var bzx = 0.0F
     var blockPos: BlockPos? = null
@@ -45,7 +46,7 @@ class SpeedMine : Module() {
     }
 
     @EventTarget
-    private fun onUpdate(e: UpdateEvent) {
+    fun onUpdate(event: UpdateEvent) {
         when(modeValue.get()) {
             "Packet" -> {
                 if(mc.playerController.curBlockDamageMP in 0.1F..0.19F)
@@ -54,6 +55,17 @@ class SpeedMine : Module() {
                     mc.playerController.curBlockDamageMP += 0.1F
                 if(mc.playerController.curBlockDamageMP in 0.8F..0.89F)
                     mc.playerController.curBlockDamageMP += 0.9F
+            }
+            "CustomPacket" -> {
+                if(mc.playerController.curBlockDamageMP in 0.1F..0.19F)
+                    mc.playerController.curBlockDamageMP = mc.playerController.curBlockDamageMP + packetAdd.get()
+                if(mc.playerController.curBlockDamageMP in 0.4F..0.49F)
+                    mc.playerController.curBlockDamageMP = mc.playerController.curBlockDamageMP + packetAdd.get()
+                if(mc.playerController.curBlockDamageMP >= 0.8F)
+                    mc.playerController.curBlockDamageMP = mc.playerController.curBlockDamageMP + packetAdd.get()
+            }
+            "Instant" -> {
+                if (mc.playerController.curBlockDamageMP in 0.1f..0.9f) mc.playerController.curBlockDamageMP = 0.99f
             }
             "Hypixel" -> {
                 if (mc.playerController.extendedReach()) {

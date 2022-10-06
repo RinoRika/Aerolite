@@ -97,7 +97,7 @@ class KillAura : Module() {
     private val keepSprintValue = BoolValue("KeepSprint", true)
 
     // AutoBlock
-    val autoBlockValue = ListValue("AutoBlock", arrayOf("Range", "Fake", "Off", "NCP", "Vulcan", "AAC"), "Off")
+    val autoBlockValue = ListValue("AutoBlock", arrayOf("Range", "Fake", "Off", "NCP", "Vulcan"), "Off")
     // vanilla will send block packet at pre
     private val blockTimingValue = ListValue("BlockTiming", arrayOf("Pre", "Post", "Both"), "Both").displayable { autoBlockValue.equals("Range") }
     private val autoBlockRangeValue = object : FloatValue("AutoBlockRange", 2.5f, 0f, 8f) {
@@ -124,14 +124,14 @@ class KillAura : Module() {
     private val rotationModeValue = ListValue("RotationMode", arrayOf("None", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView", "Hypixel", "Hypixel2", "Exhibition", "BackTrack"), "LiquidBounce")
     // TODO: RotationMode Bypass Intave
 
-    private val maxTurnSpeedValue: FloatValue = object : FloatValue("MaxTurnSpeed", 180f, 1f, 180f) {
+    private val maxTurnSpeedValue: FloatValue = object : FloatValue("MaxTurnSpeed", 180f, 1f, 360f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val v = minTurnSpeedValue.get()
             if (v > newValue) set(v)
         }
     }
 
-    private val minTurnSpeedValue: FloatValue = object : FloatValue("MinTurnSpeed", 180f, 1f, 180f) {
+    private val minTurnSpeedValue: FloatValue = object : FloatValue("MinTurnSpeed", 180f, 1f, 360f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val v = maxTurnSpeedValue.get()
             if (v < newValue) set(v)
@@ -391,7 +391,7 @@ class KillAura : Module() {
         // Update target
         updateTarget()
 
-        if (discoveredTargets.isEmpty() && noC07) {
+        if (discoveredTargets.isEmpty() && (noC07 && noBadPacketsValue.get())) {
             stopBlocking()
             noC07 = false
             return

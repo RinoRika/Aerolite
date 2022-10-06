@@ -29,6 +29,15 @@ public class Fonts {
     @FontDetails(fontName = "Medium2", fontSize = 70, fileName = "regular.ttf")
     public static GameFontRenderer font70;
 
+    @FontDetails(fontName = "abcdwwqqd", fontSize = 32, fileName = "regular.ttf")
+    public static GameFontRenderer font32;
+
+    @FontDetails(fontName = "abcdwwqqds", fontSize = 37, fileName = "PS.ttf")
+    public static GameFontRenderer font37;
+
+    @FontDetails(fontName = "iconsnovo", fontSize = 80, fileName = "novoline.ttf")
+    public static GameFontRenderer Nicon80;
+
     @FontDetails(fontName = "GoogleSans", fontSize = 35, fileName = "GoogleSans.ttf")
     public static GameFontRenderer gs35;
 
@@ -148,6 +157,7 @@ public class Fonts {
             initSingleFont("Hanabi.ttf","assets/minecraft/Fonts/Hanabi.ttf");
             initSingleFont("Tenacity.ttf","assets/minecraft/Fonts/Tenacity.ttf");
             initSingleFont("Bangers.ttf","assets/minecraft/Fonts/Bangers.ttf");
+            initSingleFont("novoline.ttf","assets/minecraft/Fonts/novoline.ttf");
 
         }catch(IOException e) {
             e.printStackTrace();
