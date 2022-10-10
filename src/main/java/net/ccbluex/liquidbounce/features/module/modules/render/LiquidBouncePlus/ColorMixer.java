@@ -1,7 +1,7 @@
 /*
- * LiquidBounce+ Hacked Client
+ * WoW Skid client very skid I love you client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/WYSI-Foundation/LiquidBouncePlus/
+ * https://github.com/skid++
  * 
  * This code belongs to WYSI-Foundation. Please give credits when using this in your repository.
  */
