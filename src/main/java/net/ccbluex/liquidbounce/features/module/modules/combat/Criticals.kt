@@ -35,7 +35,7 @@ class Criticals : Module() {
         "AACNoGround", "NoGround", "Redesky",
         "VerusSmart", "MatrixSmart", "Blocksmc", "Minemora", "HVH",
         "Motion", "Hover", "Custom"),
-        "packet")
+        "packet","test")
     // Other Lists
     private val motionValue = ListValue("MotionMode", arrayOf("RedeSkyLowHop", "Hop", "Jump", "LowJump", "MinemoraTest", "TPHop", "AAC5", "NCPSilent"), "Jump")
     private val hoverValue = ListValue("HoverMode", arrayOf("AAC4", "AAC4Other", "OldRedesky", "Normal1", "Normal2", "Normal3","Minis", "Minis2", "TPCollide", "2b2t"), "AAC4")
@@ -131,6 +131,13 @@ class Criticals : Module() {
                     sendCriticalPacket(ground = false)
                     sendCriticalPacket(yOffset = 1.1E-5, ground = false)
                     sendCriticalPacket(ground = false)
+                }
+                "test" -> {
+                    sendCriticalPacket(yOffset = 0.02022, ground = true)
+                    sendCriticalPacket(ground = false)
+                    sendCriticalPacket(yOffset = 0.02023, ground = false)
+                    sendCriticalPacket(ground = false)
+                    //只是测试
                 }
 
                 "vanilla" -> {
@@ -231,7 +238,7 @@ class Criticals : Module() {
 
                 "blocksmc" -> {
                     mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x,y + 0.001091981,z, true))
-                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.000114514, z, false))
+                    mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + 0.000114514, z, false)) //114514 [ 666主播]
                     mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x,y,z,false))
                 }
 
