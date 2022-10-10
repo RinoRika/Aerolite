@@ -28,14 +28,11 @@ import kotlin.math.roundToInt
 
 @ElementInfo(name = "Targets")
 class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
-    private val modeValue = ListValue("Mode", arrayOf("Novoline", "Hreith", "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity", "Test", "Exhibition", "Chill","ZeroDay","Jello","NewAero"), "Test")
+    private val modeValue = ListValue("Mode", arrayOf("Novoline", "Astolfo", "Liquid", "Flux", "Rise", "Zamorozka", "Arris", "Tenacity", "Test", "Exhibition", "Chill","ZeroDay","Jello","NewAero"), "Test")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2"), "New2")
     private val animSpeedValue = IntegerValue("AnimSpeed", 10, 5, 20)
     private val hpAnimTypeValue = EaseUtils.getEnumEasingList("HpAnimType")
     private val hpAnimOrderValue = EaseUtils.getEnumEasingOrderList("HpAnimOrder")
-    private val HreithParticle = BoolValue("HreithParticle", true)
-    private val Hreithfade = BoolValue("Particle-Fade", true)
-    private val HreithSpeed = FloatValue("Rise-ParticleSpeed", 0.05F, 0.01F, 0.2F)
     private val switchModeValue = ListValue("SwitchMode", arrayOf("Slide", "Zoom", "None"), "Slide")
     private val switchAnimTypeValue = EaseUtils.getEnumEasingList("SwitchAnimType")
     private val switchAnimOrderValue = EaseUtils.getEnumEasingOrderList("SwitchAnimOrder")
@@ -146,7 +143,6 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
 
         when (modeValue.get().lowercase()) {
             "novoline" -> drawNovo(prevTarget!!)
-            "hreith" -> drawHreith(prevTarget!!)
             "astolfo" -> drawAstolfo(prevTarget!!)
             "liquid" -> drawLiquid(prevTarget!!)
             "flux" -> drawFlux(prevTarget!!)
@@ -223,97 +219,6 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         font.drawString("Health: "+target.health.roundToInt(),35,15,Color.WHITE.rgb)
         font.drawString("Armor: "+target.totalArmorValue,35,26,Color.WHITE.rgb)
         RenderUtils.drawRoundedCornerRect(0f,38f,hpPos + 3f,40f,2f, if (newAeroBarRainbow.get()) ColorUtils.rainbow().rgb else Color.WHITE.rgb)
-    }
-
-    private fun drawHreith(target: EntityLivingBase) {
-        val font = Fonts.tc45
-
-        //x1 长度 y1 宽度 x 左右  y上下 *血条长度 x2线条长度 y2线条宽度
-        RenderUtils.drawBorderedRect(0f, 0f, 170f, 53f, 4f, Color(0, 0, 0, 100).rgb,1)
-        RenderUtils.drawBorder(0f, 0f, 170f, 53f, 4f, ColorUtils.rainbow().rgb)
-
-        //Shadow
-        RenderUtils.drawShadow(0f, 0f, 0f, 0f)
-
-        val hurtPercent = target.hurtPercent
-        val scale = if (hurtPercent == 0f) {
-            1f
-        } else if (hurtPercent < 0.5f) {
-            1 - (0.1f * hurtPercent * 2)
-        } else {
-            0.9f + (0.1f * (hurtPercent - 0.5f) * 2)
-        }
-        val size = 37
-        GL11.glPushMatrix()
-        GL11.glTranslatef(5f, 5f, 0f)
-
-        // 受伤粒子爆出
-        if (HreithParticle.get()) {
-            if (target.hurtTime >= 8) {
-                if (!gotDamaged) {
-                    for (j in 0..10)
-                        particleList.add(
-                            Particle(
-                                BlendUtils.blendColors(
-                                    floatArrayOf(0F, 1F),
-                                    arrayOf<Color>(Color.white, ColorUtils.rainbow()),
-                                    if (RandomUtils.nextBoolean()) RandomUtils.nextFloat(0.4F, 1.0F) else 0F
-                                ),
-                                RandomUtils.nextFloat(-30F, 30F),
-                                RandomUtils.nextFloat(-30F, 30F),
-                                RandomUtils.nextFloat(0.5F, 2.5F)
-                            )
-                        )
-
-                    gotDamaged = true
-                }
-            } else if (gotDamaged) {
-                gotDamaged = false
-            }
-
-            val deleteQueue = mutableListOf<Particle>()
-
-            particleList.forEach { particle ->
-                if (particle.alpha > 0F)
-                    particle.render(5F + 15F, 5 + 15F, Hreithfade.get(), HreithSpeed.get())
-                else
-                    deleteQueue.add(particle)
-            }
-
-            for (p in deleteQueue)
-                particleList.remove(p)
-        }
-
-        // 渲染缩放效果
-        GL11.glScalef(scale, scale, scale)
-        GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
-
-        // 渲染受伤红色
-        GL11.glColor4f(50f, 1 - hurtPercent, 1 - hurtPercent, 5f)
-
-        // 头像渲染
-        RenderUtils.quickDrawHead(target.skin, 0, 0, size, size)
-        GL11.glPopMatrix()
-
-        // 字体位置
-        font.drawString("Player ${target.name}", 45, 6, ColorUtils.rainbow().rgb)
-        font.drawString(
-            "Health ${target.health} / ${(target.maxHealth)}",
-            45,
-            7 + font.FONT_HEIGHT,
-            ColorUtils.rainbow().rgb
-        )
-        font.drawString(
-            "Distance ${decimalFormat.format(mc.thePlayer.getDistanceToEntityBox(target))} Hurt ${target.hurtTime}",
-            45,
-            19 + font.FONT_HEIGHT,
-            ColorUtils.rainbow().rgb
-        )
-        //x1 长度 y1 宽度 x 左右  y上下 *血条长度 x2线条长度 y2线条宽度 HP y1 上下
-        // Render drawRoundedCornerRect的规律 记住每个数字需要带f 规律是 [ x , y ,x1 ,y1, radius , color.rgb ]
-        val additionalWidth = font.getStringWidth(target.name).coerceAtLeast(160)
-        RenderUtils.drawRoundedCornerRect(10f, 45f, 0f + additionalWidth, 50f, 2.5f, Color(0, 0, 0, 70).rgb)
-        RenderUtils.drawRoundedCornerRect(10f, 45f, 0f + (easingHP / target.maxHealth) * additionalWidth, 50f, 2.5f, ColorUtils.rainbow().rgb)
     }
 
     private fun drawRiseNewNew(target: EntityLivingBase) {
@@ -921,12 +826,11 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     private fun getTBorder(): Border? {
         return when (modeValue.get().lowercase()) {
             "novoline" -> Border(0F, 0F, 140F, 40F)
-            "astolfo" -> Border(0F, 0F, 140F, 60F)
+            "astolfo" -> Border(0F, 0F, 140F, 60F) 
             "liquid" -> Border(0F, 0F, (38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth)).coerceAtLeast(118).toFloat(), 36F)
             "flux" -> Border(0F, 0F, (38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth))
                 .coerceAtLeast(70)
                 .toFloat(), 34F)
-            "hreith" -> Border(0F, 0F, 170F, 53F)
             "test" -> Border(0F, 0F, 120F, 40F)
             "rise" -> Border(0F, 0F, 150F, 50F)
             "zamorozka" -> Border(0F, 0F, 150F, 55F)
@@ -935,7 +839,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             "exhibition" -> Border(0F, 0F, 136F.coerceAtLeast(50F + Fonts.font35.getStringWidth("123456789")), 45F)
             "zeroday" -> Border(0F, 0F, 150F, 50F)
             "jello" -> Border(0F, 0F, 150F, 50F)
-            "newaero" -> Border(0F, 0F, 140F, 40F)
+            "newaero" -> Border(0F, 0F, 140F, 40F) // this New Tenacity ?
             else -> null
         }
     }
