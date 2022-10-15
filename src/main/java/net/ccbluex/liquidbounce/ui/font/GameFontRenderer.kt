@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.ui.font
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.TextEvent
 import net.ccbluex.liquidbounce.features.module.NotiInfo
+import net.ccbluex.liquidbounce.slib.Fonts.CFontRenderer
 import net.ccbluex.liquidbounce.ui.font.renderer.AbstractAwtFontRender
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
@@ -17,16 +18,20 @@ import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.resources.IResourceManager
 import net.minecraft.util.ResourceLocation
+import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.awt.Font
 
-class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameSettings,
+
+class GameFontRenderer(font: Font) : FontRenderer(
+    Minecraft.getMinecraft().gameSettings,
     ResourceLocation("textures/font/ascii.png"), Minecraft.getMinecraft().textureManager, false) {
 
     var defaultFont = AbstractAwtFontRender.build(font)
     private var boldFont = AbstractAwtFontRender.build(font.deriveFont(Font.BOLD))
     private var italicFont = AbstractAwtFontRender.build(font.deriveFont(Font.ITALIC))
     private var boldItalicFont = AbstractAwtFontRender.build(font.deriveFont(Font.BOLD or Font.ITALIC))
+    private val colorCode = IntArray(32)
 
 
     val height: Int
@@ -46,8 +51,13 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
 
     override fun drawStringWithShadow(text: String, x: Float, y: Float, color: Int) = drawString(text, x, y, color, true)
 
+    fun drawCenteredString(s: String, x: Float, y: Float, color: Int, shadow: Boolean) = drawString(s, x - getStringWidth(s) / 2F, y, color, shadow)
+
+    fun drawCenteredString(s: String, x: Float, y: Float, color: Int) = drawStringWithShadow(s, x - getStringWidth(s) / 2F, y, color)
+
     override fun drawString(text: String, x: Float, y: Float, color: Int, shadow: Boolean): Int {
         var currentText = text
+        val fr : CFontRenderer = CFontRenderer(defaultFont,true, true)
 
         val event = TextEvent(currentText)
         LiquidBounce.eventManager.callEvent(event)
@@ -55,9 +65,9 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
 
         val currY = y - 3F
         if (shadow) {
-            drawText(currentText, x + 1f, currY + 1f, Color(0, 0, 0, 150).rgb, true)
+            this.drawText(currentText, x + 1.0f, currY + 1.0f, Color(0, 0, 0, 150).rgb, true)
         }
-        return drawText(currentText, x, currY, color, false)
+        return this.drawText(currentText, x, currY, color, false).toInt()
     }
 
     private fun drawText(rawText: String?, x: Float, y: Float, colorHex: Int, ignoreColor: Boolean): Int {

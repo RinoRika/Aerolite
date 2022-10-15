@@ -35,6 +35,9 @@ public class Fonts {
     @FontDetails(fontName = "abcdwwqqds", fontSize = 37, fileName = "PS.ttf")
     public static GameFontRenderer font37;
 
+    @FontDetails(fontName = "wd1qqds", fontSize = 55, fileName = "mainmenu.ttf")
+    public static GameFontRenderer mainmenu;
+
     @FontDetails(fontName = "iconsnovo", fontSize = 80, fileName = "novoline.ttf")
     public static GameFontRenderer Nicon80;
 
@@ -158,6 +161,7 @@ public class Fonts {
             initSingleFont("Tenacity.ttf","assets/minecraft/Fonts/Tenacity.ttf");
             initSingleFont("Bangers.ttf","assets/minecraft/Fonts/Bangers.ttf");
             initSingleFont("novoline.ttf","assets/minecraft/Fonts/novoline.ttf");
+            initSingleFont("mainmenu.ttf","assets/minecraft/Fonts/mainmenu.ttf");
 
         }catch(IOException e) {
             e.printStackTrace();

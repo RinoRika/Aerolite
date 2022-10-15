@@ -279,9 +279,9 @@ class KillAura : Module() {
             (attackTimingValue.equals("Post") && event.eventState == EventState.POST)) {
             runAttackLoop()
         }
+        if (discoveredTargets.isEmpty()) return
         val target = this.target?: discoveredTargets.first()
 
-        if (discoveredTargets.isEmpty()) return
         if (blockTimingValue.equals("Both") ||
             (blockTimingValue.equals("Pre") && event.eventState == EventState.PRE) ||
             (blockTimingValue.equals("Post") && event.eventState == EventState.POST)) {
@@ -496,6 +496,8 @@ class KillAura : Module() {
             attackTimer.reset()
             attackDelay = getAttackDelay(minCpsValue.get(), maxCpsValue.get())
         }
+
+        if (discoveredTargets.isEmpty()) return
 
         discoveredTargets.forEach {
             when (markValue.get().lowercase()) {

@@ -17,7 +17,6 @@ public class ParticleGenerator {
 
     private final List<Particle> particles = new ArrayList<>();
     private final int amount;
-
     private int prevWidth;
     private int prevHeight;
 

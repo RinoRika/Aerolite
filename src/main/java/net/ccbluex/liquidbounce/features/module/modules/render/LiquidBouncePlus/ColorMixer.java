@@ -23,7 +23,7 @@ public class ColorMixer extends Module {
     private static float[] lastFraction = new float[]{};
     public static Color[] lastColors = new Color[]{};
 
-    public final IntegerValue blendAmount = new IntegerValue("Mixer-Amount", 2, 2, 10) {
+    public final IntegerValue blendAmount = new IntegerValue("Mixer-Amount", 2, 2, 3) {
         @Override
         protected void onChanged(final Integer oldValue, final Integer newValue) {
             regenerateColors(!Objects.equals(oldValue, newValue));
@@ -46,34 +46,6 @@ public class ColorMixer extends Module {
     public final ColorElement col3RedValue = new ColorElement(3, ColorElement.Material.RED, blendAmount);
     public final ColorElement col3GreenValue = new ColorElement(3, ColorElement.Material.GREEN, blendAmount);
     public final ColorElement col3BlueValue = new ColorElement(3, ColorElement.Material.BLUE, blendAmount);
-
-    public final ColorElement col4RedValue = new ColorElement(4, ColorElement.Material.RED, blendAmount);
-    public final ColorElement col4GreenValue = new ColorElement(4, ColorElement.Material.GREEN, blendAmount);
-    public final ColorElement col4BlueValue = new ColorElement(4, ColorElement.Material.BLUE, blendAmount);
-
-    public final ColorElement col5RedValue = new ColorElement(5, ColorElement.Material.RED, blendAmount);
-    public final ColorElement col5GreenValue = new ColorElement(5, ColorElement.Material.GREEN, blendAmount);
-    public final ColorElement col5BlueValue = new ColorElement(5, ColorElement.Material.BLUE, blendAmount);
-
-    public final ColorElement col6RedValue = new ColorElement(6, ColorElement.Material.RED, blendAmount);
-    public final ColorElement col6GreenValue = new ColorElement(6, ColorElement.Material.GREEN, blendAmount);
-    public final ColorElement col6BlueValue = new ColorElement(6, ColorElement.Material.BLUE, blendAmount);
-
-    public final ColorElement col7RedValue = new ColorElement(7, ColorElement.Material.RED, blendAmount);
-    public final ColorElement col7GreenValue = new ColorElement(7, ColorElement.Material.GREEN, blendAmount);
-    public final ColorElement col7BlueValue = new ColorElement(7, ColorElement.Material.BLUE, blendAmount);
-
-    public final ColorElement col8RedValue = new ColorElement(8, ColorElement.Material.RED, blendAmount);
-    public final ColorElement col8GreenValue = new ColorElement(8, ColorElement.Material.GREEN, blendAmount);
-    public final ColorElement col8BlueValue = new ColorElement(8, ColorElement.Material.BLUE, blendAmount);
-
-    public final ColorElement col9RedValue = new ColorElement(9, ColorElement.Material.RED, blendAmount);
-    public final ColorElement col9GreenValue = new ColorElement(9, ColorElement.Material.GREEN, blendAmount);
-    public final ColorElement col9BlueValue = new ColorElement(9, ColorElement.Material.BLUE, blendAmount);
-    
-    public final ColorElement col10RedValue = new ColorElement(10, ColorElement.Material.RED, blendAmount);
-    public final ColorElement col10GreenValue = new ColorElement(10, ColorElement.Material.GREEN, blendAmount);
-    public final ColorElement col10BlueValue = new ColorElement(10, ColorElement.Material.BLUE, blendAmount);
 
     public static Color getMixedColor(int index, int seconds) {
         final ColorMixer colMixer = (ColorMixer) LiquidBounce.moduleManager.getModule(ColorMixer.class);

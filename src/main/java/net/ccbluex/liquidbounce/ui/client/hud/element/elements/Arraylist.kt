@@ -21,8 +21,10 @@ import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.ShadowUtils
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.renderer.GlStateManager
+import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 /**
@@ -68,6 +70,13 @@ class Arraylist(
     private val backgroundColorBlueValue = IntegerValue("Background-B", 0, 0, 255)
     private val backgroundColorAlphaValue = IntegerValue("Background-Alpha", 20, 0, 255)
     private val backgroundExpand = IntegerValue("Background-Expand", 2, 0, 10)
+    private val shadowShaderValue = BoolValue("Shadow", true)
+    private val shadowNoCutValue = BoolValue("Shadow-NoCut", false)
+    private val shadowStrength = IntegerValue("Shadow-Strength", 1, 1, 30)
+    private val shadowColorMode = ListValue("Shadow-Color", arrayOf("Background", "Text", "Custom"), "Background")
+    private val shadowColorRedValue = IntegerValue("Shadow-Red", 0, 0, 255)
+    private val shadowColorGreenValue = IntegerValue("Shadow-Green", 111, 0, 255)
+    private val shadowColorBlueValue = IntegerValue("Shadow-Blue", 255, 0, 255)
     private val rainbowSpeed = IntegerValue("RainbowSpeed", 1, 1, 10)
     private val rectValue = ListValue("Rect", arrayOf("None", "Left", "Right", "Outline", "Special", "Top"), "Right")
     private val jelloblur = BoolValue("JelloBlur",false)
@@ -81,6 +90,7 @@ class Arraylist(
     private var y2 = 0F
 
     private var modules = emptyList<Module>()
+    val counter = intArrayOf(0)
 
     private fun shouldExpect(module: Module): Boolean {
         return noRenderModules.get() && module.category == ModuleCategory.RENDER
@@ -155,6 +165,8 @@ class Arraylist(
                         module.yPos = realYPos
                     }
                     val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
+                    if (yPos != realYPos) { module.yPos = realYPos }
+                    var arrayY = yPos
 
 
                     val mixerColor = ColorMixer.getMixedColor(-index * mixerDistValue.get() * 10, mixerSecValue.get()).rgb
@@ -163,22 +175,6 @@ class Arraylist(
                     if(rectblur.equals(true)) {
                         RenderUtils.drawcircleshadow(rectX - backgroundExpand.get() - 35f, yPos-35f, module.width.toFloat() +70f, 70f)
                     }
-                    RenderUtils.drawRect(
-                        rectX - backgroundExpand.get(),
-                        yPos,
-                        if (rectMode.equals("right", true)) -3F else 0F,
-                        yPos + textHeight,
-                        when (backgroundColorMode.lowercase()) {
-                            "rainbow" -> ColorUtils.rainbow().rgb
-                            "random" -> moduleColor
-                            "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
-                            "slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), index * 30 * rainbowSpeed.get(), saturationValue.get(), brightnessValue.get()).rgb
-                            "anotherrainbow" -> ColorUtils.fade(backgroundCustomColor, 100, index + 1).rgb
-                            "COlormixer" -> mixerColor
-                            else -> backgroundCustomColor.rgb
-                        }
-                    )
-
 
                     val mName = changeCase(getModuleName(module))
                     val mTag = changeCase(getModuleTag(module))
@@ -249,10 +245,77 @@ class Arraylist(
                         }
                     }
 
+                    if (shadowShaderValue.get()) {
+                        GL11.glTranslated(-renderX, -renderY, 0.0)
+                        GL11.glPushMatrix()
+                        ShadowUtils.shadow(shadowStrength.get().toFloat(), {
+                            GL11.glPushMatrix()
+                            GL11.glTranslated(renderX, renderY, 0.0)
+                            modules.forEachIndexed { index, module ->
+                                val realYPos = if (slideInAnimation.get() && !module.state) { if (side.vertical == Vertical.DOWN) { 0f } else { -textHeight } } else { (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *
+                                        if (side.vertical == Vertical.DOWN) index + 1 else index }
+                                val yPos = module.yPos
+                                if (yPos != realYPos) { module.yPos = realYPos }
+                                var arrayY = yPos.toDouble()
+                                val xPos = -module.slide - 2
+                                RenderUtils.newDrawRect(
+                                    xPos.toDouble() - if (rectValue.get().equals("right", true)) 3 else 2,
+                                    arrayY,
+                                    if (rectValue.get().equals("right")) -1.toDouble() else 0.toDouble(),
+                                    arrayY + textHeight, when (shadowColorMode.get()){
+                                        "Background" -> Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb
+                                        "Text" -> {
+                                            when {
+                                                colorModeValue.equals("Random") -> Color.getHSBColor(module.hue, saturation, brightness).rgb
+                                                colorModeValue.equals("Rainbow") -> ColorUtils.hslRainbow(index + 1, indexOffset = 100 * rainbowSpeed.get()).rgb
+                                                colorModeValue.equals("SkyRainbow") -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
+                                                //    colorModeValue.equals("Astolfo") -> RenderUtils.Astolfo(index * speed.get(), saturationValue.get(), brightnessValue.get())
+                                                colorModeValue.equals("Slowly") -> ColorUtils.slowlyRainbow(System.nanoTime(), index * 30 * rainbowSpeed.get(), saturationValue.get(), brightnessValue.get()).rgb
+                                                colorModeValue.equals("AnotherRainbow") -> ColorUtils.fade(customColor, 100, index + 1).rgb
+                                                colorModeValue.equals("Mixer") -> mixerColor
+                                                else -> customColor.rgb
+                                            }
+                                        }
+                                        else -> Color(shadowColorRedValue.get(), shadowColorGreenValue.get(), shadowColorBlueValue.get()).rgb
+                                    }
+                                )
+                            }
+                            GL11.glPopMatrix()
+                            counter[0] = 0
+                        }, {
+                            if (!shadowNoCutValue.get()) {
+                                GL11.glPushMatrix()
+                                GL11.glTranslated(renderX, renderY, 0.0)
+                                modules.forEachIndexed { index, module ->
+                                    RenderUtils.quickDrawRect(xPos - if (rectValue.get().equals("right", true)) 3 else 2,arrayY, if (rectValue.get().equals("right", true)) -1F else 0F,arrayY + textHeight)
+                                }
+                                GL11.glPopMatrix()
+                            }
+                        })
+                        GL11.glPopMatrix()
+                        GL11.glTranslated(renderX, renderY, 0.0)
+                    }
+
+                        RenderUtils.drawRect(
+                            rectX - backgroundExpand.get(),
+                            yPos,
+                            if (rectMode.equals("right", true)) -3F else 0F,
+                            yPos + textHeight,
+                            when (backgroundColorMode.lowercase()) {
+                                "rainbow" -> ColorUtils.rainbow().rgb
+                                "random" -> moduleColor
+                                "skyrainbow" -> ColorUtils.skyRainbow(index, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble()).rgb
+                                "slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), index * 30 * rainbowSpeed.get(), saturationValue.get(), brightnessValue.get()).rgb
+                                "anotherrainbow" -> ColorUtils.fade(backgroundCustomColor, 100, index + 1).rgb
+                                "mixer" -> mixerColor
+                                else -> backgroundCustomColor.rgb
+                            }
+                        )
+
                     if(jelloblur.equals(true)){
                         RenderUtils.drawcircleshadow(rectX - backgroundExpand.get(), yPos-5f, module.width.toFloat() +5f, textHeight + 8f)
                     }
-                }
+            }
             }
 
             Horizontal.LEFT -> {
@@ -269,6 +332,7 @@ class Arraylist(
 
                     val mixerColor = ColorMixer.getMixedColor(-index * mixerDistValue.get() * 10, mixerSecValue.get()).rgb
                     blur(0F, yPos, xPos + module.width + if (rectMode.equals("right", true)) 5 else 2 + backgroundExpand.get(), yPos + textHeight)
+
                     RenderUtils.drawRect(
                         0F,
                         yPos,

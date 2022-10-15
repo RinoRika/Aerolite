@@ -47,7 +47,7 @@ object LiquidBounce {
     const val CLIENT_WEBSITE = "Aerolite.tk"
     const val MINECRAFT_VERSION = "1.8.9"
     const val REL_SAYING = "114514"
-    const val CLIENT_DEV = "Stars&Packet"
+    const val CLIENT_DEV = "Stars&Packet&Crazy"
     const val DEV_SAYING = "Release"
     const val IN_Dev_VERSION = false
 

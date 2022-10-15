@@ -4,9 +4,6 @@ import kotlin.jvm.internal.DefaultConstructorMarker;
 import kotlin.jvm.internal.Intrinsics;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.launch.uninfo.GuiUpdateLog;
-import net.ccbluex.liquidbounce.slib.Fonts.CFont;
-import net.ccbluex.liquidbounce.slib.Fonts.CFontRenderer;
-import net.ccbluex.liquidbounce.slib.Guis.FontLoaders;
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
@@ -22,13 +19,8 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GuiMainMenu extends GuiScreen {
-    ScaledResolution sr;
     public static float scale = 1f;
 //    private final ResourceLocation bigLogo = new ResourceLocation("aerolite/main/m.png");
-
-
-    public GuiMainMenu() {
-    }
 
     @Override
     public void initGui() {
@@ -37,7 +29,6 @@ public class GuiMainMenu extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        super.drawScreen(mouseX, mouseY, partialTicks);
         mc.getTextureManager().bindTexture(new ResourceLocation("aerolite/main/game.png"));
         Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width, height);
         GlStateManager.pushMatrix();
@@ -62,39 +53,39 @@ public class GuiMainMenu extends GuiScreen {
         int strColor = new Color(200, 200, 200, 255).getRGB();
         int strColor2 = new Color(200,200,200,255).getRGB();
         renderSwitchButton();
- //       RenderUtils.drawImage2(this.bigLogo, (float)this.width / 2.0F - 50.0F, (float)this.height / 2.0F - 90.0F - 130, 100, 100);
+        //       RenderUtils.drawImage2(this.bigLogo, (float)this.width / 2.0F - 50.0F, (float)this.height / 2.0F - 90.0F - 130, 100, 100);
         RenderUtils.drawRect(width / 2 - 50, top, width / 2 + 50, top + rectHeight,isOnSingle ? HoverRectcolor : unHoverRectcolor);
-        FontLoaders.ETB20.drawString(object, width / 2 - mc.fontRendererObj.getStringWidth(object) / 2, top + 6, strColor);
+        Fonts.font35.drawString(object, width / 2 - mc.fontRendererObj.getStringWidth(object) / 2, top + 6, strColor);
         top += rectHeight + 2;
         object = "Multi Player";
         RenderUtils.drawRect(width / 2 - 50, top, width / 2 + 50, top + rectHeight, isOnMulit ? HoverRectcolor : unHoverRectcolor);
-        FontLoaders.ETB20.drawString(object, width / 2 - mc.fontRendererObj.getStringWidth(object) / 2, top + 6, strColor);
+        Fonts.font35.drawString(object, width / 2 - mc.fontRendererObj.getStringWidth(object) / 2, top + 6, strColor);
         top += rectHeight + 2;
         object = "Alt Manager";
         RenderUtils.drawRect(width / 2 - 50, top, width / 2 + 50, top + rectHeight, isOnAlt ? HoverRectcolor : unHoverRectcolor);
-        FontLoaders.ETB20.drawString(object, width / 2 - mc.fontRendererObj.getStringWidth(object) / 2, top + 6, strColor);
+        Fonts.font35.drawString(object, width / 2 - mc.fontRendererObj.getStringWidth(object) / 2, top + 6, strColor);
         top += rectHeight + 2;
         object = "Settings";
         RenderUtils.drawRect(width / 2 - 50, top, width / 2 + 50, top + rectHeight, isOnSetting ? HoverRectcolor : unHoverRectcolor);
-        FontLoaders.ETB20.drawString(object, width / 2 - mc.fontRendererObj.getStringWidth(object) / 2, top + 6, strColor);
+        Fonts.font35.drawString(object, width / 2 - mc.fontRendererObj.getStringWidth(object) / 2, top + 6, strColor);
 
         top += rectHeight + 2;
         object = "Update Log";
         RenderUtils.drawRect(width / 2 - 50, top, width / 2 + 50, top + rectHeight, isUpdating ? HoverRectcolor : unHoverRectcolor);
-        FontLoaders.ETB20.drawString(object, width / 2 - mc.fontRendererObj.getStringWidth(object) / 2, top + 6, strColor2);
+        Fonts.font35.drawString(object, width / 2 - mc.fontRendererObj.getStringWidth(object) / 2, top + 6, strColor2);
 
         top += rectHeight + 2;
         object = "Shutdown";
         RenderUtils.drawRect(width / 2 - 50, top, width / 2 + 50, top + rectHeight, isOuing ? HoverRectcolor : unHoverRectcolor);
-        FontLoaders.ETB20.drawString(object, width / 2 - mc.fontRendererObj.getStringWidth(object) / 2, top + 6, strColor2);
+        Fonts.font35.drawString(object, width / 2 - mc.fontRendererObj.getStringWidth(object) / 2, top + 6, strColor2);
 
 
         //Dev saying
-        FontLoaders.ETB20.drawStringWithShadow("Dev:", width / 100,height / 100, new Color(200,200,200,200).getRGB());
-        FontLoaders.ETB20.drawStringWithShadow(LiquidBounce.CLIENT_DEV, width / 100 + 25,height / 100, new Color(5,255,5,200).getRGB());
+        Fonts.font35.drawStringWithShadow("Dev:", width / 100,height / 100, new Color(200,200,200,200).getRGB());
+        Fonts.font35.drawStringWithShadow(LiquidBounce.CLIENT_DEV, width / 100 + 25,height / 100, new Color(5,255,5,200).getRGB());
 
-        FontLoaders.ETB20.drawStringWithShadow("Version:",width / 100,height / 100 + 10, new Color(200,200,200,200).getRGB());
-        FontLoaders.ETB20.drawStringWithShadow(LiquidBounce.CLIENT_REAL_VERSION, width / 100 + 40,height / 100 + 10, new Color(5,255,5,200).getRGB());
+        Fonts.font35.drawStringWithShadow("Version:",width / 100,height / 100 + 10, new Color(200,200,200,200).getRGB());
+        Fonts.font35.drawStringWithShadow(LiquidBounce.CLIENT_REAL_VERSION, width / 100 + 40,height / 100 + 10, new Color(5,255,5,200).getRGB());
 
 
 
@@ -124,6 +115,7 @@ public class GuiMainMenu extends GuiScreen {
             count += 5;
         }
         GlStateManager.popMatrix();
+        super.drawScreen(mouseX, mouseY, partialTicks);
 
     }
     public final void moveMouseEffect(int mouseX, int mouseY, float strength) {
@@ -144,7 +136,7 @@ public class GuiMainMenu extends GuiScreen {
             this.sliderX = 0.0F;
         }
 
-        FontLoaders.F20.drawStringWithShadow("Animations", 28.0F, (float)this.height - 25.0F, -1);
+        Fonts.font35.drawStringWithShadow("Animations", 28.0F, (float)this.height - 25.0F, -1);
         RenderUtils.drawRoundedCornerRect(4.0F, (float)this.height - 24.0F, 22.0F, (float)this.height - 18.0F, 3.0F, useParallax ? (new Color(0, 111, 255, 255)).getRGB() : (new Color(140, 140, 140, 255)).getRGB());
         float var10000 = 2.0F + this.sliderX;
         float var10001 = (float)this.height - 26.0F;
@@ -157,27 +149,6 @@ public class GuiMainMenu extends GuiScreen {
     public final boolean isMouseHover(float x, float y, float x2, float y2, int mouseX, int mouseY) {
         return (float)mouseX >= x && (float)mouseX < x2 && (float)mouseY >= y && (float)mouseY < y2;
     }
-    public static final class Companion {
-        public final boolean getUseParallax() {
-            return GuiMainMenu.useParallax;
-        }
-
-        public final void setUseParallax(boolean var1) {
-            GuiMainMenu.useParallax = var1;
-        }
-
-        private Companion() {
-        }
-
-        // $FF: synthetic method
-        public Companion(DefaultConstructorMarker $constructor_marker) {
-            this();
-        }
-    }
-
-
-
-
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {

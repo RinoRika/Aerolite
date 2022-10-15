@@ -3,17 +3,18 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
 
-class BmcBhop : SpeedMode("BmcBhop") {
-    private val strafeboost = FloatValue("StrafeBoost", 0.001f, 0f, 0.009f)
-    private val jumpboost = FloatValue("JumpBoost", 0.001f, 0f, 0.009f)
+class NCP : SpeedMode("NCP") {
+    private val strafeboost = IntegerValue("StrafeBoost", 1, 0, 20)
+    private val jumpboost = IntegerValue("JumpBoost", 1, 0, 20)
     override fun onUpdate() {
         if (!mc.thePlayer.isInWeb && !mc.thePlayer.isInLava && !mc.thePlayer.isInWater && !mc.thePlayer.isOnLadder && mc.thePlayer.ridingEntity == null) {
             if (MovementUtils.isMoving()) {
                 mc.gameSettings.keyBindJump.pressed = false
                 if (mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
-                    MovementUtils.strafe(0.481f + strafeboost.get())
+                    MovementUtils.strafe(0.484f + strafeboost.get().toFloat())
                     mc.timer.timerSpeed = 1.066f
                     mc.thePlayer.jumpMovementFactor = 0.02f
                 }
@@ -24,7 +25,7 @@ class BmcBhop : SpeedMode("BmcBhop") {
                 mc.timer.timerSpeed = 1.15f
             }
             if (mc.thePlayer.fallDistance > 0.7) {
-                mc.thePlayer.jumpMovementFactor = 0.021f + jumpboost.get()
+                mc.thePlayer.jumpMovementFactor = 0.02f + jumpboost.get().toFloat()
             }
         }
     }

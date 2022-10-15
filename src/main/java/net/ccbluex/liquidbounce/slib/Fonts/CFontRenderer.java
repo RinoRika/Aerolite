@@ -7,6 +7,7 @@
 package net.ccbluex.liquidbounce.slib.Fonts;
 
 import net.ccbluex.liquidbounce.slib.RenderUtils;
+import net.ccbluex.liquidbounce.ui.font.renderer.AbstractAwtFontRender;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import org.lwjgl.opengl.GL11;
@@ -26,7 +27,7 @@ public class CFontRenderer
     protected DynamicTexture texItalic;
     protected DynamicTexture texItalicBold;
 
-    public CFontRenderer(Font font, boolean antiAlias, boolean fractionalMetrics) {
+    public CFontRenderer(AbstractAwtFontRender font, boolean antiAlias, boolean fractionalMetrics) {
         super(font, antiAlias, fractionalMetrics);
         this.setupMinecraftColorcodes();
         this.setupBoldItalicIDs();
@@ -217,7 +218,7 @@ public class CFontRenderer
     }
 
     @Override
-    public void setFont(Font font) {
+    public void setFont(AbstractAwtFontRender font) {
         super.setFont(font);
         this.setupBoldItalicIDs();
     }
@@ -235,8 +236,8 @@ public class CFontRenderer
     }
 
     private void setupBoldItalicIDs() {
-        this.texBold = this.setupTexture(this.font.deriveFont(1), this.antiAlias, this.fractionalMetrics, this.boldChars);
-        this.texItalic = this.setupTexture(this.font.deriveFont(2), this.antiAlias, this.fractionalMetrics, this.italicChars);
+      //  this.texBold = this.setupTexture(this.font.deriveFont(1), this.antiAlias, this.fractionalMetrics, this.boldChars);
+      //  this.texItalic = this.setupTexture(this.font.deriveFont(2), this.antiAlias, this.fractionalMetrics, this.italicChars);
     }
 
     private void drawLine(double x, double y, double x1, double y1, float width) {

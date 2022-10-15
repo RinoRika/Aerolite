@@ -45,6 +45,7 @@ import java.util.*;
 import java.util.List;
 
 import static java.lang.Math.*;
+import static net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.novoline.AnimationUtil.getAnimationState;
 import static net.ccbluex.liquidbounce.utils.RenderUtil.color;
 import static net.ccbluex.liquidbounce.utils.RenderUtil.drawText;
 import static org.lwjgl.opengl.GL11.*;
@@ -238,7 +239,7 @@ public final class RenderUtils extends MinecraftInstance {
         drawRect(x + width / 2F, y2 - width / 2F, x2 - width / 2F, y2 + width / 2F, color1);
     }
 
-    public static void fastRoundedRect(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, float radius) {
+    public static void fastRoundedRect(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, float radius, int color) {
         float z = 0;
         if (paramXStart > paramXEnd) {
             z = paramXStart;
@@ -256,6 +257,8 @@ public final class RenderUtils extends MinecraftInstance {
         double y1 = (double)(paramYStart + radius);
         double x2 = (double)(paramXEnd - radius);
         double y2 = (double)(paramYEnd - radius);
+
+        glColor(color);
 
         glEnable(GL_LINE_SMOOTH);
         glLineWidth(1);
@@ -521,6 +524,51 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glDisable(GL11.GL_BLEND);
 
         GL11.glColor3d(255, 255, 255);
+    }
+
+    public static void newDrawRect(double left, double top, double right, double bottom, int color)
+    {
+        if (left < right)
+        {
+            double i = left;
+            left = right;
+            right = i;
+        }
+
+        if (top < bottom)
+        {
+            double j = top;
+            top = bottom;
+            bottom = j;
+        }
+
+        float f3 = (float)(color >> 24 & 255) / 255.0F;
+        float f = (float)(color >> 16 & 255) / 255.0F;
+        float f1 = (float)(color >> 8 & 255) / 255.0F;
+        float f2 = (float)(color & 255) / 255.0F;
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture2D();
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+        GlStateManager.color(f, f1, f2, f3);
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION);
+        worldrenderer.pos(left, bottom, 0.0D).endVertex();
+        worldrenderer.pos(right, bottom, 0.0D).endVertex();
+        worldrenderer.pos(right, top, 0.0D).endVertex();
+        worldrenderer.pos(left, top, 0.0D).endVertex();
+        tessellator.draw();
+        GlStateManager.enableTexture2D();
+        GlStateManager.disableBlend();
+    }
+
+    public static boolean isHovering(int mouseX, int mouseY, float xLeft, float yUp, float xRight, float yBottom) {
+        return (float)mouseX > xLeft && (float)mouseX < xRight && (float)mouseY > yUp && (float)mouseY < yBottom;
+    }
+
+
+    public static float smoothAnimation(float ani, float finalState, float speed, float scale) {
+        return getAnimationState(ani, finalState, Math.max(10.0F, Math.abs(ani - finalState) * speed) * scale);
     }
 
     public static int getColor(final float hueoffset, final float saturation, final float brightness) {

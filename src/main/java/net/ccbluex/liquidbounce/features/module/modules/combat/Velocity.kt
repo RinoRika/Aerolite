@@ -529,16 +529,4 @@ class Velocity : Module() {
             }
         }
     }
-
-    @EventTarget
-    fun onJump(event: JumpEvent) {
-        if (mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb || (onlyGroundValue.get() && !mc.thePlayer.onGround)) {
-            return
-        }
-
-        if ((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !LiquidBounce.combatManager.inCombat)) {
-            return
-        }
-
-    }
 }

@@ -139,7 +139,7 @@ class Notification(val title: String, val content: String, val type: NotifyType,
             string = "C"
         }
         GL11.glScaled(pct,pct,pct)
-        var displayingTime = BigDecimal(((time - time * ((nowTime - displayTime) / (animeTime * 2F + time))) / 1000).toDouble()).setScale(1, BigDecimal.ROUND_HALF_UP)
+        val displayingTime = BigDecimal(((time - time * ((nowTime - displayTime) / (animeTime * 2F + time))) / 1000).toDouble()).setScale(1, BigDecimal.ROUND_HALF_UP)
         GL11.glTranslatef(-width.toFloat()/2 , -height.toFloat()/2, 0F)
         RenderUtils.drawShadow(0F, 0F, width.toFloat(), height.toFloat())
         RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), Color(63, 63, 63, 100))
