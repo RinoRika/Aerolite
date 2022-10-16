@@ -37,6 +37,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.init.Blocks
+import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.*
@@ -860,6 +861,8 @@ class BlockFly : Module() {
         }
         return amount
     }
+
+    private val barrier = ItemStack(Item.getItemById(166), 0, 0)
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
         progress = (System.currentTimeMillis() - lastMS).toFloat() / 100f
@@ -872,7 +875,23 @@ class BlockFly : Module() {
         val info3Width = Fonts.gs40.getStringWidth(info3)
         val height = event.scaledResolution.scaledHeight
         val width = event.scaledResolution.scaledWidth
+        val slot = InventoryUtils.findAutoBlockBlock()
+        var stack = barrier
         if (counterDisplayValue.get()) {
+            if (slot != -1) {
+                if (mc.thePlayer.inventory.getCurrentItem() != null) {
+                    val handItem = mc.thePlayer.inventory.getCurrentItem().item
+                    if (handItem is ItemBlock && InventoryUtils.canPlaceBlock(handItem.block)) {
+                        stack = mc.thePlayer.inventory.getCurrentItem()
+                    }
+                }
+                if (stack == barrier) {
+                    stack = mc.thePlayer.inventory.getStackInSlot(InventoryUtils.findAutoBlockBlock() - 36)
+                    if (stack == null) {
+                        stack = barrier
+                    }
+                }
+            }
             when (counterModeValue.get().lowercase()) {
                 "lbp" -> {
                     GlStateManager.translate(0f, -14f - progress * 4f, 0f)
@@ -920,7 +939,7 @@ class BlockFly : Module() {
                     Renderer.drawCircleBorder(width /2f,height *0.80f,18f,Color(redValue.get(),greenValue.get(),blueValue.get(),alpha.get()).rgb, 4f)
                     Renderer.drawCircleBorder(width /2f,height *0.80f,21f,Color(redValue.get(),greenValue.get(),blueValue.get(),alpha.get()/2).rgb, 12f)
                     Renderer.enableGUIStandardItemLighting()
-                    renderItemStack(mc.thePlayer.inventory.mainInventory[slot], 0, 0)
+                    renderItemStack(stack, 0, 0)
                     Renderer.disableStandardItemLighting()
                     Fonts.font40.drawCenteredString(info2, width / 2.0f+3/2, height * 0.80f+5, Color(255,255,255,180).rgb, false)
                 }
@@ -932,6 +951,7 @@ class BlockFly : Module() {
                         (scaledResolution.scaledHeight - 77).toFloat(),
                         2.5f,
                         Color(0.25f, 0.25f, 0.25f, progress).rgb)
+                    renderItemStack(stack, (scaledResolution.scaledWidth / 2 + 0.1f).toInt(), scaledResolution.scaledHeight - 64)
                     Fonts.font35.drawCenteredString(
                         info3, scaledResolution.scaledWidth / 2 + 0.1f,
                         (scaledResolution.scaledHeight - 70).toFloat(), Color(1f, 1f, 1f, 0.8f * progress).rgb, false

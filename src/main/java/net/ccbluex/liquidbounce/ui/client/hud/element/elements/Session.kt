@@ -2,6 +2,7 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.module.modules.render.LiquidBouncePlus.ColorMixer
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
@@ -12,10 +13,7 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.Render
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FontValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.FontRenderer
 import java.awt.Color
 
@@ -24,6 +22,9 @@ import java.awt.Color
 @ElementInfo(name = "Session")
 class Session : Element() {
     private val modeValue = ListValue("Mode", arrayOf("Normal", "Hreith", "NightSense","Tenacity"), "Normal")
+    private val mixerSecValue = IntegerValue("Mixer-Seconds", 2, 1, 10)
+    private val mixerDistValue = IntegerValue("Mixer-Distance", 2, 0, 10)
+    private val mixerIndexValue = IntegerValue("Mixer-Index", 50, 10, 1000)
     private val textredValue = IntegerValue("HreithTextRed", 255, 0, 255)
     private val textgreenValue = IntegerValue("HreithTextGreen", 255, 0, 255)
     private val textblueValue = IntegerValue("HreithTextBlue", 255, 0, 255)
@@ -47,6 +48,8 @@ class Session : Element() {
     var tag = "Idle..."
     private val bgAlphaValue = IntegerValue("BackgroundAlpha", 160,0,255)
     private val hypixelCheckValue = BoolValue("HypixelCheck", false)
+
+    val mixerColor = ColorMixer.getMixedColor(-mixerIndexValue.get() * mixerDistValue.get() * 10, mixerSecValue.get()).rgb
 
     companion object {
         // no u

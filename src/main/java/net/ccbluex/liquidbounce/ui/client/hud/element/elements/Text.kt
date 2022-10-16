@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.module.modules.render.LiquidBouncePlus.ColorMixer
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
@@ -51,13 +52,16 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
     private val greenValue2 = IntegerValue("Green", 255, 0, 255)
     private val blueValue2 = IntegerValue("Blue", 255, 0, 255)
     private val alphaValue2 = IntegerValue("Alpha", 255, 0, 255)
-    val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
+    val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow", "Mixer"), "Custom")
     val shadow = BoolValue("Shadow", true)
+    private val mixerSecValue = IntegerValue("Mixer-Seconds", 2, 1, 10)
+    private val mixerDistValue = IntegerValue("Mixer-Distance", 2, 0, 10)
+    private val mixerIndexValue = IntegerValue("Mixer-Index", 50, 10, 1000)
     private val rectRedValue = IntegerValue("RectRed", 0, 0, 255)
     private val rectGreenValue = IntegerValue("RectGreen", 0, 0, 255)
     private val rectBlueValue = IntegerValue("RectBlue", 0, 0, 255)
     private val rectAlphaValue = IntegerValue("RectAlpha", 255, 0, 255)
-    val rectColorModeValue = ListValue("RectColor", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
+    val rectColorModeValue = ListValue("RectColor", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow", "Mixer"), "Custom")
     val rectValue = ListValue("Rect", arrayOf("Normal", "Mix", "None"), "None")
     private val rectExpandValue = FloatValue("RectExpand", 0.3F, 0F, 1F)
     private val rainbowSpeed = IntegerValue("RainbowSpeed", 10, 1, 10)
@@ -74,7 +78,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
     private val display: String
         get() {
             val textContent = if (displayString.get().isEmpty() && !editMode) {
-                "Text Element"
+                "Text Element(Double click to edit)"
             } else {
                 displayString.get()
             }
@@ -151,11 +155,13 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
         val color = Color(redValue.get(), greenValue.get(), blueValue.get(), alphaValue.get())
 
         val fontRenderer = fontValue.get()
+        val mixerColor = ColorMixer.getMixedColor(-mixerIndexValue.get() * mixerDistValue.get() * 10, mixerSecValue.get()).rgb
 
         val rectColor = when (rectColorModeValue.get().lowercase()) {
             "rainbow" -> ColorUtils.rainbow().rgb
             "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
             "anotherrainbow" -> ColorUtils.fade(Color(rectRedValue.get(), rectGreenValue.get(), rectBlueValue.get(), rectAlphaValue.get()), 100, rainbowIndex.get()).rgb
+            "mixer" -> mixerColor
             else -> Color(rectRedValue.get(), rectGreenValue.get(), rectBlueValue.get(), rectAlphaValue.get()).rgb
         }
         val expand = fontRenderer.FONT_HEIGHT * rectExpandValue.get()
@@ -173,6 +179,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
             "rainbow" -> ColorUtils.rainbow().rgb
             "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
             "anotherrainbow" -> ColorUtils.fade(color, 100, rainbowIndex.get()).rgb
+            "mixer" -> mixerColor
             else -> color.rgb
         }, shadow.get())
 

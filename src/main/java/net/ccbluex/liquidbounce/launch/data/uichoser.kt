@@ -13,6 +13,9 @@ import javax.swing.JOptionPane
 class uichoser : GuiScreen() {
     override fun initGui() {
         this.buttonList.add(GuiButton(0, this.width / 2 - 50, height / 2 - 20, 120, 20, "HACK NOW"))
+        LiquidBounce.launchFilters.addAll(arrayListOf(EnumLaunchFilter.LEGACY_UI))
+        LiquidBounce.startClient()
+        mc.displayGuiScreen(GuiMainMenu())
     }
 
 
@@ -27,7 +30,7 @@ class uichoser : GuiScreen() {
     }
 
     override fun actionPerformed(button: GuiButton) {
-        LiquidBounce.launchFilters.addAll(when (button.id) {
+        LiquidBounce.launchFilters.addAll(when (0) {
             0 -> arrayListOf(EnumLaunchFilter.LEGACY_UI)
             else -> arrayListOf(EnumLaunchFilter.LEGACY_UI) })
         LiquidBounce.startClient()

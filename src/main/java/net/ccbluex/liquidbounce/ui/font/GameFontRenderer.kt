@@ -57,7 +57,6 @@ class GameFontRenderer(font: Font) : FontRenderer(
 
     override fun drawString(text: String, x: Float, y: Float, color: Int, shadow: Boolean): Int {
         var currentText = text
-        val fr : CFontRenderer = CFontRenderer(defaultFont,true, true)
 
         val event = TextEvent(currentText)
         LiquidBounce.eventManager.callEvent(event)
@@ -74,7 +73,7 @@ class GameFontRenderer(font: Font) : FontRenderer(
         if (rawText == null) {
             return 0
         }
-        if (rawText.isNullOrEmpty()) {
+        if (rawText.isEmpty()) {
             return x.toInt()
         }
 

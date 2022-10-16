@@ -1,6 +1,7 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.module.modules.render.LiquidBouncePlus.ColorMixer
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
@@ -11,6 +12,7 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.GLUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -144,7 +146,7 @@ class Notification(val title: String, val content: String, val type: NotifyType,
         RenderUtils.drawShadow(0F, 0F, width.toFloat(), height.toFloat())
         RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), Color(63, 63, 63, 100))
         RenderUtils.drawGradientSidewaysV(0.0, height - 1.7,
-            (width * ((nowTime - displayTime) / (animeTime * 2F + time))).toDouble(), height.toDouble(), ColorUtils.rainbow().rgb, ColorUtils.rainbow(1).rgb)
+            (width * ((nowTime - displayTime) / (animeTime * 2F + time))).toDouble(), height.toDouble(), ColorUtils.rainbow().rgb, ColorUtils.rainbow(10).rgb)
         Fonts.font37.drawStringWithShadow(title, 27F, 6F, Color.WHITE.rgb)
         Fonts.font32.drawStringWithShadow(content + " (" + displayingTime.toString() + "s)", 27F, 17.3F, Color.WHITE.rgb)
         RenderUtils.drawFilledCircle(13, 15, 8.5F, Color(0,0,0,70))
