@@ -1,5 +1,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import me.stars.utils.Colors
+import me.stars.utils.TransUtils
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
@@ -10,11 +12,9 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import me.stars.utils.Colors
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.RenderUtil
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import me.stars.utils.TransUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.network.play.client.C03PacketPlayer

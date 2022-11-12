@@ -4,8 +4,8 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
-import kotlin.math.sqrt
 import net.minecraft.client.settings.GameSettings
+import kotlin.math.sqrt
 
 class MatrixBHop : SpeedMode("MatrixBHop") {
     private val speedMultiValue = FloatValue("MatrixBHopSpeed", 1f, 0.7f, 1.2f)

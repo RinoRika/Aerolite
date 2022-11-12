@@ -1,20 +1,19 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
-import org.lwjgl.opengl.GL11
-import net.minecraft.client.renderer.OpenGlHelper
-import net.minecraft.util.ResourceLocation
-import net.minecraft.client.renderer.texture.DynamicTexture
-import javax.imageio.ImageIO
-import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
-import net.minecraft.client.gui.Gui
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.RenderUtils
 import net.ccbluex.liquidbounce.utils.WbxMain
+import net.minecraft.client.gui.Gui
+import net.minecraft.client.renderer.OpenGlHelper
+import net.minecraft.client.renderer.texture.DynamicTexture
+import net.minecraft.util.ResourceLocation
+import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.net.URL
+import javax.imageio.ImageIO
 
 @ElementInfo(name = "QQLogo")
 class QQLogo : Element() {

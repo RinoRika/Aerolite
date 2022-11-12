@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud
 
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.injection.access.StaticStorage
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
@@ -27,9 +28,15 @@ open class HUD : MinecraftInstance() {
             .toTypedArray()
 
         fun createDefault(): HUD {
+            val text1 = Text(x = 5.0, y = 8.0)
+            text1.displayString.set("Aerolite ${LiquidBounce.CLIENT_REAL_VERSION}")
+            text1.colorModeValue.set("Rainbow")
+
 
             return HUD()
+                .addElement(text1)
                 .addElement(Arraylist())
+                .addElement(Effect())
                 .addElement(ScoreboardElement())
                 .addElement(Armor())
                 .addElement(Notifications())

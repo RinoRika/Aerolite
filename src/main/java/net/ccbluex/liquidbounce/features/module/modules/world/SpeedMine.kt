@@ -11,7 +11,6 @@ import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
-import kotlin.jvm.internal.Intrinsics
 
 @ModuleInfo("SpeedMine", ModuleCategory.WORLD)
 class SpeedMine : Module() {

@@ -3,7 +3,6 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.splash;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.render.AnimatedValue;
 import net.ccbluex.liquidbounce.utils.render.EaseUtils;
-import net.ccbluex.liquidbounce.utils.render.Render;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraftforge.fml.client.SplashProgress;
 import net.minecraftforge.fml.common.ProgressManager;

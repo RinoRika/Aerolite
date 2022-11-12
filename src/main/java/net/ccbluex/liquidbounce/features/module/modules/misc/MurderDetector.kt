@@ -14,7 +14,6 @@ import net.minecraft.init.Blocks
 import net.minecraft.init.Items
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
-import java.awt.TrayIcon
 
 @ModuleInfo(name = "MurderDetector", category = ModuleCategory.MISC)
 class MurderDetector : Module() {

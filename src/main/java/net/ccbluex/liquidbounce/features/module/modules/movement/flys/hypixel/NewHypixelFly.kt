@@ -5,7 +5,6 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.util.MathHelper
-import net.minecraft.util.MovementInput
 
 class NewHypixelFly : FlyMode("NewHypixel"){
     private val strafeValue = BoolValue("StrafeFly", true)

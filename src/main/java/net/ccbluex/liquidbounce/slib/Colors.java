@@ -1,7 +1,8 @@
 package net.ccbluex.liquidbounce.slib;
 
 import net.minecraft.entity.EntityLivingBase;
-import java.awt.Color;
+
+import java.awt.*;
 import java.text.NumberFormat;
 
 public enum Colors {

@@ -1,9 +1,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.render.button
 
+//import net.ccbluex.liquidbounce.utils.render.skided.RenderUtils5
 import net.ccbluex.liquidbounce.features.module.modules.client.button.AbstractButtonRenderer
 import net.ccbluex.liquidbounce.utils.RenderUtil
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
-//import net.ccbluex.liquidbounce.utils.render.skided.RenderUtils5
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
 import java.awt.Color

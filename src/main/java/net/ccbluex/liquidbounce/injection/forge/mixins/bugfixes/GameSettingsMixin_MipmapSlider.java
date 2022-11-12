@@ -5,8 +5,8 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.bugfixes;
 
-import net.ccbluex.liquidbounce.slib.hhc.GameSettingsExt;
 import com.google.common.util.concurrent.ListenableFuture;
+import net.ccbluex.liquidbounce.slib.hhc.GameSettingsExt;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.GameSettings;
 import org.spongepowered.asm.mixin.Mixin;

@@ -18,6 +18,16 @@ object RandomUtils {
         }
     }
 
+    fun random(length: Int, chars: String): String? {
+        return random(length, chars.toCharArray())
+    }
+
+    fun random(length: Int, chars: CharArray): String? {
+        val stringBuilder = java.lang.StringBuilder()
+        for (i in 0 until length) stringBuilder.append(chars[Random().nextInt(chars.size)])
+        return stringBuilder.toString()
+    }
+
     fun nextDouble(startInclusive: Double, endInclusive: Double): Double {
         return if (startInclusive == endInclusive || endInclusive - startInclusive <= 0.0) {
             startInclusive

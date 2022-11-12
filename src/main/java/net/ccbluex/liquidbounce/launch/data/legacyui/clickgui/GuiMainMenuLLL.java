@@ -1,5 +1,6 @@
 package net.ccbluex.liquidbounce.launch.data.legacyui.clickgui;
 
+import me.stars.utils.Renderer;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.launch.data.legacyui.Button;
 import net.ccbluex.liquidbounce.launch.uninfo.GuiUpdateLog;
@@ -10,55 +11,59 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.ParticleUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.*;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.GuiModList;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 public class GuiMainMenuLLL extends GuiScreen {
-    public ArrayList butt = new ArrayList();
+    public ArrayList<Button> butt = new ArrayList<Button>();
+    ScaledResolution sr;
     public static float scale = 1f;
     private float currentX;
     private float currentY;
-    net.ccbluex.liquidbounce.launch.data.legacyui.Button updatelog;
+    private ResourceLocation logoFile = new ResourceLocation("aerolite/main/m.png");
 //    private final ResourceLocation bigLogo = new ResourceLocation("aerolite/main/m.png");
 
     @Override
     public void initGui() {
-   /*     this.butt.clear();
-        this.butt.add(new net.ccbluex.liquidbounce.launch.data.legacyui.Button(this, 0, "G", "Single Player", () -> {
+        this.butt.clear();
+        this.butt.add(new Button(this, 0, "G", "Single Player", () -> {
             this.mc.displayGuiScreen(new GuiSelectWorld(this));
         }));
-        this.butt.add(new net.ccbluex.liquidbounce.launch.data.legacyui.Button(this, 1, "H", "Multi Player", () -> {
+        this.butt.add(new Button(this, 1, "H", "Multi Player", () -> {
             this.mc.displayGuiScreen(new GuiMultiplayer(this));
         }));
-        this.butt.add(new net.ccbluex.liquidbounce.launch.data.legacyui.Button(this, 2, "I", "Alt Manager", () -> {
+        this.butt.add(new Button(this, 2, "I", "Alt Manager", () -> {
             this.mc.displayGuiScreen(new GuiAltManager(this));
         }));
-        this.butt.add(new net.ccbluex.liquidbounce.launch.data.legacyui.Button(this, 3, "J", "Mods", () -> {
+        this.butt.add(new Button(this, 3, "J", "Mods", () -> {
             this.mc.displayGuiScreen(new GuiModList(this));
         }, 0.5F));
-        this.butt.add(new net.ccbluex.liquidbounce.launch.data.legacyui.Button(this, 4, "K", "Options", () -> {
+        this.butt.add(new Button(this, 4, "K", "Options", () -> {
             this.mc.displayGuiScreen(new GuiOptions(this, this.mc.gameSettings));
         }));
-        this.butt.add(new net.ccbluex.liquidbounce.launch.data.legacyui.Button(this, 5, "L", "Languages", () -> {
+        this.butt.add(new Button( this, 5, "L", "Languages", () -> {
             this.mc.displayGuiScreen(new GuiLanguage(this, this.mc.gameSettings, this.mc.getLanguageManager()));
         }));
-        this.butt.add(new net.ccbluex.liquidbounce.launch.data.legacyui.Button(this, 6, "M", "Quit", () -> {
+        this.butt.add(new Button(this, 6, "E", "Update Log", () -> {
+            this.mc.displayGuiScreen(new GuiUpdateLog());
+        }));
+        this.butt.add(new Button(this, 7, "M", "Quit", () -> {
             this.mc.shutdown();
         }));
-        updatelog = new net.ccbluex.liquidbounce.launch.data.legacyui.Button(this, 7, "E", "Update Log", () -> {
-            this.mc.displayGuiScreen(new GuiUpdateLog());
-        }); */
         super.initGui();
     }
 
     @Override
     public void updateScreen() {
+        sr = new ScaledResolution(mc);
         super.updateScreen();
     }
 
@@ -67,32 +72,36 @@ public class GuiMainMenuLLL extends GuiScreen {
         try {
         mc.getTextureManager().bindTexture(new ResourceLocation("aerolite/main/game.png"));
         Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width, height);
-    //    GlStateManager.pushMatrix();
+        GlStateManager.disableAlpha();
+        RenderUtils.drawImage(logoFile, sr.getScaledWidth() / 2 - 35, sr.getScaledHeight() / 2 - 110, 70,70) ;
+        GlStateManager.enableAlpha();
+        //    GlStateManager.pushMatrix();
         if (useParallax) {
             this.moveMouseEffect(mouseX, mouseY, 7.0F);
         }
+        GlStateManager.resetColor();
+        Renderer.addSmoothLine(1.0f);
 
-        Fonts.font70.drawCenteredString("Aerolite", (float) this.width / 2.0F, (float) this.height / 2.0F - 70.0F, ColorUtils.INSTANCE.rainbow().getRGB(),true);
-        Fonts.font35.drawCenteredString("You are using " + LiquidBounce.CLIENT_REAL_VERSION + " version!", (float) this.width / 2.0F, (float) this.height / 2.0F + 70.0F, new Color(255, 255, 255, 255).getRGB());
+        Fonts.font100.drawCenteredString("Aerolite", (float) this.width / 2.0F, (float) this.height / 2.0F - 70.0F, ColorUtils.INSTANCE.rainbow().getRGB(),true);
+        Fonts.font35.drawCenteredString("You are using " + LiquidBounce.CLIENT_REAL_VERSION + " version! You can check 578251834 for updates.", (float) this.width / 2.0F, (float) this.height / 2.0F + 70.0F, new Color(255, 255, 255, 255).getRGB());
 
         ParticleUtils.drawParticles(mouseX,mouseY);
-        RenderUtils.fastRoundedRect((float) this.width / 2.0F - 82.0F * ((float) this.butt.size() / 2.0F) - 3f, (float) this.height / 2.0F - 102.0F - 3f, (float) this.width / 2.0F + 82.0F * ((float) this.butt.size() / 2.0F) + 3f, (float) this.height / 2.0F + 105.0F, 10, ColorUtils.INSTANCE.rainbow().getRGB());
         if (RenderUtils.isHovering(mouseX, mouseY, (float) this.width / 2.0F - 80.0F * ((float) this.butt.size() / 2.0F) - 3f, (float) this.height / 2.0F - 100.0F - 3f, (float) this.width / 2.0F + 80.0F * ((float) this.butt.size() / 2.0F) + 3f, (float) this.height / 2.0F + 103.0F))
-            RenderUtils.drawRoundedCornerRect((float) this.width / 2.0F - 80.0F * ((float) this.butt.size() / 2.0F) - 3f, (float) this.height / 2.0F - 100.0F - 3f, (float) this.width / 2.0F + 80.0F * ((float) this.butt.size() / 2.0F) + 3f, (float) this.height / 2.0F + 103.0F, 10, new Color(0, 0, 0, 150).getRGB());
-        else RenderUtils.drawRoundedCornerRect((float) this.width / 2.0F - 80.0F * ((float) this.butt.size() / 2.0F) - 3f, (float) this.height / 2.0F - 100.0F - 3f, (float) this.width / 2.0F + 80.0F * ((float) this.butt.size() / 2.0F) + 3f, (float) this.height / 2.0F + 103.0F, 10, new Color(0, 0, 0, 70).getRGB());
+            RenderUtils.drawRoundedCornerRect((float) this.width / 2.0F - 80.0F * ((float) this.butt.size() / 2.0F) - 3f, (float) this.height / 2.0F - 100.0F - 3f, (float) this.width / 2.0F + 80.0F * ((float) this.butt.size() / 2.0F) + 3f, (float) this.height / 2.0F + 103.0F, 10, new Color(0, 0, 0, 130).getRGB());
+        else RenderUtils.drawRoundedCornerRect((float) this.width / 2.0F - 80.0F * ((float) this.butt.size() / 2.0F) - 3f, (float) this.height / 2.0F - 100.0F - 3f, (float) this.width / 2.0F + 80.0F * ((float) this.butt.size() / 2.0F) + 3f, (float) this.height / 2.0F + 103.0F, 10, new Color(0, 0, 0, 60).getRGB());
      //   RenderUtils.drawShadow((float) this.width / 2.0F - 82.0F * ((float) this.butt.size() / 2.0F) - 3f, (float) this.height / 2.0F - 102.0F - 3f, (float) this.width / 2.0F + 82.0F * ((float) this.butt.size() / 2.0F) + 3f, (float) this.height / 2.0F + 105.0F);
 
         float startX = (float) this.width / 2.0F - 64.5F * ((float) this.butt.size() / 2.0F);
 
-        for (Iterator var9 = this.butt.iterator(); var9.hasNext(); startX += 75.0F) {
-            net.ccbluex.liquidbounce.launch.data.legacyui.Button button = (net.ccbluex.liquidbounce.launch.data.legacyui.Button) var9.next();
+        for (Iterator<Button> var9 = this.butt.iterator(); var9.hasNext(); startX += 75.0F) {
+            Button button = var9.next();
             button.draw(startX, (float) this.height / 2.0F + 20.0F, mouseX, mouseY);
         }
 
-        updatelog.draw(30f, 15f, mouseX, mouseY);
         Fonts.font32.drawCenteredString("Made with <3 by " + LiquidBounce.CLIENT_DEV, (float)this.width / 2.0f, (float)this.height - 12f, Color.WHITE.getRGB());
 
         renderSwitchButton();
+        Renderer.removeSmoothLine();
     //    GlStateManager.popMatrix();
 
         } catch (Exception e) {
@@ -103,11 +112,19 @@ public class GuiMainMenuLLL extends GuiScreen {
 
     @Override
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        Iterator var4 = this.butt.iterator();
+        Iterator<Button> var4 = this.butt.iterator();
 
         while (var4.hasNext()) {
-            net.ccbluex.liquidbounce.launch.data.legacyui.Button button = (Button)var4.next();
+            Button button = var4.next();
             button.mouseClick(mouseX, mouseY, mouseButton);
+        }
+
+        if (mouseX < this.width / 2.0 + 50 && mouseX < this.width / 2.0 - 50 && mouseY > this.height - 1 && mouseY < this.height - 13) {
+            try {
+                openWebpage(new URI("https://space.bilibili.com/670866766"));
+            } catch (Exception e) {
+                ClientUtils.INSTANCE.logError("Error while loading main menu.", e);
+            }
         }
 
         super.mouseClicked(mouseX, mouseY, mouseButton);
@@ -141,4 +158,16 @@ public class GuiMainMenuLLL extends GuiScreen {
         RenderUtils.drawRoundedCornerRect(var10000, var10001, var10002, var10003, 5.0F, var10005.getRGB());
     }
 
+    public static boolean openWebpage(final URI uri) {
+        final Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+        if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+            try {
+                desktop.browse(uri);
+                return true;
+            } catch (final Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
 }

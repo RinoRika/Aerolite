@@ -1,10 +1,8 @@
 package net.ccbluex.liquidbounce.features.special
 
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import net.minecraft.client.Minecraft
 import net.minecraft.network.play.server.S02PacketChat
 
 class CoreManager : Listenable, MinecraftInstance() {

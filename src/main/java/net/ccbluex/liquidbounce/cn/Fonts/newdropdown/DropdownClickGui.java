@@ -9,12 +9,9 @@ import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.utils.normal.Main;
 import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.utils.render.DrRenderUtils;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner;
-import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.WbxMain;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 
 import java.util.ArrayList;

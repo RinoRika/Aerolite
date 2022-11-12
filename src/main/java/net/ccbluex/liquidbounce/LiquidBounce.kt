@@ -10,7 +10,10 @@ import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.features.macro.MacroManager
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleManager
-import net.ccbluex.liquidbounce.features.special.*
+import net.ccbluex.liquidbounce.features.special.AntiForge
+import net.ccbluex.liquidbounce.features.special.CombatManager
+import net.ccbluex.liquidbounce.features.special.CoreManager
+import net.ccbluex.liquidbounce.features.special.ServerSpoof
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.file.config.ConfigManager
 import net.ccbluex.liquidbounce.launch.EnumLaunchFilter
@@ -41,14 +44,14 @@ object LiquidBounce {
     // Client information
     const val CLIENT_NAME = "Aerolite"
     const val COLORED_NAME = "§b§lAerolite"
-    const val BUILD_CODE = "3.0.1"                       //更完改
-    const val CLIENT_REAL_VERSION = "3.0.1"                            //更完改
+    const val BUILD_CODE = "3.1.3"                       //更完改
+    const val CLIENT_REAL_VERSION = "3.1.3"                            //更完改
     const val CLIENT_CREATOR = "AeroTeam"
     const val CLIENT_WEBSITE = "Aerolite.tk"
     const val MINECRAFT_VERSION = "1.8.9"
     const val REL_SAYING = "114514"
     const val CLIENT_DEV = "Stars&Packet&Crazy"
-    const val DEV_SAYING = "Release"
+    const val DEV_SAYING = "Very good hypixel bypasses"
     const val IN_Dev_VERSION = false
 
     // Tasks

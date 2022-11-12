@@ -17,7 +17,6 @@ import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.minecraft.client.Minecraft
 import org.lwjgl.input.Keyboard
-import java.util.ArrayList
 
 class ModuleManager : Listenable {
 

@@ -1,9 +1,6 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.forge;
 
-import net.ccbluex.liquidbounce.features.module.modules.render.BetterFont;
 import net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiInGame;
-import net.ccbluex.liquidbounce.ui.font.Fonts;
-import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.client.GuiIngameForge;

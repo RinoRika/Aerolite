@@ -1,9 +1,8 @@
 package net.ccbluex.liquidbounce.utils
 
+import me.stars.utils.TransUtils
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.MinecraftInstance.mc
-import net.ccbluex.liquidbounce.utils.RenderUtil
-import me.stars.utils.TransUtils
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 

@@ -6,9 +6,9 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.features.module.modules.render.LiquidBouncePlus.ColorMixer
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.modules.render.LiquidBouncePlus.ColorMixer
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
@@ -252,12 +252,12 @@ class Arraylist(
                             GL11.glPushMatrix()
                             GL11.glTranslated(renderX, renderY, 0.0)
                             modules.forEachIndexed { index, module ->
-                                val realYPos = if (slideInAnimation.get() && !module.state) { if (side.vertical == Vertical.DOWN) { 0f } else { -textHeight } } else { (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *
-                                        if (side.vertical == Vertical.DOWN) index + 1 else index }
-                                val yPos = module.yPos
-                                if (yPos != realYPos) { module.yPos = realYPos }
+                             //   val realYPos = if (slideInAnimation.get() && !module.state) { if (side.vertical == Vertical.DOWN) { 0f } else { -textHeight } } else { (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *
+                             //           if (side.vertical == Vertical.DOWN) index + 1 else index }
+                             //   val yPos = module.yPos
+                             //   if (yPos != realYPos) { module.yPos = realYPos }
                                 var arrayY = yPos.toDouble()
-                                val xPos = -module.slide - 2
+                             //   val xPos = -module.slide - 2
                                 RenderUtils.newDrawRect(
                                     xPos.toDouble() - if (rectValue.get().equals("right", true)) 3 else 2,
                                     arrayY,

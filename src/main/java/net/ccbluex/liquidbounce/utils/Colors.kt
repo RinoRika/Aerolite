@@ -1,10 +1,8 @@
 package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD
-import net.ccbluex.liquidbounce.slib.Colors.getFractionIndicies
 import net.minecraft.util.ChatAllowedCharacters
 import java.awt.Color
-import java.text.NumberFormat
 import java.util.*
 import java.util.regex.Pattern
 import kotlin.math.abs

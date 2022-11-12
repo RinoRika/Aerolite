@@ -8,7 +8,8 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
-import kotlin.math.*
+import kotlin.math.cos
+import kotlin.math.sin
 
 class MatrixMotion : FlyMode("MatrixMotion") {
     private val noClipValue = BoolValue("NoClip", false)

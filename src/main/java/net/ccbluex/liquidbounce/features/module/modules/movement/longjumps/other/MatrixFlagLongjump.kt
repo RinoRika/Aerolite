@@ -5,8 +5,6 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.LongJumpMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
-import kotlin.math.cos
-import kotlin.math.sin
 
 class MatrixFlagLongjump : LongJumpMode("MatrixFlag") {
 

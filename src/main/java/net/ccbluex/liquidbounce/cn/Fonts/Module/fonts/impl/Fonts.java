@@ -1,11 +1,11 @@
 package net.ccbluex.liquidbounce.cn.Fonts.Module.fonts.impl;
 
 
-import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.WbxMain;
 import net.ccbluex.liquidbounce.cn.Fonts.Module.fonts.api.FontFamily;
 import net.ccbluex.liquidbounce.cn.Fonts.Module.fonts.api.FontManager;
 import net.ccbluex.liquidbounce.cn.Fonts.Module.fonts.api.FontRenderer;
 import net.ccbluex.liquidbounce.cn.Fonts.Module.fonts.api.FontType;
+import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.WbxMain;
 
 /**
  * @author Artyom Popov

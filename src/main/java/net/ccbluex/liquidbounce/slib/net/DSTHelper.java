@@ -1,11 +1,10 @@
 package net.ccbluex.liquidbounce.slib.net;
 
 
+import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.slib.hhc.HDUtils;
 import net.ccbluex.liquidbounce.slib.hhc.WebUtils;
 import net.ccbluex.liquidbounce.slib.sys.SystemUtils;
-
-import net.ccbluex.liquidbounce.LiquidBounce;
 import org.lwjgl.opengl.Display;
 
 import javax.swing.*;

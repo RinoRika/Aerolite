@@ -9,34 +9,22 @@
  */
 package net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles;
 
-import java.awt.Color;
-import java.util.Arrays;
-
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.Opacity;
+import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.RenderUtils;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.Style;
-import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.SlowlyStyle;
-import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
-import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
-import net.ccbluex.liquidbounce.value.BoolValue;
-import net.ccbluex.liquidbounce.value.FloatValue;
-import net.ccbluex.liquidbounce.value.FontValue;
-import net.ccbluex.liquidbounce.value.IntegerValue;
-import net.ccbluex.liquidbounce.value.ListValue;
-import net.ccbluex.liquidbounce.value.TextValue;
-import net.ccbluex.liquidbounce.value.Value;
-import net.minecraft.client.audio.PositionedSoundRecord;
+import net.ccbluex.liquidbounce.value.*;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiYesNoCallback;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
-import scala.Int;
+
+import java.awt.*;
 
 public class WhiteStyle extends GuiScreen implements GuiYesNoCallback {
     private ModuleCategory currentModuleType = ModuleCategory.COMBAT;

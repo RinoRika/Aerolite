@@ -51,7 +51,6 @@ public class OptimizeTransformer implements IClassTransformer {
                     return ASMUtils.INSTANCE.toBytes(classNode);
                 }
             }catch(final Throwable throwable) {
-                throwable.printStackTrace();
             }
         }
 

@@ -3,8 +3,6 @@
  */
 package net.ccbluex.liquidbounce.launch.data.legacyui.clickgui;
 
-import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.AnimationsUtils;
-
 public class Opacity {
     private float opacity;
     private long lastMS;

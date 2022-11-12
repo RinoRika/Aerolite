@@ -1,6 +1,5 @@
 package net.ccbluex.liquidbounce.slib.net;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.slib.hhc.WebUtils;
 
 import javax.swing.*;

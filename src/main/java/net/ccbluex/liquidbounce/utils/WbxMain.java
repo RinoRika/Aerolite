@@ -1,11 +1,11 @@
 package net.ccbluex.liquidbounce.utils;
 
-import java.awt.AWTException;
-import java.awt.Component;
-import java.io.IOException;
-import javax.swing.JOptionPane;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import org.lwjgl.opengl.Display;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
 
 /* loaded from: LiquidBounce-b73.jar:Core/Insane/WbxMain.class */
 public class WbxMain {

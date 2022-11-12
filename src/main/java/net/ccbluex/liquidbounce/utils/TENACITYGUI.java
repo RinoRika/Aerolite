@@ -1,6 +1,5 @@
 package net.ccbluex.liquidbounce.utils;
 
-import net.ccbluex.liquidbounce.utils.GLUtil;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;

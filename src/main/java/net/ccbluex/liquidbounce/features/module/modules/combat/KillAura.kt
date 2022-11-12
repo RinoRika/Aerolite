@@ -109,7 +109,6 @@ class KillAura : Module() {
     private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla"), "AfterTick").displayable { autoBlockValue.equals("Range") }
     private val interactAutoBlockValue = BoolValue("InteractAutoBlock", true).displayable { autoBlockValue.equals("Range") }
     private val blockRateValue = IntegerValue("BlockRate", 100, 1, 100).displayable { autoBlockValue.equals("Range") }
-    private val noBadPacketsValue = BoolValue("NoBadPackets", true)
 
     // Raycast
     private val raycastValue = BoolValue("RayCast", true)
@@ -121,7 +120,7 @@ class KillAura : Module() {
     // TODO: Divide AAC Opinion into three separated opinions
 
     // Rotations
-    private val rotationModeValue = ListValue("RotationMode", arrayOf("None", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView", "Hypixel", "Hypixel2", "Exhibition", "BackTrack"), "LiquidBounce")
+    private val rotationModeValue = ListValue("RotationMode", arrayOf("None","Vanilla", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView", "Hypixel", "Hypixel2", "Exhibition", "BackTrack"), "LiquidBounce")
     // TODO: RotationMode Bypass Intave
 
     private val maxTurnSpeedValue: FloatValue = object : FloatValue("MaxTurnSpeed", 180f, 1f, 360f) {
@@ -285,9 +284,6 @@ class KillAura : Module() {
         if (blockTimingValue.equals("Both") ||
             (blockTimingValue.equals("Pre") && event.eventState == EventState.PRE) ||
             (blockTimingValue.equals("Post") && event.eventState == EventState.POST)) {
-            if (packetSent && noBadPacketsValue.get()) {
-                return
-            }
             // AutoBlock
             if ((autoBlockValue.equals("Range") || autoBlockValue.equals("NCP")) || autoBlockValue.equals("AAC") && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.equals("AfterAttack")
                         || discoveredTargets.any { mc.thePlayer.getDistanceToEntityBox(it) > maxRange }) && canBlock) {
@@ -391,7 +387,7 @@ class KillAura : Module() {
         // Update target
         updateTarget()
 
-        if (discoveredTargets.isEmpty() && (noC07 && noBadPacketsValue.get())) {
+        if (discoveredTargets.isEmpty()) {
             stopBlocking()
             noC07 = false
             return
@@ -772,9 +768,6 @@ class KillAura : Module() {
         if (!autoBlockPacketValue.equals("Vanilla") && (mc.thePlayer.isBlocking || blockingStatus)) {
             mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
             blockingStatus = false
-            if (noBadPacketsValue.get()) {
-                packetSent = true
-            }
         }
 
         // Attack target
@@ -918,6 +911,28 @@ class KillAura : Module() {
 
 
         if (silentRotationValue.get()) {
+            if (rotationModeValue.get() == "Vanilla") {
+                if (maxTurnSpeedValue.get() <= 0F) RotationUtils.setTargetRotation(RotationUtils.serverRotation)
+                if (predictValue.get())
+                    boundingBox = boundingBox.offset(
+                        (entity.posX - entity.prevPosX) * RandomUtils.nextFloat(minPredictSizeValue.get(), maxPredictSizeValue.get()),
+                        (entity.posY - entity.prevPosY) * RandomUtils.nextFloat(minPredictSizeValue.get(), maxPredictSizeValue.get()),
+                        (entity.posZ - entity.prevPosZ) * RandomUtils.nextFloat(minPredictSizeValue.get(), maxPredictSizeValue.get())
+                    )
+
+                val (_, rotation) = RotationUtils.searchCenter(
+                    boundingBox,
+                    !attackTimer.hasTimePassed(attackDelay / 2),
+                    randomCenterModeValue.get() != "Off",
+                    predictValue.get(),
+                    mc.thePlayer!!.getDistanceToEntityBox(entity) < throughWallsRangeValue.get(),
+                )
+
+                val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, rotation,
+                    (Math.random() * (maxTurnSpeedValue.get() - minTurnSpeedValue.get()) + minTurnSpeedValue.get()).toFloat())
+
+                RotationUtils.setTargetRotationReverse(limitedRotation, keepDirectionTickValue.get(), rotationRevTickValue.get())
+            } else
             if (rotationRevTickValue.get()> 0 && rotationRevValue.get()) {
                 if (keepDirectionValue.get()) {
                     RotationUtils.setTargetRotationReverse(rotation, keepDirectionTickValue.get(), rotationRevTickValue.get())
@@ -984,10 +999,6 @@ class KillAura : Module() {
             return
         }
 
-        if (packetSent && noBadPacketsValue.get()) {
-            return
-        }
-
         if (interact) {
             mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, interactEntity.positionVector))
             mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, C02PacketUseEntity.Action.INTERACT))
@@ -1017,9 +1028,6 @@ class KillAura : Module() {
      */
     private fun stopBlocking() {
         if (blockingStatus) {
-            if (packetSent && noBadPacketsValue.get()) {
-                return
-            }
             mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, if (MovementUtils.isMoving()) BlockPos(-1, -1, -1) else BlockPos.ORIGIN, EnumFacing.DOWN))
             blockingStatus = false
             packetSent = true
@@ -1082,6 +1090,6 @@ class KillAura : Module() {
      * HUD Tag
      */
     override val tag: String
-        get() = "${targetModeValue.get()}Mode"
+        get() = "${targetModeValue.get()}, ${minCpsValue.get()}-${maxCpsValue.get()}"
 }
 //1

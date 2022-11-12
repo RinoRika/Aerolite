@@ -38,6 +38,12 @@ object ColorUtils {
         return COLOR_PATTERN.matcher(input).replaceAll("")
     }
 
+    @JvmStatic
+    fun getRainbowOpaque(seconds: Int, saturation: Float, brightness: Float, index: Int):
+            Int { val hue = (System.currentTimeMillis() + index) % (seconds * 1000) / (seconds * 1000).toFloat()
+        return Color.HSBtoRGB(hue, saturation, brightness)
+    }
+
     fun astolfoRainbow(delay: Int, offset: Int, index: Int): Int {
         var rainbowDelay = Math.ceil((System.currentTimeMillis() + (delay * index).toLong()).toDouble()) / offset
         return Color.getHSBColor(if ((360.0.also { rainbowDelay %= it } / 360.0).toFloat()

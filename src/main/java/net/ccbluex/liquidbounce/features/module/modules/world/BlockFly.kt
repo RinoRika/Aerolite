@@ -5,14 +5,12 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.world
 
-import com.viaversion.viaversion.util.MathUtil
 import me.stars.utils.Renderer
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.addit.utils.DisablerUtils
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.injection.access.StaticStorage
 import net.ccbluex.liquidbounce.ui.font.Fonts
@@ -20,7 +18,6 @@ import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo.Companion.get
-import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
 import net.ccbluex.liquidbounce.utils.extensions.rayTraceWithServerSideRotation
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -55,6 +52,7 @@ class BlockFly : Module() {
 
     // Delay
     private val placeableDelayValue = ListValue("PlaceableDelay", arrayOf("Normal", "Smart", "OFF"), "Normal")
+    private val placeDelayTower = BoolValue("TowerPlaceableDelay", true)
     private val maxDelayValue: IntegerValue = object : IntegerValue("MaxDelay", 0, 0, 1000) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val i = minDelayValue.get()
@@ -86,8 +84,17 @@ class BlockFly : Module() {
     private val expandLengthValue = IntegerValue("ExpandLength", 1, 1, 6)
 
     // Rotations
-    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC", "Test1", "Test2", "Custom"), "AAC")
+    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC", "Test1", "Test2", "Custom", "Advanced"), "AAC")
+    private val towerrotationsValue = ListValue("TowerRotations", arrayOf("None", "Better", "Vanilla", "AAC", "Test1", "Test2", "Custom"), "AAC")
     private val aacYawValue = IntegerValue("AACYawOffset", 0, 0, 90).displayable { rotationsValue.equals("AAC") }
+    private val advancedYawModeValue = ListValue("AdvancedYawRotations", arrayOf("Offset", "Static", "RoundStatic", "Vanilla", "Round", "MoveDirection", "OffsetMove"), "MoveDirection").displayable { rotationsValue.equals("Advanced") }
+    private val advancedPitchModeValue = ListValue("AdvancedPitchRotations", arrayOf("Offset", "Static", "Vanilla"), "Static").displayable { rotationsValue.equals("Advanced") }
+    private val advancedYawOffsetValue = IntegerValue("AdvancedOffsetYaw", -15, -180, 180).displayable { rotationsValue.equals("Advanced") && advancedYawModeValue.equals("Offset") }
+    private val advancedYawMoveOffsetValue = IntegerValue("AdvancedMoveOffsetYaw", -15, -180, 180).displayable { rotationsValue.equals("Advanced") && advancedYawModeValue.equals("Offset") }
+    private val advancedYawStaticValue = IntegerValue("AdvancedStaticYaw", 145, -180, 180).displayable { rotationsValue.equals("Advanced") && (advancedYawModeValue.equals("Static") || advancedYawModeValue.equals("RoundStatic")) }
+    private val advancedYawRoundValue = IntegerValue("AdvancedYawRoundValue", 45, 0, 180).displayable { rotationsValue.equals("Advanced") && (advancedYawModeValue.equals("Round") || advancedYawModeValue.equals("RoundStatic")) }
+    private val advancedPitchOffsetValue = FloatValue("AdvancedOffsetPitch", -0.4f, -90f, 90f).displayable { rotationsValue.equals("Advanced") && advancedPitchModeValue.equals("Offset") }
+    private val advancedPitchStaticValue = FloatValue("AdvancedStaticPitch", 82.4f, -90f, 90f).displayable { rotationsValue.equals("Advanced") && advancedPitchModeValue.equals("Static") }
     private val randomChangeValue = BoolValue("RandomChange", false)
     private val changeMaxPitchValue = IntegerValue("ChangeMaxPitch", 1, -89, 89).displayable { randomChangeValue.get() }
     private val changeMaxYawValue = IntegerValue("ChangeMaxYaw", 1, -179, 179).displayable { randomChangeValue.get() }
@@ -502,7 +509,7 @@ class BlockFly : Module() {
         if (placeModeValue.equals(eventState.stateName)) place()
 
         // Reset placeable delay
-        if (targetPlace == null && !placeableDelayValue.equals("OFF")) {
+        if (targetPlace == null && !placeableDelayValue.equals("OFF") && (!placeDelayTower.get() || !towerStatus)) {
             if (placeableDelayValue.equals("Smart")) {
                 if (lastPlace == 0) {
                     delayTimer.reset()
@@ -525,9 +532,9 @@ class BlockFly : Module() {
     fun getRandomHypixelValues(): Double {
         val secureRandom = SecureRandom()
         var value = secureRandom.nextDouble() * (1.0 / System.currentTimeMillis())
-        for (i in 0 until DisablerUtils.getRandom(
-            DisablerUtils.getRandom(4.0, 6.0),
-            DisablerUtils.getRandom(8.0, 20.0)
+        for (i in 0 until RandomUtils.nextDouble(
+            RandomUtils.nextDouble(4.0, 6.0),
+            RandomUtils.nextDouble(8.0, 20.0)
         ).toInt()) value *= 1.0 / System.currentTimeMillis()
         return value
     }
@@ -1189,16 +1196,65 @@ class BlockFly : Module() {
             }
         }
         if (placeRotation == null) return false
-        if (!rotationsValue.equals("None")) {
+        if (!towerrotationsValue.equals("None") && towerStatus) {
+            lockRotation = when (towerrotationsValue.get().lowercase()) {
+                "better" -> {
+                    Rotation(mc.thePlayer.rotationYaw + customYawValue.get(), placeRotation.rotation.pitch)
+                }
+                "aac" -> {
+                    Rotation(mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180) + aacYawValue.get(), placeRotation.rotation.pitch)
+                }
+                "vanilla" -> {
+                    placeRotation.rotation
+                }
+                "test1" -> {
+                    val caluyaw = ((placeRotation.rotation.yaw / 45).roundToInt() * 45).toFloat()
+                    Rotation(caluyaw, placeRotation.rotation.pitch)
+                }
+                "test2" -> {
+                    Rotation(((MovementUtils.direction * 180f / Math.PI).toFloat() + 135), placeRotation.rotation.pitch)
+                }
+                "custom" -> {
+                    Rotation(mc.thePlayer.rotationYaw + customYawValue.get(), customPitchValue.get().toFloat())
+                }
+                "advanced" -> {
+                    var advancedYaw = 0f
+                    var advancedPitch = 0f
+                    advancedYaw = when (advancedYawModeValue.get().lowercase()) {
+                        "offset" -> placeRotation.rotation.yaw + advancedYawOffsetValue.get()
+                        "static" -> mc.thePlayer.rotationYaw + advancedYawStaticValue.get()
+                        "vanilla" -> placeRotation.rotation.yaw
+                        "round" -> ((placeRotation.rotation.yaw / advancedYawRoundValue.get()).roundToInt() * advancedYawRoundValue.get()).toFloat()
+                        "roundstatic" -> (((mc.thePlayer.rotationYaw + advancedYawStaticValue.get()) / advancedYawRoundValue.get()).roundToInt() * advancedYawRoundValue.get()).toFloat()
+                        "movedirection" -> MovementUtils.movingYaw - 180
+                        "offsetmove" -> MovementUtils.movingYaw - 180 + advancedYawMoveOffsetValue.get()
+                        else -> placeRotation.rotation.yaw
+                    }
+                    advancedPitch = when (advancedPitchModeValue.get().lowercase()) {
+                        "offset" -> placeRotation.rotation.pitch + advancedPitchOffsetValue.get().toFloat()
+                        "static" -> advancedPitchStaticValue.get().toFloat()
+                        "vanilla" -> placeRotation.rotation.pitch
+                        else -> placeRotation.rotation.pitch
+                    }
+                    Rotation(advancedYaw, advancedPitch)
+                }
+                else -> return false // this should not happen
+            }
+            if (silentRotationValue.get()) {
+                val limitedRotation =
+                    RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, rotationSpeed)
+                RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
+            } else {
+                mc.thePlayer.rotationYaw = lockRotation!!.yaw
+                mc.thePlayer.rotationPitch = lockRotation!!.pitch
+            }
+        }
+        if (!rotationsValue.equals("None") && !towerStatus) {
             val changeYaw = if (!randomChangeValue.get()) 0 else RandomUtils.nextInt(0, changeMaxYawValue.get())
             val changePitch = if (!randomChangeValue.get()) 0 else RandomUtils.nextInt(0, changeMaxPitchValue.get())
             lockRotation = when (rotationsValue.get().lowercase()) {
                 "aac" -> {
-                    if (!towerStatus) {
-                        Rotation((mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180)) + changeYaw + aacYawValue.get(), placeRotation.rotation.pitch + changePitch)
-                    } else {
-                        placeRotation.rotation
-                    }
+                    Rotation(mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180) + aacYawValue.get(), placeRotation.rotation.pitch)
                 }
                 "vanilla" -> {
                     placeRotation.rotation
@@ -1212,6 +1268,27 @@ class BlockFly : Module() {
                 }
                 "custom" -> {
                     Rotation(mc.thePlayer.rotationYaw + customYawValue.get() + changeYaw, customPitchValue.get().toFloat() + changePitch)
+                }
+                "advanced" -> {
+                    var advancedYaw = 0f
+                    var advancedPitch = 0f
+                    advancedYaw = when (advancedYawModeValue.get().lowercase()) {
+                        "offset" -> placeRotation.rotation.yaw + advancedYawOffsetValue.get()
+                        "static" -> mc.thePlayer.rotationYaw + advancedYawStaticValue.get()
+                        "vanilla" -> placeRotation.rotation.yaw
+                        "round" -> ((placeRotation.rotation.yaw / advancedYawRoundValue.get()).roundToInt() * advancedYawRoundValue.get()).toFloat()
+                        "roundstatic" -> (((mc.thePlayer.rotationYaw + advancedYawStaticValue.get()) / advancedYawRoundValue.get()).roundToInt() * advancedYawRoundValue.get()).toFloat()
+                        "movedirection" -> MovementUtils.movingYaw - 180
+                        "offsetmove" -> MovementUtils.movingYaw - 180 + advancedYawMoveOffsetValue.get()
+                        else -> placeRotation.rotation.yaw
+                    }
+                    advancedPitch = when (advancedPitchModeValue.get().lowercase()) {
+                        "offset" -> placeRotation.rotation.pitch + advancedPitchOffsetValue.get().toFloat()
+                        "static" -> advancedPitchStaticValue.get().toFloat()
+                        "vanilla" -> placeRotation.rotation.pitch
+                        else -> placeRotation.rotation.pitch
+                    }
+                    Rotation(advancedYaw, advancedPitch)
                 }
                 else -> return false // this should not happen
             }

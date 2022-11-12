@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.visual;
 
 import me.stars.vec.EvictingList;
 import me.stars.vec.Particle;
+import me.stars.vec.TimerUtil;
 import me.stars.vec.Vec3;
 import net.ccbluex.liquidbounce.event.AttackEvent;
 import net.ccbluex.liquidbounce.event.EventTarget;
@@ -18,7 +19,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import me.stars.vec.TimerUtil;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.minecraft.entity.EntityLivingBase;

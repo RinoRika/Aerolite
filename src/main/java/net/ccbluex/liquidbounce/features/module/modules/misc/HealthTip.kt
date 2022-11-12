@@ -7,10 +7,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.minecraft.client.entity.EntityPlayerSP
-import net.minecraft.client.shader.Shader
 import net.minecraft.entity.EntityLivingBase
-import java.lang.reflect.Field
 import kotlin.math.abs
 
 

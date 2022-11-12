@@ -2,20 +2,18 @@ package net.ccbluex.liquidbounce.launch.data
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.launch.EnumLaunchFilter
-import net.ccbluex.liquidbounce.launch.data.legacyui.GuiMainMenu
+import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.GuiMainMenuLLL
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ResourceLocation
-import org.lwjgl.opengl.Display
 import java.awt.Color
-import javax.swing.JOptionPane
 
 class uichoser : GuiScreen() {
     override fun initGui() {
         this.buttonList.add(GuiButton(0, this.width / 2 - 50, height / 2 - 20, 120, 20, "HACK NOW"))
         LiquidBounce.launchFilters.addAll(arrayListOf(EnumLaunchFilter.LEGACY_UI))
         LiquidBounce.startClient()
-        mc.displayGuiScreen(GuiMainMenu())
+        mc.displayGuiScreen(GuiMainMenuLLL())
     }
 
 

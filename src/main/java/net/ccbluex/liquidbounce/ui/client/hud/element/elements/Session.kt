@@ -10,11 +10,11 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Text.Companion.HO
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.utils.render.Render
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.*
-import net.minecraft.client.gui.FontRenderer
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import java.awt.Color
 
 
@@ -93,7 +93,7 @@ class Session : Element() {
         val timer = "${h}h ${m}m ${s}s"
         if (modeValue.get().equals("Normal")) {
             // Code by stars
-            RenderUtils.drawRoundedCornerRect(0f + 2, -1f, 180f - 2, 0f, 6F, ColorUtils.rainbow().rgb)
+            RenderUtils.drawRoundedCornerRect(0f + 2, -1f, 180f - 2, 0f, 6F, mixerColor)
             RenderUtils.drawRoundedCornerRect(0f, 0f, 180f, 105f, 4F, Color(10, 10, 10, bgAlphaValue.get()).rgb)
 
             Fonts.icon30.drawStringWithShadow("q", 3f, 4f, -1)
@@ -185,7 +185,7 @@ class Session : Element() {
         return getBorderSize()
     }
 
-    fun getBorderSize(): Border? {
+    private fun getBorderSize(): Border? {
         return when (modeValue.get()) {
             "Normal" -> Border(0f, -1f, 180f, 105f)
             "Hreith" -> Border(0f,0f,189f,80f)

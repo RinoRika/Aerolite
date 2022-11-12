@@ -1,9 +1,8 @@
 package net.ccbluex.liquidbounce.cn.Fonts.newdropdown.impl;
 
 
-
-import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.WbxMain;
 import net.ccbluex.liquidbounce.cn.Fonts.Module.fonts.impl.Fonts;
+import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.WbxMain;
 import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.utils.animations.Animation;
 import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.utils.animations.Direction;
 import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.utils.animations.impl.DecelerateAnimation;

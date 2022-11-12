@@ -9,7 +9,6 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import java.awt.Color
-import kotlin.collections.ArrayList
 
 
 @ElementInfo(name = "Hotbar")

@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -19,7 +18,6 @@ import net.minecraft.block.BlockAir
 import net.minecraft.block.material.Material
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
-import kotlin.concurrent.timer
 
 @ModuleInfo(name = "IceSpeedPlus", category = ModuleCategory.MOVEMENT)
 class IceSpeed : Module() {

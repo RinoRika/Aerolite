@@ -8,8 +8,8 @@ package net.ccbluex.liquidbounce.features.module.modules.client
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.minecraft.client.gui.GuiMultiplayer
 import net.minecraft.client.gui.GuiMainMenu
+import net.minecraft.client.gui.GuiMultiplayer
 
 
 @ModuleInfo(name = "ServerSwitcher", category = ModuleCategory.CLIENT, canEnable = false)

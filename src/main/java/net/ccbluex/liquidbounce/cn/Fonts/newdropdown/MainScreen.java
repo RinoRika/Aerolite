@@ -16,7 +16,9 @@ import net.ccbluex.liquidbounce.launch.data.legacyui.ClickGUIModule;
 import net.minecraft.client.gui.ScaledResolution;
 
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 

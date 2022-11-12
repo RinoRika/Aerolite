@@ -1,5 +1,6 @@
 package net.ccbluex.liquidbounce.utils.render;
 
+import net.ccbluex.liquidbounce.utils.AbstractGuiScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
@@ -9,8 +10,7 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
-import net.ccbluex.liquidbounce.utils.AbstractGuiScreen;
-import net.ccbluex.liquidbounce.utils.ColorUtils;
+
 import java.awt.*;
 
 public class GuiRenderUtils {

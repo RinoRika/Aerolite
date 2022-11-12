@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.utils;
 
-import java.awt.Color;
+import java.awt.*;
 
 public enum ColorUtils {
     BLACK(-16711423),

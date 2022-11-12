@@ -34,8 +34,8 @@ import net.minecraft.util.ResourceLocation
 @ModuleInfo(name = "HUD", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 object HUD : Module() {
     val betterHotbarValue = BoolValue("BetterHotbar", true)
-    //val hotbarAlphaValue = IntegerValue("HotbarAlpha", 70, 0, 255).displayable { betterHotbarValue.get() }
-    val hotbarEaseValue = BoolValue("HotbarEase", true)
+    val notHotBarValue = BoolValue("NoHotbar", false)
+    val hotbarEaseValue = BoolValue("HotbarEase", true).displayable { betterHotbarValue.get() }
     private val hotbarAnimSpeedValue = IntegerValue("HotbarAnimSpeed", 10, 5, 20).displayable { hotbarEaseValue.get() }
     private val hotbarAnimTypeValue =
         EaseUtils.getEnumEasingList("HotbarAnimType").displayable { hotbarEaseValue.get() }
@@ -49,10 +49,10 @@ object HUD : Module() {
     val chatCombineValue = BoolValue("ChatCombine", true)
     val chatAnimValue = BoolValue("ChatAnimation", true)
     val rainbow2 = BoolValue("Rainbow2", false)
-    val rainbowStartValue2 = FloatValue("Rainbow2Start", 0.2f, 0f, 1f)
-    val rainbowStopValue2 = FloatValue("Rainbow2Stop", 0.2f, 0f, 1f)
-    val rainbow2Index = IntegerValue("Rainbow2Index", 1, 1, 100)
-    val rainbow2percent = FloatValue("Rainbow2Percent", 0.5f, 0.1f, 1f)
+    val rainbowStartValue2 = FloatValue("Rainbow2Start", 0.2f, 0f, 1f).displayable { rainbow2.get() }
+    val rainbowStopValue2 = FloatValue("Rainbow2Stop", 0.2f, 0f, 1f).displayable { rainbow2.get() }
+    val rainbow2Index = IntegerValue("Rainbow2Index", 1, 1, 100).displayable { rainbow2.get() }
+    val rainbow2percent = FloatValue("Rainbow2Percent", 0.5f, 0.1f, 1f).displayable { rainbow2.get() }
     val rainbowStartValue = FloatValue("RainbowStart", 0.41f, 0f, 1f)
     val rainbowStopValue = FloatValue("RainbowStop", 0.58f, 0f, 1f)
     val rainbowSaturationValue = FloatValue("RainbowSaturation", 0.7f, 0f, 1f)

@@ -361,7 +361,7 @@ class Criticals : Module() {
         if(s08FlagValue.get() && !flagTimer.hasTimePassed(s08DelayValue.get().toLong()))
             return
 
-        if (packet is C04PacketPlayerPosition && modeValue.get().equals("Edit2")) {
+        if (packet is C04PacketPlayerPosition && modeValue.get().equals("Edit2") && LiquidBounce.combatManager.inCombat) {
             if (!c03changed) {
                 val ru = RandomUtils.getRandom(4.0E-7, 4.0E-5)
                 val doubleArray = arrayOf(0.007017625 + ru, 0.006102874 + ru, 0.02 + ru, 0.04 + ru)

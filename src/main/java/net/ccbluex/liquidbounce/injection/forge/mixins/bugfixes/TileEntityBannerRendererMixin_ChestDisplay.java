@@ -5,18 +5,10 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.bugfixes;
 
-import com.google.common.collect.Lists;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.LayeredColorMaskTexture;
 import net.minecraft.client.renderer.tileentity.TileEntityBannerRenderer;
-import net.minecraft.item.EnumDyeColor;
 import net.minecraft.tileentity.TileEntityBanner;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.*;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 @Mixin(TileEntityBannerRenderer.class)
 public class TileEntityBannerRendererMixin_ChestDisplay {

@@ -1,8 +1,8 @@
 package net.ccbluex.liquidbounce.utils.render;
 
+import net.ccbluex.liquidbounce.utils.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.ccbluex.liquidbounce.utils.RenderUtils;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
