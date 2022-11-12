@@ -62,7 +62,8 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
     private val rectBlueValue = IntegerValue("RectBlue", 0, 0, 255)
     private val rectAlphaValue = IntegerValue("RectAlpha", 255, 0, 255)
     val rectColorModeValue = ListValue("RectColor", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow", "Mixer"), "Custom")
-    val rectValue = ListValue("Rect", arrayOf("Normal", "Mix", "None"), "None")
+    val rectValue = ListValue("Rect", arrayOf("Normal", "Mix", "Skeet", "Artemis", "Flux", "Novoline", "None"), "None")
+    private val lineValue = BoolValue("SkeetLine", true)
     private val rectExpandValue = FloatValue("RectExpand", 0.3F, 0F, 1F)
     private val rainbowSpeed = IntegerValue("RainbowSpeed", 10, 1, 10)
     private val rainbowIndex = IntegerValue("RainbowIndex", 1, 1, 20)
@@ -106,7 +107,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
             "username" -> mc.getSession().username
             "clientName" -> "AeroLite"
             "clientVersion" -> LiquidBounce.CLIENT_REAL_VERSION
-            "clientCreator" -> "Stars&Packet:("
+            "clientCreator" -> LiquidBounce.CLIENT_CREATOR
             "fps" -> Minecraft.getDebugFPS().toString()
             "date" -> DATE_FORMAT.format(System.currentTimeMillis())
             "time" -> HOUR_FORMAT.format(System.currentTimeMillis())
@@ -172,6 +173,19 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
             }
             "mix" -> {
                 RenderUtils.drawGradientSidewaysV(-expand.toDouble(), -expand.toDouble(), fontRenderer.getStringWidth(displayText) + expand.toDouble(), fontRenderer.FONT_HEIGHT + expand.toDouble(), Color(redValue.get(),greenValue.get(),blueValue.get(),alphaValue.get()).rgb,Color(redValue2.get(),greenValue2.get(),blueValue2.get(),alphaValue2.get()).rgb)
+            }
+            "skeet" -> {
+                RenderUtils.drawExhiRect(-4F, if (lineValue.get()) -5F else -4F, fontRenderer.getStringWidth(displayText) + 4F, fontRenderer.FONT_HEIGHT + 2F, 230f)
+            }
+            "artemis" -> {
+                RenderUtils.drawGradientRoundedNoAlphaOutline(-4, if (lineValue.get()) -5 else -4, fontRenderer.getStringWidth(displayText) + 4, fontRenderer.FONT_HEIGHT + 2,5,ColorMixer.getMixedColor(1 * mixerDistValue.get(), mixerSecValue.get()).rgb,ColorMixer.getMixedColor((1 + 1) * mixerDistValue.get(), mixerSecValue.get()).rgb,1)
+            }
+            "flux" -> {
+                RenderUtils.drawRect(-2F, -6F, fontRenderer.getStringWidth(displayText) + 2F, fontRenderer.FONT_HEIGHT + 0F,Color(50,50,50,255))
+                RenderUtils.drawGradientRect(-1, -5, fontRenderer.getStringWidth(displayText) +1, -2,ColorMixer.getMixedColor(1 * mixerDistValue.get(), mixerSecValue.get()).rgb,ColorMixer.getMixedColor((-1) * mixerDistValue.get(), mixerSecValue.get()).rgb)
+            }
+            "novoline" -> { // really awful
+                RenderUtils.drawGradientRoundedNoAlphaOutline(-4, if (lineValue.get()) -5 else -4, fontRenderer.getStringWidth(displayText) + 4, fontRenderer.FONT_HEIGHT + 2,5,Color(0,255,50,255).rgb,Color(50,0,255,255).rgb,1)
             }
         }
 

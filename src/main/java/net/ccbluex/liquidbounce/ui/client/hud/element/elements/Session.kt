@@ -21,10 +21,11 @@ import java.awt.Color
 // Session Info Reloaded by Stars
 @ElementInfo(name = "Session")
 class Session : Element() {
-    private val modeValue = ListValue("Mode", arrayOf("Normal", "Hreith", "NightSense","Tenacity"), "Normal")
+    private val modeValue = ListValue("Mode", arrayOf("Normal", "Hreith", "NightSense","Tenacity", "Novoline"), "Normal")
+    private val indexfu = BoolValue("IndexFu", false)
+    private val index = IntegerValue("Index", 10, 1, 1000)
     private val mixerSecValue = IntegerValue("Mixer-Seconds", 2, 1, 10)
-    private val mixerDistValue = IntegerValue("Mixer-Distance", 2, 0, 10)
-    private val mixerIndexValue = IntegerValue("Mixer-Index", 50, 10, 1000)
+    private val mixerDistValue = IntegerValue("Mixer-Distance", 2, 0, 100)
     private val textredValue = IntegerValue("HreithTextRed", 255, 0, 255)
     private val textgreenValue = IntegerValue("HreithTextGreen", 255, 0, 255)
     private val textblueValue = IntegerValue("HreithTextBlue", 255, 0, 255)
@@ -49,7 +50,7 @@ class Session : Element() {
     private val bgAlphaValue = IntegerValue("BackgroundAlpha", 160,0,255)
     private val hypixelCheckValue = BoolValue("HypixelCheck", false)
 
-    val mixerColor = ColorMixer.getMixedColor(-mixerIndexValue.get() * mixerDistValue.get() * 10, mixerSecValue.get()).rgb
+    val mixerColor = ColorMixer.getMixedColor(2 * mixerDistValue.get() * 10, mixerSecValue.get()).rgb
 
     companion object {
         // no u
@@ -182,6 +183,15 @@ class Session : Element() {
             Fonts.tc45.drawString("Speed                                       ${bps}",5F,50f,Color(textredValue.get(), textgreenValue.get(), textblueValue.get(), 255).rgb)
             Fonts.tc45.drawString("PlayerKills                                ${LiquidBounce.combatManager.getTotalPlayed()}",5F, 64f, Color(textredValue.get(), textgreenValue.get(), textblueValue.get(), 255).rgb)
         }
+        if(modeValue.get().equals("Novoline")){
+            RenderUtils.drawRoundedCornerRect(0f,0f,170f,80f,4f,Color(0,0,0,100).rgb)
+            RenderUtils.drawRect(0.0, 16.0,170.0,18.0,ColorMixer.getMixedColor(0,255,50,50,0,255,(if (indexfu.get()) -index.get() else index.get()) * mixerDistValue.get() * 10, mixerSecValue.get()).rgb)
+            Fonts.font40.drawCenteredString("Session Info",85f,5f,Color(255,255,255,255).rgb)
+            Fonts.font37.drawString("Play Time:                                   ${HOUR_FORMAT.format(System.currentTimeMillis())}",5f,25f,Color.WHITE.rgb)
+            Fonts.font37.drawString("Games Won:                                     ${LiquidBounce.combatManager.getWin()}",5f,40f,Color.WHITE.rgb)
+            Fonts.font37.drawString("Players Killed:                                   ${LiquidBounce.combatManager.getKillCounts()}",5f,55f,Color.WHITE.rgb)
+            Fonts.font37.drawString("Banned:                                            0",5f,70f,Color.WHITE.rgb)
+        }
         return getBorderSize()
     }
 
@@ -190,6 +200,7 @@ class Session : Element() {
             "Normal" -> Border(0f, -1f, 180f, 105f)
             "Hreith" -> Border(0f,0f,189f,80f)
             "NightSense" -> Border(0f, 0f, 189f, 80f)
+            "Novoline" -> Border(0f,0f,189f,80f)
             else -> null
         }
     }

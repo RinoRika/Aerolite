@@ -17,11 +17,14 @@ import java.awt.*;
 import java.lang.reflect.Field;
 import java.util.Objects;
 
-@ModuleInfo(name = "ColorMixer", category = ModuleCategory.RENDER)
+@ModuleInfo(name = "ColorMixer", category = ModuleCategory.RENDER, defaultOn = true)
 public class ColorMixer extends Module {
 
     private static float[] lastFraction = new float[]{};
     public static Color[] lastColors = new Color[]{};
+
+    private static float[] lastFractionC = new float[]{};
+    public static Color[] lastColorsC = new Color[]{};
 
     public final IntegerValue blendAmount = new IntegerValue("Mixer-Amount", 2, 2, 3) {
         @Override
@@ -54,6 +57,12 @@ public class ColorMixer extends Module {
         if (lastColors.length <= 0 || lastFraction.length <= 0) regenerateColors(true); // just to make sure it won't go white
 
         return BlendUtils.blendColors(lastFraction, lastColors, (System.currentTimeMillis() + index) % (seconds * 1000) / (float) (seconds * 1000));
+    }
+
+    public static Color getMixedColor(int r, int g, int b, int r2, int g2, int b2, int index, int seconds) {
+        if (lastColorsC.length <= 0 || lastFractionC.length <= 0) regenerateColors2(r,g,b,r2,g2,b2,true); // just to make sure it won't go white
+
+        return BlendUtils.blendColors(lastFractionC, lastColorsC, (System.currentTimeMillis() + index) % (seconds * 1000) / (float) (seconds * 1000));
     }
 
     public static void regenerateColors(boolean forceValue) {
@@ -105,6 +114,47 @@ public class ColorMixer extends Module {
             }
 
             lastFraction = colorFraction;
+        }
+    }
+
+    public static void regenerateColors2(int r, int g, int b, int r2, int g2, int b2,boolean forceValue) {
+        // color generation
+        if (forceValue || lastColorsC.length <= 0) {
+            Color[] generator = new Color[3];
+
+            // reflection is cool
+            for (int i = 1; i <= 2; i++) {
+                Color result = Color.white;
+                try {
+                    if (i == 1) result = new Color(Math.max(0, Math.min(r, 255)), Math.max(0, Math.min(g, 255)), Math.max(0, Math.min(b, 255)));
+                    if (i == 2) result = new Color(Math.max(0, Math.min(r2, 255)), Math.max(0, Math.min(g2, 255)), Math.max(0, Math.min(b2, 255)));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                generator[i - 1] = result;
+            }
+
+            int h = 2;
+            for (int z = 2 - 2; z >= 0; z--) {
+                generator[h] = generator[z];
+                h++;
+            }
+
+            lastColorsC = generator;
+        }
+
+        // cache thingy
+        if (forceValue || lastFractionC.length <= 0) {
+            // color frac regenerate if necessary
+            float[] colorFraction = new float[3];
+
+            for (int i = 0; i <= (2 * 2) - 2; i++)
+            {
+                colorFraction[i] = (float)i / (float)(2);
+            }
+
+            lastFractionC = colorFraction;
         }
     }
     
