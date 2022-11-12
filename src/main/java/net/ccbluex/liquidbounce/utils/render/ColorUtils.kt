@@ -147,24 +147,6 @@ object ColorUtils {
         }
     }
 
-    fun hslRainbow2(
-        index: Int,
-        index2: Int = HUD.rainbow2Index.get(),
-        lowest: Float = HUD.rainbowStartValue.get(),
-        bigest: Float = HUD.rainbowStopValue.get(),
-        lowest2: Float = HUD.rainbowStartValue2.get(),
-        bigest2: Float = HUD.rainbowStopValue2.get(),
-        indexOffset: Int = 300,
-        percent: Float = HUD.rainbow2percent.get(),
-        timeSplit: Int = HUD.rainbowSpeedValue.get(),
-        saturation: Float = HUD.rainbowSaturationValue.get(),
-        brightness: Float = HUD.rainbowBrightnessValue.get()
-    ): Color {
-        val color1 = Color.getHSBColor((abs(((((System.currentTimeMillis() - startTime).toInt() + index * indexOffset) / timeSplit.toFloat()) % 2) - 1) * (bigest - lowest)) + lowest, saturation, brightness)
-        val color2 = Color.getHSBColor((abs(((((System.currentTimeMillis() - startTime).toInt() + index2 * indexOffset) / timeSplit.toFloat()) % 2) - 1) * (bigest2 - lowest2)) + lowest2, saturation, brightness)
-        if (HUD.rainbow2.get()) return mixColors(color1,color2,percent)
-        else return color1
-    }
 
     fun hslRainbow(
         index: Int,
@@ -183,11 +165,11 @@ object ColorUtils {
     }
 
     fun rainbow(): Color {
-        return hslRainbow2(1)
+        return hslRainbow(1)
     }
 
     fun rainbow(index: Int): Color {
-        return hslRainbow2(index)
+        return hslRainbow(index)
     }
 
     fun rainbow(alpha: Float) = reAlpha(hslRainbow(1), alpha)

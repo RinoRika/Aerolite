@@ -167,9 +167,12 @@ public abstract class MixinGuiInGame extends MixinGui {
                 RenderUtils.drawRect(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(),new Color(0,0,0, 200).getRGB());
                 RenderUtils.drawRect(itemX, sr.getScaledHeight() - 21, itemX + 22, sr.getScaledHeight(),new Color(150, 150, 150, 155).getRGB());
                 GlStateManager.enableTexture2D();
-            } else {
-                this.drawTexturedModalRect(i - 91, sr.getScaledHeight() - 22, 0, 0, 182, 22);
-                this.drawTexturedModalRect(itemX - 1, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
+            } else if (hud.getNotHotBarValue().get()) {
+
+            } else
+            {
+                    this.drawTexturedModalRect(i - 91, sr.getScaledHeight() - 22, 0, 0, 182, 22);
+                    this.drawTexturedModalRect(itemX - 1, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
             }
             this.zLevel = f;
             RenderHelper.enableGUIStandardItemLighting();

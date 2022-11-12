@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
+import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.module.modules.client.Modules;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
@@ -110,6 +111,8 @@ public abstract class MixinMinecraft {
 
     @Shadow private CrashReport crashReporter;
 
+    @Shadow public boolean renderChunksMany;
+
     /**
      * @author XiGuaGeGe
      * @reason s
@@ -117,7 +120,8 @@ public abstract class MixinMinecraft {
 
     @Overwrite
     public int getLimitFramerate() {
-        return this.gameSettings.limitFramerate;
+        if (HUD.INSTANCE.getThirtyfpsnoworld().get() && Minecraft.getMinecraft().theWorld == null) return 30;
+        else return this.gameSettings.limitFramerate;
     }
 
     @Inject(method = "<init>", at = @At("RETURN"))

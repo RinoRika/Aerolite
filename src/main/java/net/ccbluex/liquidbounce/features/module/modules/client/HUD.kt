@@ -48,11 +48,6 @@ object HUD : Module() {
     val GameInfo = BoolValue("GameInfo", false)
     val chatCombineValue = BoolValue("ChatCombine", true)
     val chatAnimValue = BoolValue("ChatAnimation", true)
-    val rainbow2 = BoolValue("Rainbow2", false)
-    val rainbowStartValue2 = FloatValue("Rainbow2Start", 0.2f, 0f, 1f).displayable { rainbow2.get() }
-    val rainbowStopValue2 = FloatValue("Rainbow2Stop", 0.2f, 0f, 1f).displayable { rainbow2.get() }
-    val rainbow2Index = IntegerValue("Rainbow2Index", 1, 1, 100).displayable { rainbow2.get() }
-    val rainbow2percent = FloatValue("Rainbow2Percent", 0.5f, 0.1f, 1f).displayable { rainbow2.get() }
     val rainbowStartValue = FloatValue("RainbowStart", 0.41f, 0f, 1f)
     val rainbowStopValue = FloatValue("RainbowStop", 0.58f, 0f, 1f)
     val rainbowSaturationValue = FloatValue("RainbowSaturation", 0.7f, 0f, 1f)
@@ -66,6 +61,7 @@ object HUD : Module() {
     val arraylistYAxisAnimOrderValue = EaseUtils.getEnumEasingOrderList("ArraylistYAxisHotbarAnimOrder")
     val fontEpsilonValue = FloatValue("FontVectorEpsilon", 0.5f, 0f, 1.5f)
     private val buttonValue = ListValue("Button", arrayOf("FLine", "Rounded", "Rise",  "xiaochibounce", "Vanilla"), "Rise")
+    val thirtyfpsnoworld = BoolValue("30FPSInGui", false)
 
 
     private var lastFontEpsilon = 0f
