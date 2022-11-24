@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.utils.render.StencilUtil;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.launch.data.legacyui.ClickGUIModule;
+import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.minecraft.client.gui.ScaledResolution;
 
 import java.awt.*;
@@ -21,8 +22,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static net.ccbluex.liquidbounce.cn.Fonts.newdropdown.utils.render.DrRenderUtils.isHovering;
 
 
 public class MainScreen implements Screen {
@@ -34,6 +33,7 @@ public class MainScreen implements Screen {
     public HashMap<ModuleRect, Animation> moduleAnimMap = new HashMap<>();
     public Animation openingAnimation;
     private List<ModuleRect> moduleRects;
+    private boolean addok = false;
 
     public MainScreen(ModuleCategory category) {
         this.category = category;
@@ -43,13 +43,13 @@ public class MainScreen implements Screen {
     public void initGui() {
         if (moduleRects == null) {
             moduleRects = new ArrayList<>();
-            for (Module module : Main.getModulesInCategory(category,LiquidBounce.moduleManager).stream().sorted(Comparator.comparing(Module::getName)).collect(Collectors.toList())) {
+            for (Module module : Main.getModulesInCategory(category, LiquidBounce.moduleManager).stream().sorted(Comparator.comparing(Module::getName)).collect(Collectors.toList())) {
+         //   for (Module module : LiquidBounce.moduleManager.getModuleInCategory(category)) {
                 ModuleRect moduleRect = new ModuleRect(module);
                 moduleRects.add(moduleRect);
                 moduleAnimMap.put(moduleRect, new DecelerateAnimation(250, 1));
             }
         }
-
         if (moduleRects != null) {
             moduleRects.forEach(ModuleRect::initGui);
         }
@@ -70,13 +70,13 @@ public class MainScreen implements Screen {
         int categoryRectColor = new Color(29, 29, 29, alphaAnimation).getRGB();
         int textColor = new Color(255, 255, 255, alphaAnimation).getRGB();
 
-        category.getDrag().onDraw(mouseX, mouseY);
-        float x = category.getDrag().getX(), y = category.getDrag().getY();
+        category.getDragNew(category).onDraw(mouseX, mouseY);
+        float x = category.getDragNew(category).getX(), y = category.getDragNew(category).getY();
         DrRenderUtils.drawRect2(x, y, rectWidth, categoryRectHeight, categoryRectColor);
         DrRenderUtils.setAlphaLimit(0);
         Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString(category.name(), x + 5, y + Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.getMiddleOfBox(categoryRectHeight), textColor);
 
-       // String icon = category.icon;
+        // String icon = category.icon;
         //绘制图标
         String l = "";
         if (category.name().equalsIgnoreCase("Combat")) {
@@ -91,15 +91,8 @@ public class MainScreen implements Screen {
             l = "G";
         } else if (category.name().equalsIgnoreCase("Misc")) {
             l = "F";
-        }
-     else if (category.name().equalsIgnoreCase("Addit")) {
-        l = "H";
-    } else if (category.name().equalsIgnoreCase("Client")) {
-        l = "I";
-    }else if (category.name().equalsIgnoreCase("Visual")) {
-            l = "J";
-        } else if (category.name().equalsIgnoreCase("World")) {
-            l = "K";
+        } else {
+            l = "H";
         }
 
 
@@ -113,7 +106,7 @@ public class MainScreen implements Screen {
                     y + Fonts.ICONFONT.ICONFONT_20.ICONFONT_20.getMiddleOfBox(categoryRectHeight), textColor);
         }
 
-   //     ClickGuiMod clickGUIMod = (ClickGuiMod) Tenacity.INSTANCE.getModuleCollection().get(ClickGuiMod.class);
+        //     ClickGuiMod clickGUIMod = (ClickGuiMod) Tenacity.INSTANCE.getModuleCollection().get(ClickGuiMod.class);
 
         if (ClickGUIModule.scrollMode.get().equals("Value")) {
             Main.allowedClickGuiHeight =  ClickGUIModule.clickHeight.get().floatValue();
@@ -125,11 +118,11 @@ public class MainScreen implements Screen {
         float allowedHeight = Main.allowedClickGuiHeight;
 
 
-        boolean hoveringMods = isHovering(x, y + categoryRectHeight, rectWidth, allowedHeight, mouseX, mouseY);
+        boolean hoveringMods = DrRenderUtils.isHovering(x, y + categoryRectHeight, rectWidth, allowedHeight, mouseX, mouseY);
 
 
-        //float scaleAnim = Math.max(1, (float) openingAnimation.getOutput() + .7f);
-        //float width = rectWidth;
+        float scaleAnim = Math.max(1, (float) openingAnimation.getOutput() + .7f);
+        float width = rectWidth;
 
         StencilUtil.initStencilToWrite();
         DrRenderUtils.drawRect2(x - 100, y + categoryRectHeight, rectWidth + 150, allowedHeight, -1);
@@ -157,25 +150,23 @@ public class MainScreen implements Screen {
 
         if (hoveringMods) {
             category.getScroll().onScroll(30);
-            //float hiddenHeight = (float) ((count * 17) - allowedHeight);
-            //category.getScroll().setMaxScroll(Math.max(0, hiddenHeight));
-            //category.getScroll().setMaxScroll(Math.max(0, hiddenHeight));
+            float hiddenHeight = (float) ((count * 17) - allowedHeight);
+            category.getScroll().setMaxScroll(Math.max(0, hiddenHeight));
         }
 
         StencilUtil.uninitStencilBuffer();
-
     }
 
     @Override
     public void mouseClicked(int mouseX, int mouseY, int button) {
-        boolean canDrag = isHovering(category.getDrag().getX(), category.getDrag().getY(), rectWidth, categoryRectHeight, mouseX, mouseY);
+        boolean canDrag = DrRenderUtils.isHovering(category.getDragNew(category).getX(), category.getDragNew(category).getY(), rectWidth, categoryRectHeight, mouseX, mouseY);
         category.getDrag().onClick(mouseX, mouseY, button, canDrag);
         moduleRects.forEach(moduleRect -> moduleRect.mouseClicked(mouseX, mouseY, button));
     }
 
     @Override
     public void mouseReleased(int mouseX, int mouseY, int state) {
-        category.getDrag().onRelease(state);
+        category.getDragNew(category).onRelease(state);
         moduleRects.forEach(moduleRect -> moduleRect.mouseReleased(mouseX, mouseY, state));
     }
 }

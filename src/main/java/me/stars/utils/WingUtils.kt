@@ -3,7 +3,7 @@ package me.stars.utils
 import me.stars.Core
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
-import net.ccbluex.liquidbounce.features.module.modules.visual.Wings
+import net.ccbluex.liquidbounce.features.module.modules.render.Wings
 import net.ccbluex.liquidbounce.features.module.modules.world.BlockFly
 import net.minecraft.client.Minecraft
 import net.minecraft.client.model.ModelBase

@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.features.module.modules.visual
+package net.ccbluex.liquidbounce.features.module.modules.render
 
 import me.stars.utils.WingUtils
 import net.ccbluex.liquidbounce.event.EventTarget

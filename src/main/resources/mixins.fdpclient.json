@@ -65,13 +65,17 @@
     "world.MixinWorld"
   ],
   "client": [
+    "client.IMixinKeyBinding",
     "forge.MixinGuiIngameForge",
     "gui.MixinGui",
+    "gui.MixinGuiDownloadTerrain",
+    "gui.MixinGuiEditSign",
     "gui.MixinGuiKeyBindingList",
     "gui.MixinGuiPlayerTabOverlay",
     "gui.MixinGuiSlot",
     "gui.MixinGuiTextField",
     "render.MixinLayerArmorBase",
-    "render.MixinModelPlayer"
+    "render.MixinModelPlayer",
+    "render.MixinRenderManager"
   ]
 }

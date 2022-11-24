@@ -1,11 +1,16 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import me.stars.utils.Renderer
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD
+import net.ccbluex.liquidbounce.features.module.modules.movement.Fly
+import net.ccbluex.liquidbounce.features.module.modules.player.Blink
+import net.ccbluex.liquidbounce.features.module.modules.render.FreeCam
+import net.ccbluex.liquidbounce.features.module.modules.world.BlockFly
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
@@ -17,6 +22,7 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.enchantment.EnchantmentHelper
@@ -32,19 +38,22 @@ import net.minecraft.util.*
 import net.minecraft.world.WorldSettings
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
+import org.lwjgl.util.glu.Cylinder
 import java.awt.Color
 import java.util.*
-import kotlin.math.*
+import kotlin.math.cos
+import kotlin.math.max
+import kotlin.math.pow
+import kotlin.math.sin
 
 @ModuleInfo(name = "Aura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_R)
 class KillAura : Module() {
-
     /**
      * OPTIONS
      */
 
     // CPS - Attack speed
-    private val maxCpsValue: IntegerValue = object : IntegerValue("MaxCPS", 8, 1, 20) {
+    private val maxCpsValue: IntegerValue = object : IntegerValue("MaxCPS", 12, 1, 20) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val i = minCpsValue.get()
             if (i > newValue) set(i)
@@ -53,7 +62,7 @@ class KillAura : Module() {
         }
     }
 
-    private val minCpsValue: IntegerValue = object : IntegerValue("MinCPS", 5, 1, 20) {
+    private val minCpsValue: IntegerValue = object : IntegerValue("MinCPS", 8, 1, 20) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val i = maxCpsValue.get()
             if (i < newValue) set(i)
@@ -63,7 +72,7 @@ class KillAura : Module() {
     }
 
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
-    private val combatDelayValue = BoolValue("1.9Combat", false)
+    private val combatDelayValue = BoolValue("1.9CombatDelay", false)
 
     // Range
     val rangeValue = object : FloatValue("Range", 3.7f, 1f, 8f) {
@@ -78,6 +87,7 @@ class KillAura : Module() {
             if (i < newValue) set(i)
         }
     }
+    private val rangeSprintReducementValue = FloatValue("RangeSprintReducement", 0f, 0f, 0.4f)
     private val swingRangeValue = object : FloatValue("SwingRange", 5f, 0f, 15f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = discoverRangeValue.get()
@@ -87,26 +97,34 @@ class KillAura : Module() {
     }
     private val discoverRangeValue = FloatValue("DiscoverRange", 6f, 0f, 15f)
 
+    private val blinkCheck = BoolValue("BlinkCheck", true)
+    private val noScaffValue = BoolValue("NoScaffold", true)
+    private val noFlyValue = BoolValue("NoFly", false)
+
     // Modes
-    private val priorityValue = ListValue("Priority", arrayOf("Health", "Distance", "Fov", "LivingTime", "Armor","Hurttime", "HurtResistantTime", "HealthAbsorption", "RegenAmplifier"), "Distance")
-    private val targetModeValue = ListValue("TargetMode", arrayOf("Single", "Switch", "Multi"), "Single")
+    private val priorityValue = ListValue("Priority", arrayOf("Health", "Distance", "Fov", "LivingTime", "Armor", "HurtResistance", "HurtTime", "HealthAbsorption", "RegenAmplifier"), "Armor")
+    private val targetModeValue = ListValue("TargetMode", arrayOf("Single", "Switch", "Multi"), "Switch")
 
     // Bypass
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
     private val attackTimingValue = ListValue("AttackTiming", arrayOf("All", "Pre", "Post", "Both"), "All")
     private val keepSprintValue = BoolValue("KeepSprint", true)
 
+    private val noBadPacketsValue = BoolValue("NoBadPackets", false)
+
     // AutoBlock
-    val autoBlockValue = ListValue("AutoBlock", arrayOf("Range", "Fake", "Off", "NCP", "Vulcan"), "Off")
+    val autoBlockValue = ListValue("AutoBlock", arrayOf("Range", "NCP", "Fake", "Off"), "Off")
+
     // vanilla will send block packet at pre
-    private val blockTimingValue = ListValue("BlockTiming", arrayOf("Pre", "Post", "Both"), "Both").displayable { autoBlockValue.equals("Range") }
+    private val blockTimingValue =
+        ListValue("BlockTiming", arrayOf("Pre", "Post", "Both"), "Both").displayable { autoBlockValue.equals("Range") }
     private val autoBlockRangeValue = object : FloatValue("AutoBlockRange", 2.5f, 0f, 8f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val i = discoverRangeValue.get()
             if (i < newValue) set(i)
         }
     }.displayable { autoBlockValue.equals("Range") }
-    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla"), "AfterTick").displayable { autoBlockValue.equals("Range") }
+    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla", "Hypixel"), "AfterTick").displayable { autoBlockValue.equals("Range") }
     private val interactAutoBlockValue = BoolValue("InteractAutoBlock", true).displayable { autoBlockValue.equals("Range") }
     private val blockRateValue = IntegerValue("BlockRate", 100, 1, 100).displayable { autoBlockValue.equals("Range") }
 
@@ -120,17 +138,21 @@ class KillAura : Module() {
     // TODO: Divide AAC Opinion into three separated opinions
 
     // Rotations
-    private val rotationModeValue = ListValue("RotationMode", arrayOf("None","Vanilla", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView", "Hypixel", "Hypixel2", "Exhibition", "BackTrack"), "LiquidBounce")
+    private val rotationModeValue = ListValue(
+        "RotationMode",
+        arrayOf("None", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView", "OldMatrix", "NCP"),
+        "LiquidBounce"
+    )
     // TODO: RotationMode Bypass Intave
 
-    private val maxTurnSpeedValue: FloatValue = object : FloatValue("MaxTurnSpeed", 180f, 1f, 360f) {
+    private val maxTurnSpeedValue: FloatValue = object : FloatValue("MaxTurnSpeed", 360f, 1f, 360f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val v = minTurnSpeedValue.get()
             if (v > newValue) set(v)
         }
     }
 
-    private val minTurnSpeedValue: FloatValue = object : FloatValue("MinTurnSpeed", 180f, 1f, 360f) {
+    private val minTurnSpeedValue: FloatValue = object : FloatValue("MinTurnSpeed", 360f, 1f, 360f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val v = maxTurnSpeedValue.get()
             if (v < newValue) set(v)
@@ -151,11 +173,13 @@ class KillAura : Module() {
     private val rotationRevTickValue = IntegerValue("RotationReverseTick", 5, 1, 20).displayable { !rotationModeValue.equals("None") }
     private val keepDirectionValue = BoolValue("KeepDirection", true).displayable { !rotationModeValue.equals("None") }
     private val keepDirectionTickValue = IntegerValue("KeepDirectionTick", 15, 1, 20).displayable { !rotationModeValue.equals("None") }
+    private val backtraceValue = BoolValue("Backtrace", false)
+    private val backtraceMarkValue = BoolValue("BacktraceMark", false).displayable { backtraceValue.get() }
+    private val backtraceTickValue = IntegerValue("BacktraceTick", 2, 1, 10).displayable { backtraceValue.get() }
     private val hitableValue = BoolValue("AlwaysHitable", true).displayable { !rotationModeValue.equals("None") }
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f)
 
     // Predict
-    private val boundingBoxModeValue = ListValue("LockLocation", arrayOf("Head","Auto","Default"), "Auto").displayable { !rotationModeValue.equals("None")}
     private val predictValue = BoolValue("Predict", true).displayable { !rotationModeValue.equals("None") }
 
     private val maxPredictSizeValue: FloatValue = object : FloatValue("MaxPredictSize", 1f, 0.1f, 5f) {
@@ -178,18 +202,18 @@ class KillAura : Module() {
     private val noInventoryAttackValue = ListValue("NoInvAttack", arrayOf("Spoof", "CancelRun", "Off"), "Off")
 
     private val noInventoryDelayValue = IntegerValue("NoInvDelay", 200, 0, 500)
-    private val switchDelayValue = IntegerValue("SwitchDelay", 300, 1, 2000).displayable { targetModeValue.equals("Switch") }
+    private val switchDelayValue = IntegerValue("SwitchDelay", 15, 1, 2000).displayable { targetModeValue.equals("Switch") }
     private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50).displayable { targetModeValue.equals("Multi") }
 
     // Visuals
-    private val markValue = ListValue("Mark", arrayOf("Liquid", "Jello", "Matrix", "Vape", "None"), "Vape")
-    private val matrixRadiusValue = FloatValue("MatrixRadius", 2f, 0.1f, 4f)
-    private val circleValue = BoolValue("Circle", false)
-    private val circleRedValue = IntegerValue("CircleR", 255, 0, 255).displayable { circleValue.get() }
-    private val circleGreenValue = IntegerValue("CircleG", 255, 0, 255).displayable { circleValue.get() }
-    private val circleBlueValue = IntegerValue("CircleB", 255, 0, 255).displayable { circleValue.get() }
+    private val markValue = ListValue("Mark", arrayOf("Liquid", "FDP", "Block", "Jello", "Sims", "Lies", "Circle", "None"), "Jello")
+    private val circleValue = BoolValue("Circle", true)
+    private val circleRedValue = IntegerValue("CircleRed", 255, 0, 255).displayable { circleValue.get() }
+    private val circleGreenValue = IntegerValue("CircleGreen", 255, 0, 255).displayable { circleValue.get() }
+    private val circleBlueValue = IntegerValue("CircleBlue", 255, 0, 255).displayable { circleValue.get() }
     private val circleAlphaValue = IntegerValue("CircleAlpha", 255, 0, 255).displayable { circleValue.get() }
-    private val circleThicknessValue = FloatValue("CircleSize", 2F, 1F, 5F).displayable { circleValue.get() }
+    private val circleThicknessValue = FloatValue("CircleThickness", 2F, 1F, 5F).displayable { circleValue.get() }
+    private val circleRadiusValue = FloatValue("CircleRadius", 1.0F,0.5F, 3.0F).displayable { markValue.equals("Circle") }
 
     /**
      * MODULE
@@ -199,6 +223,8 @@ class KillAura : Module() {
     var target: EntityLivingBase? = null
     private var currentTarget: EntityLivingBase? = null
     private var hitable = false
+    private var lastPacketSent = false
+    private var packetSent = false
     private val prevTargetEntities = mutableListOf<Int>()
     private val discoveredTargets = mutableListOf<EntityLivingBase>()
     private val inRangeDiscoveredTargets = mutableListOf<EntityLivingBase>()
@@ -211,8 +237,6 @@ class KillAura : Module() {
     private var attackDelay = 0L
     private var clicks = 0
 
-    private var packetSent = false
-
     // Container Delay
     private var containerOpen = -1L
 
@@ -223,17 +247,29 @@ class KillAura : Module() {
 
     // Fake block status
     var blockingStatus = false
+    private var espAnimation = 0.0
+    private var isUp = true
 
-    // other
-    private var noC07 = false
+    var strictStrafe = false
 
     val displayBlocking: Boolean
         get() = blockingStatus || (autoBlockValue.equals("Fake") && canFakeBlock)
+
+    private var predictX = 1.0f
+    private var predictY = 1.0f
+    private var predictZ = 1.0f
+
+    private val getAABB: ((Entity) -> AxisAlignedBB) = {
+        var aabb = it.entityBoundingBox
+        aabb = if (predictValue.get()) aabb.offset((it.posX - it.lastTickPosX) * predictX, (it.posY - it.lastTickPosY) * predictY, (it.posZ - it.lastTickPosZ) * predictZ) else aabb
+        aabb
+    }
 
     /**
      * Enable kill aura module
      */
     override fun onEnable() {
+        strictStrafe = false
         mc.thePlayer ?: return
         mc.theWorld ?: return
 
@@ -244,9 +280,11 @@ class KillAura : Module() {
      * Disable kill aura module
      */
     override fun onDisable() {
+        strictStrafe = false
         target = null
         currentTarget = null
         hitable = false
+        packetSent = false
         prevTargetEntities.clear()
         discoveredTargets.clear()
         inRangeDiscoveredTargets.clear()
@@ -254,56 +292,61 @@ class KillAura : Module() {
         clicks = 0
         canSwing = false
         swingTimer.reset()
-        packetSent = false
 
         stopBlocking()
         RotationUtils.setTargetRotationReverse(RotationUtils.serverRotation, 0, 0)
     }
-
-
 
     /**
      * Motion event
      */
     @EventTarget
     fun onMotion(event: MotionEvent) {
-        if (mc.thePlayer.isRiding) {
-            return
-        }
         if (event.eventState == EventState.POST) {
             packetSent = false
         }
+        if (mc.thePlayer.isRiding) {
+            return
+        }
+
         if (attackTimingValue.equals("All") || attackTimingValue.equals("Both") ||
             (attackTimingValue.equals("Pre") && event.eventState == EventState.PRE) ||
-            (attackTimingValue.equals("Post") && event.eventState == EventState.POST)) {
+            (attackTimingValue.equals("Post") && event.eventState == EventState.POST)
+        ) {
             runAttackLoop()
         }
-        if (discoveredTargets.isEmpty()) return
-        val target = this.target?: discoveredTargets.first()
+
+        if (autoBlockValue.equals("Range") && event.eventState == EventState.POST && autoBlockPacketValue.equals("Hypixel")) {
+            if (mc.thePlayer.swingProgressInt == 1) {
+                mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
+            } else if (mc.thePlayer.swingProgressInt == 2) {
+                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.getHeldItem()))
+            }
+        }
 
         if (blockTimingValue.equals("Both") ||
             (blockTimingValue.equals("Pre") && event.eventState == EventState.PRE) ||
-            (blockTimingValue.equals("Post") && event.eventState == EventState.POST)) {
+            (blockTimingValue.equals("Post") && event.eventState == EventState.POST)
+        ) {
+            if (packetSent && noBadPacketsValue.get()) {
+                return
+            }
             // AutoBlock
-            if ((autoBlockValue.equals("Range") || autoBlockValue.equals("NCP")) || autoBlockValue.equals("AAC") && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.equals("AfterAttack")
-                        || discoveredTargets.any { mc.thePlayer.getDistanceToEntityBox(it) > maxRange }) && canBlock) {
-                if (mc.thePlayer.getDistanceToEntityBox(target) < autoBlockRangeValue.get()) {
-                    try {
-                        startBlocking(
-                            target,
-                            interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) <  maxRange)
-                        )
-                    } catch (e: Exception) {
+            if ((autoBlockValue.equals("Range") || autoBlockValue.equals("NCP")) && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.equals("AfterAttack")
+                        || discoveredTargets.any { mc.thePlayer.getDistanceToEntityBox(it) > maxRange }) && canBlock
+            ) {
+                val target = this.target ?: discoveredTargets.first()
+                if (mc.thePlayer.getDistanceToEntityBox(target) <= autoBlockRangeValue.get()) {
+                    startBlocking(
+                        target,
+                        interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange)
+                    )
+                } else {
+                    if (!mc.thePlayer.isBlocking) {
+                        stopBlocking()
                     }
                 }
             }
-
-        }
-        if (event.eventState !== EventState.PRE && autoBlockValue.get().equals("Vulcan", true) && canBlock) {
-            startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
-        }
-        if (target == null) {
-            stopBlocking()
         }
 
         if (event.eventState == EventState.POST) {
@@ -326,7 +369,10 @@ class KillAura : Module() {
      */
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
+        if (cancelRun) return
+        strictStrafe = false
         if (rotationStrafeValue.equals("Off") && !mc.thePlayer.isRiding) {
+            strictStrafe = false
             return
         }
 
@@ -334,6 +380,7 @@ class KillAura : Module() {
         update()
 
         if (strafeOnlyGroundValue.get() && !mc.thePlayer.onGround) {
+            strictStrafe = false
             return
         }
 
@@ -342,37 +389,41 @@ class KillAura : Module() {
         if (discoveredTargets.isNotEmpty() && RotationUtils.targetRotation != null) {
             when (rotationStrafeValue.get().lowercase()) {
                 "strict" -> {
-                    val (yaw) = RotationUtils.targetRotation ?: return
-                    var strafe = event.strafe
-                    var forward = event.forward
-                    val friction = event.friction
+                    if(strictStrafe) {
+                        strictStrafe = false
+                        val (yaw) = RotationUtils.targetRotation ?: return
+                        var strafe = event.strafe
+                        var forward = event.forward
+                        val friction = event.friction
 
-                    var f = strafe * strafe + forward * forward
+                        var f = strafe * strafe + forward * forward
 
-                    if (f >= 1.0E-4F) {
-                        f = MathHelper.sqrt_float(f)
+                        if (f >= 1.0E-4F) {
+                            f = MathHelper.sqrt_float(f)
 
-                        if (f < 1.0F) {
-                            f = 1.0F
+                            if (f < 1.0F) {
+                                f = 1.0F
+                            }
+
+                            f = friction / f
+                            strafe *= f
+                            forward *= f
+
+                            val yawSin = MathHelper.sin((yaw * Math.PI / 180F).toFloat())
+                            val yawCos = MathHelper.cos((yaw * Math.PI / 180F).toFloat())
+
+                            mc.thePlayer.motionX += strafe * yawCos - forward * yawSin
+                            mc.thePlayer.motionZ += forward * yawCos + strafe * yawSin
                         }
-
-                        f = friction / f
-                        strafe *= f
-                        forward *= f
-
-                        val yawSin = MathHelper.sin((yaw * Math.PI / 180F).toFloat())
-                        val yawCos = MathHelper.cos((yaw * Math.PI / 180F).toFloat())
-
-                        mc.thePlayer.motionX += strafe * yawCos - forward * yawSin
-                        mc.thePlayer.motionZ += forward * yawCos + strafe * yawSin
+                        event.cancelEvent()
                     }
-                    event.cancelEvent()
                 }
                 "silent" -> {
-                    // update()
-
-                    RotationUtils.targetRotation.applyStrafeToPlayer(event)
-                    event.cancelEvent()
+                    if(strictStrafe) {
+                        strictStrafe = false
+                        RotationUtils.targetRotation.applyStrafeToPlayer(event)
+                        event.cancelEvent()
+                    }
                 }
             }
         }
@@ -380,7 +431,8 @@ class KillAura : Module() {
 
     fun update() {
         if (cancelRun || (noInventoryAttackValue.equals("CancelRun") && (mc.currentScreen is GuiContainer ||
-                    System.currentTimeMillis() - containerOpen < noInventoryDelayValue.get()))) {
+                    System.currentTimeMillis() - containerOpen < noInventoryDelayValue.get()))
+        ) {
             return
         }
 
@@ -389,14 +441,17 @@ class KillAura : Module() {
 
         if (discoveredTargets.isEmpty()) {
             stopBlocking()
-            noC07 = false
             return
         }
 
         // Target
         currentTarget = target
 
-        if (!targetModeValue.equals("Switch") && (currentTarget != null && EntityUtils.isSelected(currentTarget!!, true))) {
+        if (!targetModeValue.equals("Switch") && (currentTarget != null && EntityUtils.isSelected(
+                currentTarget!!,
+                true
+            ))
+        ) {
             target = currentTarget
         }
     }
@@ -406,6 +461,11 @@ class KillAura : Module() {
      */
     @EventTarget
     fun onUpdate() {
+        if ((!strafeOnlyGroundValue.get() || mc.thePlayer.onGround) && !rotationStrafeValue.equals("Off") && !mc.thePlayer.isRiding) {
+            strictStrafe = true
+        }else {
+            strictStrafe = false
+        }
         if (cancelRun) {
             target = null
             currentTarget = null
@@ -415,13 +475,10 @@ class KillAura : Module() {
             inRangeDiscoveredTargets.clear()
             return
         }
-        if(target == null && autoBlockValue.get().equals("Vulcan", true)){
-            stopBlocking()
-        }
-
 
         if (noInventoryAttackValue.equals("CancelRun") && (mc.currentScreen is GuiContainer ||
-                    System.currentTimeMillis() - containerOpen < noInventoryDelayValue.get())) {
+                    System.currentTimeMillis() - containerOpen < noInventoryDelayValue.get())
+        ) {
             target = null
             currentTarget = null
             hitable = false
@@ -461,12 +518,20 @@ class KillAura : Module() {
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
 
             GL11.glLineWidth(circleThicknessValue.get())
-            GL11.glColor4f(circleRedValue.get().toFloat() / 255.0F, circleGreenValue.get().toFloat() / 255.0F, circleBlueValue.get().toFloat() / 255.0F, circleAlphaValue.get().toFloat() / 255.0F)
+            GL11.glColor4f(
+                circleRedValue.get().toFloat() / 255.0F,
+                circleGreenValue.get().toFloat() / 255.0F,
+                circleBlueValue.get().toFloat() / 255.0F,
+                circleAlphaValue.get().toFloat() / 255.0F
+            )
             GL11.glRotatef(90F, 1F, 0F, 0F)
             GL11.glBegin(GL11.GL_LINE_STRIP)
 
             for (i in 0..360 step 5) { // You can change circle accuracy  (60 - accuracy)
-                GL11.glVertex2f(cos(i * Math.PI / 180.0).toFloat() * rangeValue.get(), (sin(i * Math.PI / 180.0).toFloat() * rangeValue.get()))
+                GL11.glVertex2f(
+                    cos(i * Math.PI / 180.0).toFloat() * rangeValue.get(),
+                    (sin(i * Math.PI / 180.0).toFloat() * rangeValue.get())
+                )
             }
 
             GL11.glEnd()
@@ -493,25 +558,138 @@ class KillAura : Module() {
             attackDelay = getAttackDelay(minCpsValue.get(), maxCpsValue.get())
         }
 
-        if (discoveredTargets.isEmpty()) return
-
         discoveredTargets.forEach {
+            var bb = it.entityBoundingBox
+            val partialTicks = mc.timer.renderPartialTicks
+
+            val x: Double = (it.lastTickPosX + (it.posX - it.lastTickPosX) * partialTicks - mc.renderManager.renderPosX)
+            val y: Double = (it.lastTickPosY + (it.posY - it.lastTickPosY) * partialTicks - mc.renderManager.renderPosY)
+            val z: Double = (it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * partialTicks - mc.renderManager.renderPosZ)
+            bb = AxisAlignedBB(bb.minX - it.posX + x - 0.05, bb.minY - it.posY + y, bb.minZ - it.posZ + z - 0.05, bb.maxX - it.posX + x + 0.05, bb.maxY - it.posY + y + 0.15, bb.maxZ - it.posZ + z + 0.05).offset(-it.posX, -it.posY, -it.posZ).offset(x, y, z)
+
+            val pos = Vec3(bb.minX + (bb.maxX - bb.minX) * 0.5,
+                bb.minY + (bb.maxY - bb.minY) * 0.5,
+                bb.minZ + (bb.maxZ - bb.minZ) * 0.5)
+
             when (markValue.get().lowercase()) {
                 "liquid" -> {
-                    RenderUtils.drawPlatform(it, if (it.hurtTime <= 0) Color(37, 126, 255, 170) else Color(255, 0, 0, 170))
+                    RenderUtils.drawAxisAlignedBB(AxisAlignedBB(bb.minX, bb.maxY + 0.2, bb.minZ, bb.maxX, bb.maxY + 0.26, bb.maxZ),
+                        if (it.hurtTime <= 0) Color(37, 126, 255, 170) else Color(255, 0, 0, 170), false, true, 2f)
                 }
-                "vape" -> {
-                    val bb = it.entityBoundingBox
-                    it.entityBoundingBox = bb.expand(0.2, 0.2, 0.2)
-                    if (LiquidBounce.combatManager.inCombat) RenderUtils.drawEntityBox(it, if (it.hurtTime <= 0) if (it == target) Color.RED else Color.RED else Color.RED, true, true, 1f)
-                    else RenderUtils.drawEntityBox(it, if (it.hurtTime <= 0) if (it == target) Color.PINK else Color.PINK else Color.PINK, true, true, 1f)
-                    it.entityBoundingBox = bb
+                "block" -> {
+                    bb.expand(2.05, 2.05, 2.05).addCoord(0.0, 0.1, 0.0)
+                    RenderUtils.drawAxisAlignedBB(bb, if (it.hurtTime <= 0) if (it == target) Color(255, 0, 0, 170) else Color(255, 0, 0, 170) else Color(255, 0, 0, 170), true, true, 4f)
+                }
+                "fdp" -> {
+                    val drawTime = (System.currentTimeMillis() % 1500).toInt()
+                    val drawMode = drawTime > 750
+                    var drawPercent = drawTime / 750.0
+                    // true when goes up
+                    if (!drawMode) {
+                        drawPercent = 1 - drawPercent
+                    } else {
+                        drawPercent -= 1
+                    }
+                    drawPercent = EaseUtils.easeInOutQuad(drawPercent)
+                    mc.entityRenderer.disableLightmap()
+                    GL11.glPushMatrix()
+                    GL11.glDisable(GL11.GL_TEXTURE_2D)
+                    GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+                    GL11.glEnable(GL11.GL_LINE_SMOOTH)
+                    GL11.glEnable(GL11.GL_BLEND)
+                    GL11.glDisable(GL11.GL_DEPTH_TEST)
+
+                    val radius = ((bb.maxX - bb.minX) + (bb.maxZ - bb.minZ)) * 0.5f
+                    val y = pos.yCoord + (bb.maxY - bb.minY) * drawPercent
+                    mc.entityRenderer.disableLightmap()
+                    GL11.glLineWidth((radius * 8f).toFloat())
+                    GL11.glBegin(GL11.GL_LINE_STRIP)
+                    for (i in 0..360 step 10) {
+                        RenderUtils.glColor(
+                            Color.getHSBColor(
+                                if (i < 180) {
+                                    HUD.rainbowStartValue.get() + (HUD.rainbowStopValue.get() - HUD.rainbowStartValue.get()) * (i / 180f)
+                                } else {
+                                    HUD.rainbowStartValue.get() + (HUD.rainbowStopValue.get() - HUD.rainbowStartValue.get()) * (-(i - 360) / 180f)
+                                }, 0.7f, 1.0f
+                            )
+                        )
+                        GL11.glVertex3d(pos.xCoord - sin(i * Math.PI / 180F) * radius, y, pos.zCoord + cos(i * Math.PI / 180F) * radius)
+                    }
+                    GL11.glEnd()
+
+                    GL11.glEnable(GL11.GL_DEPTH_TEST)
+                    GL11.glDisable(GL11.GL_LINE_SMOOTH)
+                    GL11.glDisable(GL11.GL_BLEND)
+                    GL11.glEnable(GL11.GL_TEXTURE_2D)
+                    GL11.glPopMatrix()
                 }
                 "jello" -> {
+                    val drawTime = (System.currentTimeMillis() % 2000).toInt()
+                    val drawMode=drawTime>1000
+                    var drawPercent=drawTime/1000.0
+                    //true when goes up
+                    if(!drawMode){
+                        drawPercent=1-drawPercent
+                    }else{
+                        drawPercent-=1
+                    }
+                    drawPercent=EaseUtils.easeInOutQuad(drawPercent)
+                    val points = mutableListOf<Vec3>()
+                    val radius=bb.maxX-bb.minX
+                    val height=bb.maxY-bb.minY
+                    var posY = pos.yCoord
+                    if(drawMode){
+                        posY-=0.5
+                    }else{
+                        posY+=0.5
+                    }
+                    for(i in 0..360 step 7){
+                        points.add(Vec3(pos.xCoord - sin(i * Math.PI / 180F) * radius,posY+height*drawPercent,pos.zCoord + cos(i * Math.PI / 180F) * radius))
+                    }
+                    points.add(points[0])
+                    //draw
+                    mc.entityRenderer.disableLightmap()
+                    GL11.glPushMatrix()
+                    GL11.glDisable(GL11.GL_TEXTURE_2D)
+                    GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+                    GL11.glEnable(GL11.GL_LINE_SMOOTH)
+                    GL11.glEnable(GL11.GL_BLEND)
+                    GL11.glDisable(GL11.GL_DEPTH_TEST)
+                    GL11.glBegin(GL11.GL_LINE_STRIP)
+                    val baseMove=(if(drawPercent>0.5){1-drawPercent}else{drawPercent})*2
+                    val min=(height/60)*20*(1-baseMove)*(if(drawMode){-1}else{1})
+                    for(i in 0..20) {
+                        var moveFace=(height/60F)*i*baseMove
+                        if(drawMode){
+                            moveFace=-moveFace
+                        }
+                        val firstPoint=points[0]
+                        GL11.glVertex3d(
+                            firstPoint.xCoord, firstPoint.yCoord - moveFace - min,
+                            firstPoint.zCoord
+                        )
+                        GL11.glColor4f(1F, 1F, 1F, 0.7F*(i/20F))
+                        for (vec3 in points) {
+                            GL11.glVertex3d(
+                                vec3.xCoord, vec3.yCoord - moveFace - min,
+                                vec3.zCoord
+                            )
+                        }
+                        GL11.glColor4f(0F,0F,0F,0F)
+                    }
+                    GL11.glEnd()
+                    GL11.glEnable(GL11.GL_DEPTH_TEST)
+                    GL11.glDisable(GL11.GL_LINE_SMOOTH)
+                    GL11.glDisable(GL11.GL_BLEND)
+                    GL11.glEnable(GL11.GL_TEXTURE_2D)
+                    GL11.glPopMatrix()
+                }
+                "lies" -> {
                     val everyTime = 3000
                     val drawTime = (System.currentTimeMillis() % everyTime).toInt()
-                    val drawMode = drawTime > (everyTime/2)
-                    var drawPercent = drawTime / (everyTime/2.0)
+                    val drawMode = drawTime > (everyTime / 2)
+                    var drawPercent = drawTime / (everyTime / 2.0)
                     // true when goes up
                     if (!drawMode) {
                         drawPercent = 1 - drawPercent
@@ -529,20 +707,30 @@ class KillAura : Module() {
                     GL11.glDisable(GL11.GL_CULL_FACE)
                     GL11.glShadeModel(7425)
                     mc.entityRenderer.disableLightmap()
-
-                    val bb = it.entityBoundingBox
                     val radius = ((bb.maxX - bb.minX) + (bb.maxZ - bb.minZ)) * 0.5f
                     val height = bb.maxY - bb.minY
-                    val x = it.lastTickPosX + (it.posX - it.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
-                    val y = (it.lastTickPosY + (it.posY - it.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY) + height * drawPercent
-                    val z = it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
-                    val eased = (height / 3) * (if (drawPercent > 0.5) { 1 - drawPercent } else { drawPercent }) * (if (drawMode) { -1 } else { 1 })
+                    val y = pos.yCoord  + height * drawPercent
+                    val eased = (height / 3) * (if (drawPercent > 0.5) {
+                        1 - drawPercent
+                    } else {
+                        drawPercent
+                    }) * (if (drawMode) {
+                        -1
+                    } else {
+                        1
+                    })
                     for (i in 5..360 step 5) {
-                        val color = Color(255,255,255).rgb
-                        val x1 = x - sin(i * Math.PI / 180F) * radius
-                        val z1 = z + cos(i * Math.PI / 180F) * radius
-                        val x2 = x - sin((i - 5) * Math.PI / 180F) * radius
-                        val z2 = z + cos((i - 5) * Math.PI / 180F) * radius
+                        val color = Color.getHSBColor(
+                            if (i < 180) {
+                                HUD.rainbowStartValue.get() + (HUD.rainbowStopValue.get() - HUD.rainbowStartValue.get()) * (i / 180f)
+                            } else {
+                                HUD.rainbowStartValue.get() + (HUD.rainbowStopValue.get() - HUD.rainbowStartValue.get()) * (-(i - 360) / 180f)
+                            }, 0.7f, 1.0f
+                        )
+                        val x1 = pos.xCoord - sin(i * Math.PI / 180F) * radius
+                        val z1 = pos.zCoord + cos(i * Math.PI / 180F) * radius
+                        val x2 = pos.xCoord - sin((i - 5) * Math.PI / 180F) * radius
+                        val z2 = pos.zCoord + cos((i - 5) * Math.PI / 180F) * radius
                         GL11.glBegin(GL11.GL_QUADS)
                         RenderUtils.glColor(color, 0f)
                         GL11.glVertex3d(x1, y + eased, z1)
@@ -562,37 +750,43 @@ class KillAura : Module() {
                     GL11.glEnable(GL11.GL_TEXTURE_2D)
                     GL11.glPopMatrix()
                 }
-                "matrix" -> {
-                    GL11.glDisable(3553)
-                    GL11.glEnable(2848)
-                    GL11.glEnable(2881)
-                    GL11.glEnable(2832)
-                    GL11.glEnable(3042)
-                    GL11.glBlendFunc(770, 771)
-                    GL11.glHint(3154, 4354)
-                    GL11.glHint(3155, 4354)
-                    GL11.glHint(3153, 4354)
-                    GL11.glDisable(2929)
-                    GL11.glDepthMask(false)
-                    GL11.glLineWidth(3f)
-                    val target = LiquidBounce.combatManager.target
-                    GL11.glBegin(3)
-                    val x = target!!.lastTickPosX + (target.posX - target.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
-                    val y = target.lastTickPosY + (target.posY - target.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY
-                    val z = target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
-                    val radius = matrixRadiusValue.get()
-                    for (i in 0..360 step 30) {
-                        RenderUtils.glColor(Color.getHSBColor(if (i < 180) { HUD.rainbowStartValue.get() + (HUD.rainbowStopValue.get() - HUD.rainbowStartValue.get()) * (i / 180f) } else { HUD.rainbowStartValue.get() + (HUD.rainbowStopValue.get() - HUD.rainbowStartValue.get()) * (-(i-360) / 180f) }, 0.7f, 1.0f))
-                        GL11.glVertex3d(x - sin(i * Math.PI / 180F) * radius, y, z + cos(i * Math.PI / 180F) * radius)
+                "circle" -> {
+                    if (espAnimation > it.eyeHeight + 0.4 || espAnimation < 0) {
+                        isUp = !isUp
                     }
-                    GL11.glEnd()
-
-                    GL11.glDepthMask(true)
-                    GL11.glEnable(2929)
-                    GL11.glDisable(2848)
-                    GL11.glDisable(2881)
-                    GL11.glEnable(2832)
-                    GL11.glEnable(3553)
+                    if (isUp) {
+                        espAnimation += 0.05 * 60 / Minecraft.getDebugFPS()
+                    } else {
+                        espAnimation -= 0.05 * 60 / Minecraft.getDebugFPS()
+                    }
+                    if (isUp) {
+                        esp(pos, circleRadiusValue.get())
+                    } else {
+                        esp(pos, circleRadiusValue.get())
+                    }
+                }
+                "sims" -> {
+                    val radius = 0.15f
+                    val side = 4
+                    GL11.glPushMatrix()
+                    GL11.glTranslated( pos.xCoord, pos.yCoord + it.height * 1.1, pos.zCoord)
+                    GL11.glRotatef(-it.width, 0.0f, 1.0f, 0.0f)
+                    GL11.glRotatef((mc.thePlayer.ticksExisted + mc.timer.renderPartialTicks) * 5, 0f, 1f, 0f)
+                    RenderUtils.glColor(if (it.hurtTime <= 0) Color(80, 255, 80) else Color(255, 0, 0))
+                    RenderUtils.enableSmoothLine(1.5F)
+                    val c = Cylinder()
+                    GL11.glRotatef(-90.0f, 1.0f, 0.0f, 0.0f)
+                    c.draw(0F, radius, 0.3f, side, 1)
+                    c.drawStyle = 100012
+                    GL11.glTranslated(0.0, 0.0, 0.3)
+                    c.draw(radius, 0f, 0.3f, side, 1)
+                    GL11.glRotatef(90.0f, 0.0f, 0.0f, 1.0f)
+                    GL11.glTranslated(0.0, 0.0, -0.3)
+                    c.draw(0F, radius, 0.3f, side, 1)
+                    GL11.glTranslated(0.0, 0.0, 0.3)
+                    c.draw(radius, 0F, 0.3f, side, 1)
+                    RenderUtils.disableSmoothLine()
+                    GL11.glPopMatrix()
                 }
             }
         }
@@ -611,6 +805,27 @@ class KillAura : Module() {
 //        updateHitable()
 //    }
 
+    private fun esp(pos: Vec3, radius: Float) {
+        GL11.glPushMatrix()
+        GL11.glDisable(3553)
+        Renderer.addSmoothLine(1f)
+        GL11.glDisable(2929)
+        GL11.glDepthMask(false)
+        GL11.glLineWidth(1.0F)
+        GL11.glBegin(3)
+        for (i in 0..360) {
+            val rainbow = Color(Color.HSBtoRGB((mc.thePlayer.ticksExisted / 70.0 + sin(i / 50.0 * 1.75)).toFloat() % 1.0f, 0.7f, 1.0f))
+            GL11.glColor3f(rainbow.red / 255.0f, rainbow.green / 255.0f, rainbow.blue / 255.0f)
+            GL11.glVertex3d(pos.xCoord + radius * cos(i * 6.283185307179586 / 45.0), pos.yCoord + espAnimation, pos.zCoord + radius * sin(i * 6.283185307179586 / 45.0))
+        }
+        GL11.glEnd()
+        GL11.glDepthMask(true)
+        GL11.glEnable(2929)
+        Renderer.removeSmoothLine()
+        GL11.glEnable(3553)
+        GL11.glPopMatrix()
+    }
+
     private fun runAttackLoop() {
         if (clicks <= 0 && canSwing && swingTimer.hasTimePassed(swingDelay)) {
             swingTimer.reset()
@@ -619,9 +834,13 @@ class KillAura : Module() {
             return
         }
 
-        while (clicks > 0) {
-            runAttack()
-            clicks--
+        try {
+            while (clicks > 0) {
+                runAttack()
+                clicks--
+            }
+        } catch (e: java.lang.IllegalStateException) {
+            return
         }
     }
 
@@ -649,7 +868,7 @@ class KillAura : Module() {
                 attackEntity(currentTarget!!)
             } else {
                 inRangeDiscoveredTargets.forEachIndexed { index, entity ->
-                    if (limitedMultiTargetsValue.get() == 0 || index <limitedMultiTargetsValue.get()) {
+                    if (limitedMultiTargetsValue.get() == 0 || index < limitedMultiTargetsValue.get()) {
                         attackEntity(entity)
                     }
                 }
@@ -690,7 +909,11 @@ class KillAura : Module() {
         discoveredTargets.clear()
 
         for (entity in mc.theWorld.loadedEntityList) {
-            if (entity !is EntityLivingBase || !EntityUtils.isSelected(entity, true) || (switchMode && prevTargetEntities.contains(entity.entityId))) {
+            if (entity !is EntityLivingBase || !EntityUtils.isSelected(
+                    entity,
+                    true
+                ) || (switchMode && prevTargetEntities.contains(entity.entityId))
+            ) {
                 continue
             }
 
@@ -716,7 +939,7 @@ class KillAura : Module() {
         }
 
         inRangeDiscoveredTargets.clear()
-        inRangeDiscoveredTargets.addAll(discoveredTargets.filter { mc.thePlayer.getDistanceToEntityBox(it) <getRange(it) })
+        inRangeDiscoveredTargets.addAll(discoveredTargets.filter { mc.thePlayer.getDistanceToEntityBox(it) < getRange(it) })
 
         // Cleanup last targets when no targets found and try again
         if (inRangeDiscoveredTargets.isEmpty() && prevTargetEntities.isNotEmpty()) {
@@ -755,8 +978,12 @@ class KillAura : Module() {
 
     /**
      * Attack [entity]
+     * @throws IllegalStateException when bad packets protection
      */
     private fun attackEntity(entity: EntityLivingBase) {
+        if (packetSent && noBadPacketsValue.get()) {
+            throw java.lang.IllegalStateException("Attack canceled because of bad packets protection")
+        }
         // Call attack event
         val event = AttackEvent(entity)
         LiquidBounce.eventManager.callEvent(event)
@@ -766,8 +993,18 @@ class KillAura : Module() {
 
         // Stop blocking
         if (!autoBlockPacketValue.equals("Vanilla") && (mc.thePlayer.isBlocking || blockingStatus)) {
-            mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
+            mc.netHandler.addToSendQueue(
+                C07PacketPlayerDigging(
+                    C07PacketPlayerDigging.Action.RELEASE_USE_ITEM,
+                    BlockPos.ORIGIN,
+                    EnumFacing.DOWN
+                )
+            )
             blockingStatus = false
+            if (noBadPacketsValue.get()) {
+                packetSent = true
+                throw java.lang.IllegalStateException("Attack canceled because of bad packets protection")
+            }
         }
 
         // Attack target
@@ -788,7 +1025,7 @@ class KillAura : Module() {
         }
 
         // Start blocking after attack
-        if (mc.thePlayer.isBlocking || (autoBlockValue.equals("Range") && canBlock)) {
+        if (mc.thePlayer.isBlocking || ((autoBlockValue.equals("Range") || autoBlockValue.equals("NCP")) && canBlock)) {
             if (autoBlockPacketValue.equals("AfterTick")) {
                 return
             }
@@ -799,10 +1036,6 @@ class KillAura : Module() {
 
             startBlocking(entity, interactAutoBlockValue.get())
         }
-
-        if (!blockingStatus && autoBlockValue.equals("Verus")) {
-            mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
-        }
     }
 
     /**
@@ -812,74 +1045,23 @@ class KillAura : Module() {
         if (rotationModeValue.equals("None")) {
             return true
         }
-        val bb = entity.entityBoundingBox
-        val predictSize = if(predictValue.get()) floatArrayOf(minPredictSizeValue.get(),maxPredictSizeValue.get()) else floatArrayOf(0.0F,0.0F)
-        val predict = doubleArrayOf(
-            (entity.posX - entity.prevPosX) * RandomUtils.nextFloat(predictSize[0], predictSize[1]),
-            (entity.posY - entity.prevPosY) * RandomUtils.nextFloat(predictSize[0], predictSize[1]),
-            (entity.posZ - entity.prevPosZ) * RandomUtils.nextFloat(predictSize[0], predictSize[1]))
-        var boundingBox = when(boundingBoxModeValue.get()) {
-            "Head" -> AxisAlignedBB(max(bb.minX,bb.minX + predict[0]),max(bb.minY,bb.minY + predictSize[1]),max(bb.minZ,bb.minZ + predict[2]),min(bb.maxX,bb.maxX + predict[0]),min(bb.maxY,bb.maxY + predictSize[1]),min(bb.maxZ,bb.maxZ + predict[2]))
-            "Auto" -> bb.offset(predict[0],predict[1],predict[2])
-            else -> entity.entityBoundingBox
-        }
+
         if (predictValue.get()) {
-            boundingBox = boundingBox.offset(
-                (entity.posX - entity.prevPosX) * RandomUtils.nextFloat(minPredictSizeValue.get(), maxPredictSizeValue.get()),
-                (entity.posY - entity.prevPosY) * RandomUtils.nextFloat(minPredictSizeValue.get(), maxPredictSizeValue.get()),
-                (entity.posZ - entity.prevPosZ) * RandomUtils.nextFloat(minPredictSizeValue.get(), maxPredictSizeValue.get())
-            )
+            predictX = RandomUtils.nextFloat(maxPredictSizeValue.get(), minPredictSizeValue.get())
+            predictY = RandomUtils.nextFloat(maxPredictSizeValue.get(), minPredictSizeValue.get())
+            predictZ = RandomUtils.nextFloat(maxPredictSizeValue.get(), minPredictSizeValue.get())
         }
+
+        val boundingBox = if (rotationModeValue.get() == "Test") entity.entityBoundingBox else getAABB(entity)
+
         val rModes = when (rotationModeValue.get()) {
-            "LiquidBounce", "SmoothLiquid" -> "LiquidBounce"
-            "ForceCenter", "SmoothCenter" -> "CenterLine"
+            "LiquidBounce", "SmoothLiquid", "Derp", "NCP" -> "LiquidBounce"
+            "ForceCenter", "SmoothCenter", "OldMatrix", "Spin", "FastSpin" -> "CenterLine"
             "LockView" -> "CenterSimple"
+            "Test" -> "HalfUp"
             else -> "LiquidBounce"
         }
 
-        val (_, directRotation) =
-            RotationUtils.calculateCenter(
-                rModes,
-                randomCenterModeValue.get(),
-                (randomCenRangeValue.get()).toDouble(),
-                boundingBox,
-                predictValue.get() && rotationModeValue.get() != "Test",
-                mc.thePlayer.getDistanceToEntityBox(entity) <= throughWallsRangeValue.get()
-            ) ?: return false
-
-        if (rotationModeValue.get() == "OldMatrix") directRotation.pitch = (89.9).toFloat()
-
-
-        var diffAngle = RotationUtils.getRotationDifference(RotationUtils.serverRotation, directRotation)
-        if (diffAngle <0) diffAngle = -diffAngle
-        if (diffAngle> 180.0) diffAngle = 180.0
-
-        val calculateSpeed = when (rotationSmoothModeValue.get()) {
-            "Custom" -> diffAngle / rotationSmoothValue.get()
-            "Line" -> (diffAngle / 180) * maxTurnSpeedValue.get() + (1 - diffAngle / 180) * minTurnSpeedValue.get()
-            //"Quad" -> Math.pow((diffAngle / 180.0), 2.0) * maxTurnSpeedValue.get() + (1 - Math.pow((diffAngle / 180.0), 2.0)) * minTurnSpeedValue.get()
-            "Quad" -> (diffAngle / 180.0).pow(2.0) * maxTurnSpeedValue.get() + (1 - (diffAngle / 180.0).pow(2.0)) * minTurnSpeedValue.get()
-            "Sine" -> (-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5) * maxTurnSpeedValue.get() + (cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5) * minTurnSpeedValue.get()
-            //"QuadSine" -> Math.pow(-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5, 2.0) * maxTurnSpeedValue.get() + (1 - Math.pow(-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5, 2.0)) * minTurnSpeedValue.get()
-            "QuadSine" -> (-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5).pow(2.0) * maxTurnSpeedValue.get() + (1 - (-cos(
-                diffAngle / 180 * Math.PI
-            ) * 0.5 + 0.5).pow(2.0)) * minTurnSpeedValue.get()
-            else -> 180.0
-        }
-
-        fun getHypixelRotations(vec: Vec3): Rotation {
-            val eyesPos = Vec3(
-                mc.thePlayer.posX, mc.thePlayer.entityBoundingBox.minY +
-                        mc.thePlayer.getEyeHeight(), mc.thePlayer.posZ
-            )
-            val diffX = vec.xCoord - eyesPos.xCoord
-            val diffY = vec.yCoord - eyesPos.yCoord
-            val diffZ = vec.zCoord - eyesPos.zCoord
-            val dist = MathHelper.sqrt_double(diffX * diffX + diffZ * diffZ).toDouble()
-            val yaw = (Math.atan2(diffZ, diffX) * 180.0 / 3.141592653589793).toFloat() - 90.0f
-            val pitch = (-Math.atan2(diffY, dist) * 180.0 / 3.141592653589793).toFloat()
-            return Rotation(yaw, pitch)
-        }
         fun getNCPRotations(vec: Vec3, predict: Boolean): Rotation {
             val eyesPos = Vec3(
                 mc.thePlayer.posX, mc.thePlayer.entityBoundingBox.minY +
@@ -895,47 +1077,65 @@ class KillAura : Module() {
                 (-Math.atan2(diffY, hypotenuse) * 180.0 / 3.141592653589793).toFloat())
         }
 
+        val (_, directRotation) =
+            RotationUtils.calculateCenter(
+                rModes,
+                randomCenterModeValue.get(),
+                (randomCenRangeValue.get()).toDouble(),
+                boundingBox,
+                predictValue.get() && rotationModeValue.get() != "Test",
+                mc.thePlayer.getDistanceToEntityBox(entity) <= throughWallsRangeValue.get()
+            ) ?: return false
+
+        if (rotationModeValue.get() == "OldMatrix") directRotation.pitch = 89.9f
+
+        var diffAngle = RotationUtils.getRotationDifference(RotationUtils.serverRotation, directRotation)
+        if (diffAngle < 0) diffAngle = -diffAngle
+        if (diffAngle > 180.0) diffAngle = 180.0
+
+        val calculateSpeed = when (rotationSmoothModeValue.get()) {
+            "Custom" -> diffAngle / rotationSmoothValue.get()
+            "Line" -> (diffAngle / 360) * maxTurnSpeedValue.get() + (1 - diffAngle / 360) * minTurnSpeedValue.get()
+            //"Quad" -> Math.pow((diffAngle / 180.0), 2.0) * maxTurnSpeedValue.get() + (1 - Math.pow((diffAngle / 180.0), 2.0)) * minTurnSpeedValue.get()
+            "Quad" -> (diffAngle / 360.0).pow(2.0) * maxTurnSpeedValue.get() + (1 - (diffAngle / 360.0).pow(2.0)) * minTurnSpeedValue.get()
+            "Sine" -> (-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5) * maxTurnSpeedValue.get() + (cos(diffAngle / 360 * Math.PI) * 0.5 + 0.5) * minTurnSpeedValue.get()
+            //"QuadSine" -> Math.pow(-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5, 2.0) * maxTurnSpeedValue.get() + (1 - Math.pow(-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5, 2.0)) * minTurnSpeedValue.get()
+            "QuadSine" -> (-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5).pow(2.0) * maxTurnSpeedValue.get() + (1 - (-cos(diffAngle / 180 * Math.PI) * 0.5 + 0.5).pow(2.0)) * minTurnSpeedValue.get()
+            else -> 360.0
+        }
+
         val rotation = when (rotationModeValue.get()) {
-            "LiquidBounce", "ForceCenter" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation,
-                (Math.random() * (maxTurnSpeedValue.get() - minTurnSpeedValue.get()) + minTurnSpeedValue.get()).toFloat())
-            "LockView" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation, (180.0).toFloat())
-            "SmoothCenter", "SmoothLiquid", "OldMatrix" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, directRotation, (calculateSpeed).toFloat())
-            "Hypixel" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, RotationUtils.toRotation(RotationUtils.getCenter(entity.entityBoundingBox),false),(Math.random() * (maxTurnSpeedValue.get() - minTurnSpeedValue.get()) + minTurnSpeedValue.get()).toFloat())
-            "Hypixel2" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, getHypixelRotations(RotationUtils.getCenter(entity.entityBoundingBox)),(Math.random() * (maxTurnSpeedValue.get() - minTurnSpeedValue.get()) + minTurnSpeedValue.get()).toFloat())
-            "Exhibition" ->RotationUtils.limitAngleChange(RotationUtils.serverRotation, getNCPRotations(RotationUtils.getCenter(entity.entityBoundingBox),false),(Math.random() * (maxTurnSpeedValue.get() - minTurnSpeedValue.get()) + minTurnSpeedValue.get()).toFloat())
-            "BackTrack" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation,
-                RotationUtils.otherRotation(boundingBox,RotationUtils.getCenter(entity.entityBoundingBox), predictValue.get(),
-                    mc.thePlayer!!.getDistanceToEntityBox(entity) < throughWallsRangeValue.get(),maxRange), (Math.random() * (maxTurnSpeedValue.get() - minTurnSpeedValue.get()) + minTurnSpeedValue.get()).toFloat())
+            "LiquidBounce", "ForceCenter" -> RotationUtils.limitAngleChange(
+                RotationUtils.serverRotation, directRotation,
+                (Math.random() * (maxTurnSpeedValue.get() - minTurnSpeedValue.get()) + minTurnSpeedValue.get()).toFloat()
+            )
+            "LockView" -> RotationUtils.limitAngleChange(
+                RotationUtils.serverRotation,
+                directRotation,
+                (180.0).toFloat()
+            )
+            "SmoothCenter", "SmoothLiquid", "OldMatrix" -> RotationUtils.limitAngleChange(
+                RotationUtils.serverRotation,
+                directRotation,
+                (calculateSpeed).toFloat()
+            )
+            "Test" -> RotationUtils.limitAngleChange(
+                RotationUtils.serverRotation,
+                directRotation,
+                (calculateSpeed).toFloat()
+            )
+            "NCP" -> RotationUtils.limitAngleChange(RotationUtils.serverRotation, getNCPRotations(RotationUtils.getCenter(entity.entityBoundingBox),false),(Math.random() * (maxTurnSpeedValue.get() - minTurnSpeedValue.get()) + minTurnSpeedValue.get()).toFloat())
             else -> return true
         }
 
-
         if (silentRotationValue.get()) {
-            if (rotationModeValue.get() == "Vanilla") {
-                if (maxTurnSpeedValue.get() <= 0F) RotationUtils.setTargetRotation(RotationUtils.serverRotation)
-                if (predictValue.get())
-                    boundingBox = boundingBox.offset(
-                        (entity.posX - entity.prevPosX) * RandomUtils.nextFloat(minPredictSizeValue.get(), maxPredictSizeValue.get()),
-                        (entity.posY - entity.prevPosY) * RandomUtils.nextFloat(minPredictSizeValue.get(), maxPredictSizeValue.get()),
-                        (entity.posZ - entity.prevPosZ) * RandomUtils.nextFloat(minPredictSizeValue.get(), maxPredictSizeValue.get())
-                    )
-
-                val (_, rotation) = RotationUtils.searchCenter(
-                    boundingBox,
-                    !attackTimer.hasTimePassed(attackDelay / 2),
-                    randomCenterModeValue.get() != "Off",
-                    predictValue.get(),
-                    mc.thePlayer!!.getDistanceToEntityBox(entity) < throughWallsRangeValue.get(),
-                )
-
-                val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation, rotation,
-                    (Math.random() * (maxTurnSpeedValue.get() - minTurnSpeedValue.get()) + minTurnSpeedValue.get()).toFloat())
-
-                RotationUtils.setTargetRotationReverse(limitedRotation, keepDirectionTickValue.get(), rotationRevTickValue.get())
-            } else
-            if (rotationRevTickValue.get()> 0 && rotationRevValue.get()) {
+            if (rotationRevTickValue.get() > 0 && rotationRevValue.get()) {
                 if (keepDirectionValue.get()) {
-                    RotationUtils.setTargetRotationReverse(rotation, keepDirectionTickValue.get(), rotationRevTickValue.get())
+                    RotationUtils.setTargetRotationReverse(
+                        rotation,
+                        keepDirectionTickValue.get(),
+                        rotationRevTickValue.get()
+                    )
                 } else {
                     RotationUtils.setTargetRotationReverse(rotation, 1, rotationRevTickValue.get())
                 }
@@ -971,11 +1171,18 @@ class KillAura : Module() {
         if (raycastValue.get()) {
             val raycastedEntity = RaycastUtils.raycastEntity(reach) {
                 (!livingRaycastValue.get() || it is EntityLivingBase && it !is EntityArmorStand) &&
-                        (EntityUtils.isSelected(it, true) || raycastIgnoredValue.get() || aacValue.get() && mc.theWorld.getEntitiesWithinAABBExcludingEntity(it, it.entityBoundingBox).isNotEmpty())
+                        (EntityUtils.isSelected(
+                            it,
+                            true
+                        ) || raycastIgnoredValue.get() || aacValue.get() && mc.theWorld.getEntitiesWithinAABBExcludingEntity(
+                            it,
+                            it.entityBoundingBox
+                        ).isNotEmpty())
             }
 
             if (raycastValue.get() && raycastedEntity is EntityLivingBase &&
-                !EntityUtils.isFriend(raycastedEntity)) {
+                !EntityUtils.isFriend(raycastedEntity)
+            ) {
                 currentTarget = raycastedEntity
             }
 
@@ -989,13 +1196,15 @@ class KillAura : Module() {
      * Start blocking
      */
     private fun startBlocking(interactEntity: Entity, interact: Boolean) {
-        noC07 = true
-
-        if (autoBlockValue.equals("Range") && mc.thePlayer.getDistanceToEntityBox(interactEntity)> autoBlockRangeValue.get()) {
+        if ((autoBlockValue.equals("Range") || autoBlockValue.equals("NCP")) && mc.thePlayer.getDistanceToEntityBox(interactEntity) > autoBlockRangeValue.get()) {
             return
         }
 
         if (blockingStatus) {
+            return
+        }
+
+        if (packetSent && noBadPacketsValue.get()) {
             return
         }
 
@@ -1010,14 +1219,6 @@ class KillAura : Module() {
             return
         }
 
-        if (autoBlockValue.equals("AAC")) {
-            if (mc.thePlayer.ticksExisted % 2 == 0) {
-                mc.playerController.interactWithEntitySendPacket(mc.thePlayer, target)
-                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
-            }
-            return
-        }
-
         mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
         blockingStatus = true
         packetSent = true
@@ -1028,7 +1229,16 @@ class KillAura : Module() {
      */
     private fun stopBlocking() {
         if (blockingStatus) {
-            mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, if (MovementUtils.isMoving()) BlockPos(-1, -1, -1) else BlockPos.ORIGIN, EnumFacing.DOWN))
+            if (packetSent && noBadPacketsValue.get()) {
+                return
+            }
+            mc.netHandler.addToSendQueue(
+                C07PacketPlayerDigging(
+                    C07PacketPlayerDigging.Action.RELEASE_USE_ITEM,
+                    if (MovementUtils.isMoving()) BlockPos(-1, -1, -1) else BlockPos.ORIGIN,
+                    EnumFacing.DOWN
+                )
+            )
             blockingStatus = false
             packetSent = true
         }
@@ -1064,6 +1274,8 @@ class KillAura : Module() {
      */
     private val cancelRun: Boolean
         get() = mc.thePlayer.isSpectator || !isAlive(mc.thePlayer)
+                || (blinkCheck.get() && LiquidBounce.moduleManager[Blink::class.java]!!.state) || LiquidBounce.moduleManager[FreeCam::class.java]!!.state ||
+                (noScaffValue.get() && LiquidBounce.moduleManager[BlockFly::class.java]!!.state) || (noFlyValue.get() && LiquidBounce.moduleManager[Fly::class.java]!!.state)
 
     /**
      * Check if [entity] is alive
@@ -1084,12 +1296,13 @@ class KillAura : Module() {
         get() = max(rangeValue.get(), throughWallsRangeValue.get())
 
     private fun getRange(entity: Entity) =
-        (if (mc.thePlayer.getDistanceToEntityBox(entity) >= throughWallsRangeValue.get()) rangeValue.get() else throughWallsRangeValue.get())
+        (if (mc.thePlayer.getDistanceToEntityBox(entity) >= throughWallsRangeValue.get()) rangeValue.get() else throughWallsRangeValue.get()) - if (mc.thePlayer.isSprinting) rangeSprintReducementValue.get() else 0F
 
     /**
      * HUD Tag
      */
+
     override val tag: String
-        get() = "${targetModeValue.get()}, ${minCpsValue.get()}-${maxCpsValue.get()}"
+        get() = "${maxCpsValue.get()}-${minCpsValue.get()},${rangeValue.get()},${rotationModeValue.get()}"
+
 }
-//1

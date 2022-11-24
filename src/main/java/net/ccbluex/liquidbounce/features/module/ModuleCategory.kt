@@ -19,12 +19,10 @@ enum class ModuleCategory(val displayName: String, val configName: String, val N
     WORLD("%module.category.world%", "World",  "e"),
     MISC("%module.category.misc%", "Misc", "m"),
     EXPLOIT("%module.category.exploit%", "Exploit", "f"),
-    ADDIT("%module.category.addit%", "Addit", "u"),
-    VISUAL("%module.category.visual%", "Visual", "s");
+    ADDIT("%module.category.addit%", "Addit", "u");
 
-    var namee: String? = null
-    var posX = 0
-    var expanded = false
+    private var posX = 20
+    private var posY = 20
 
     private var scroll = Scroll()
 
@@ -32,23 +30,23 @@ enum class ModuleCategory(val displayName: String, val configName: String, val N
         return scroll
     }
 
-    private var drag = Drag()
-
     open fun getDrag(): Drag {
-        return drag
+        posX = 20 + Main.categoryCount * 100
+        return Drag(posX.toFloat(), posY.toFloat())
     }
-
-    var posY = 20
-
-
-    open fun ModuleCategory(name: String?) {
-        namee = name
-        posX = 40 + Main.categoryCount * 120
-        drag = Drag(posX.toFloat(), posY.toFloat())
-        expanded = true
-        Main.categoryCount++
+    open fun getDragNew(moduleCategory: ModuleCategory): Drag {
+        if (moduleCategory == COMBAT) return Drag(5f, posY.toFloat())
+        else if (moduleCategory == PLAYER) return Drag(125f, posY.toFloat())
+        else if (moduleCategory == MOVEMENT) return Drag(245f, posY.toFloat())
+        else if (moduleCategory == RENDER) return Drag(365f, posY.toFloat())
+        else if (moduleCategory == CLIENT) return Drag(485f, posY.toFloat())
+        else if (moduleCategory == WORLD) return Drag(605f, posY.toFloat())
+        else if (moduleCategory == MISC) return Drag(725f, posY.toFloat())
+        else if (moduleCategory == EXPLOIT) return Drag(845f, posY.toFloat())
+        else if (moduleCategory == ADDIT) return Drag(485f, posY.toFloat() + 70f)
+        else return Drag(0f, 0f)
     }
-    }
+}
 
 enum class NotiInfo(val NotiModule: String){
     COMBAT( "a"),
@@ -59,8 +57,6 @@ enum class NotiInfo(val NotiModule: String){
     WORLD( "e"),
     MISC( "m"),
     EXPLOIT( "f"),
-    ADDIT("u"),
-    VISUAL("s");
 }
 
 

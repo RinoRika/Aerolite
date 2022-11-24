@@ -88,6 +88,7 @@ class Arraylist(
 
     private var x2 = 0
     private var y2 = 0F
+    private var mixer = 0
 
     private var modules = emptyList<Module>()
     val counter = intArrayOf(0)
@@ -167,9 +168,8 @@ class Arraylist(
                     val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
                     if (yPos != realYPos) { module.yPos = realYPos }
                     var arrayY = yPos
-
-
                     val mixerColor = ColorMixer.getMixedColor(-index * mixerDistValue.get() * 10, mixerSecValue.get()).rgb
+                    mixer = mixerColor
                     val rectX = xPos - if (rectMode.equals("right", true)) 5 else 2
                     blur(rectX - backgroundExpand.get(), yPos, if (rectMode.equals("right", true)) -3F else 0F, yPos + textHeight)
                     if(rectblur.equals(true)) {

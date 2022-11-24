@@ -54,9 +54,6 @@ public class AeroliteStyle extends Style {
         if (categoryName.equals(ModuleCategory.ADDIT)) {
             return new Color(211, 123, 77, 175);
         }
-        if (categoryName.equals(ModuleCategory.VISUAL)) {
-            return new Color(3, 199, 199, 175);
-        }
         if (categoryName.equals(ModuleCategory.EXPLOIT)) {
             return new Color(90, 90, 90, 175);
         }

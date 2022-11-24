@@ -31,6 +31,7 @@ public class DrRenderUtils implements Utils {
         worldrenderer.pos((double) x, (double) y, 0.0D).tex((double) (u * f), (double) (v * f1)).endVertex();
         tessellator.draw();
     }
+
     public static void drawGradientRect2(double x, double y, double width, double height, int startColor, int endColor) {
         drawGradientRect(x, y, x + width, y + height, startColor, endColor);
     }

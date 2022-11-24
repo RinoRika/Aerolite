@@ -11,7 +11,7 @@ public class Main{
 
     public static int categoryCount;
 
-    public static boolean reloadModules;
+    public static boolean reloadModules = true;
 
     public static float allowedClickGuiHeight = 300;
 
@@ -23,4 +23,7 @@ public class Main{
         return moduleManager.getModules().stream().filter(m -> m.getCategory() == c).collect(Collectors.toList());
     }
 
+    public static float getAllowedClickGUIHeight() {
+        return allowedClickGuiHeight;
+    }
 }

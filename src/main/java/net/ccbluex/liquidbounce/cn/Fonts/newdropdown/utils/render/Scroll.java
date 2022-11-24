@@ -33,4 +33,7 @@ public class Scroll {
         return scroll;
     }
 
+    public void setMaxScroll(Float maxScroll1) {
+        maxScroll = maxScroll1;
+    }
 }

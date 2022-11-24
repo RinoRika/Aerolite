@@ -147,6 +147,7 @@ public abstract class MixinMinecraft {
         LiquidBounce.INSTANCE.initClient();
     }
 
+
     @Inject(method = "createDisplay", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setTitle(Ljava/lang/String;)V", shift = At.Shift.AFTER))
     private void createDisplay(CallbackInfo callbackInfo) {
         ClientUtils.INSTANCE.setTitle();

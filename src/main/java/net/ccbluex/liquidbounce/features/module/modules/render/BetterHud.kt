@@ -15,7 +15,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import java.awt.Color
 
-@ModuleInfo(name = "BetterHud", category = ModuleCategory.VISUAL)
+@ModuleInfo(name = "BetterHud", category = ModuleCategory.RENDER)
 class BetterHud : Module() {
     private val modeValue = ListValue("bar", arrayOf("Black","Lite", "Off"), "Off")
     private val fontvalue = ListValue("Info", arrayOf("Info", "Off"),"Off")

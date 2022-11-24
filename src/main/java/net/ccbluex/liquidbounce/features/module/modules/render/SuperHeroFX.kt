@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.features.module.modules.visual
+package net.ccbluex.liquidbounce.features.module.modules.render
 
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.EventTarget
@@ -17,7 +17,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.abs
 
-@ModuleInfo(name = "SuperheroFX", category = ModuleCategory.VISUAL)
+@ModuleInfo(name = "SuperheroFX", category = ModuleCategory.RENDER)
 class SuperHeroFX : Module() {
 
     private val textParticles = mutableListOf<FXParticle>()

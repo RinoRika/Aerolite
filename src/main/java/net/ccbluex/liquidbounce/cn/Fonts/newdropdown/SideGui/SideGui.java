@@ -141,6 +141,7 @@ public class SideGui extends GuiPanel {
 
             DrRenderUtils.resetColor();
             Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawCenteredString(category, xVal, y + 15, textColor);
+            Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawCenteredString("Not finished!", xVal, y - 15, textColor);
             seperation += 100;
         }
 

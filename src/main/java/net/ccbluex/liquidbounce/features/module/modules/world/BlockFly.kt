@@ -74,7 +74,8 @@ class BlockFly : Module() {
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
     private val searchValue = BoolValue("Search", true)
     private val downValue = BoolValue("Down", true)
-    private val placeModeValue = ListValue("PlaceTiming", arrayOf("Pre", "Post"), "Post")
+    private val placeModeValue = ListValue("PlaceTiming", arrayOf("Pre", "Post"), "Pre")
+    private val towerPlaceModeValue = ListValue("TowerPlaceTiming", arrayOf("Pre", "Post"), "Post")
 
     // Eagle
     private val eagleValue = ListValue("Eagle", arrayOf("Silent", "Normal", "OFF"), "OFF")
@@ -150,7 +151,8 @@ class BlockFly : Module() {
             "AAC4.4Constant",
             "AAC4Jump",
             "Verus",
-            "NCP"
+            "NCP",
+            "Matrix"
         ), "Jump"
     )
     private val stopWhenBlockAboveValue = BoolValue("StopTowerWhenBlockAbove", true)
@@ -506,7 +508,8 @@ class BlockFly : Module() {
         if (event.eventState == EventState.PRE) update()
 
         // Place block
-        if (placeModeValue.equals(eventState.stateName)) place()
+        if (!towerStatus && placeModeValue.equals(eventState.stateName)) place()
+        if (towerStatus && towerPlaceModeValue.equals(eventState.stateName)) place()
 
         // Reset placeable delay
         if (targetPlace == null && !placeableDelayValue.equals("OFF") && (!placeDelayTower.get() || !towerStatus)) {
@@ -685,6 +688,16 @@ class BlockFly : Module() {
                     fakeJump()
                     mc.thePlayer.motionY = 0.387565
                     mc.timer.timerSpeed = 1.05f
+                }
+            }
+            "matrix" -> {
+                if (mc.thePlayer.onGround) {
+                    fakeJump()
+                    mc.thePlayer.motionY = 0.42
+                } else if (mc.thePlayer.motionY < 0.19145141919180) {
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, truncate(mc.thePlayer.posY), mc.thePlayer.posZ)
+                    mc.thePlayer.onGround = true
+                    mc.thePlayer.motionY = 0.481145141919180
                 }
             }
         }
@@ -884,6 +897,7 @@ class BlockFly : Module() {
         val width = event.scaledResolution.scaledWidth
         val slot = InventoryUtils.findAutoBlockBlock()
         var stack = barrier
+        val w2=(mc.fontRendererObj.getStringWidth(info))
         if (counterDisplayValue.get()) {
             if (slot != -1) {
                 if (mc.thePlayer.inventory.getCurrentItem() != null) {
@@ -900,6 +914,22 @@ class BlockFly : Module() {
                 }
             }
             when (counterModeValue.get().lowercase()) {
+                "fdp" -> {
+                    RenderUtils.drawRoundedCornerRect(
+                        (width - w2 - 20) / 2f,
+                        height * 0.8f - 24f,
+                        (width + w2 + 18) / 2f,
+                        height * 0.8f + 12f,
+                        3f,
+                        Color(43, 45, 48).rgb
+                    )
+                    Fonts.font40.drawCenteredString("▼",width / 2.0f + 2f, height * 0.8f+8f,Color(43,45,48).rgb)
+                    RenderHelper.enableGUIStandardItemLighting()
+                    mc.renderItem.renderItemIntoGUI(stack, width / 2 - 10, (height * 0.8 - 20).toInt())
+                    RenderHelper.disableStandardItemLighting()
+                    Fonts.font40.drawCenteredString(info, width / 2f, height * 0.8f, Color.WHITE.rgb, false)
+                    GlStateManager.popMatrix()
+                }
                 "lbp" -> {
                     GlStateManager.translate(0f, -14f - progress * 4f, 0f)
                     //GL11.glPushMatrix();

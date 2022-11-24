@@ -13,8 +13,10 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.ClickGui;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.*;
+import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.newVer.NewUi;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.novoline.ClickyUI;
 import net.ccbluex.liquidbounce.launch.options.LegacyUiLaunchOption;
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Arraylist;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.FloatValue;
@@ -25,10 +27,11 @@ import net.minecraft.network.play.server.S2EPacketCloseWindow;
 import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
+import java.util.Objects;
 
 @ModuleInfo(name = "ClickGUI", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
 public class ClickGUIModule extends Module {
-    private final ListValue styleValue = new ListValue("Style", new String[] {"Novoline","LiquidBounce", "Null", "Slowly", "Black", "astolfo", "Aerolite", "Neon" ,"Tenacity"}, "Liquidbounce") {
+    private final ListValue styleValue = new ListValue("Style", new String[] {"Novoline","LiquidBounce", "Null", "Slowly", "Black", "astolfo", "Aerolite", "Neon" ,"Tenacity", "LBP"}, "Liquidbounce") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -46,6 +49,7 @@ public class ClickGUIModule extends Module {
     public static final IntegerValue clickHeight = new IntegerValue("TabHeight", 250, 100, 500);
     public static final ListValue colormode = new ListValue("SettingAccent", new String[]{"White", "Color"},"Color");
     public static final BoolValue backback = new BoolValue("BackgroundAccent",true);
+    public static final BoolValue fastRenderValue = new BoolValue("FastRender", true);
 
     public static Color generateColor() {
         return colorRainbow.get() ? ColorUtils.INSTANCE.rainbow() : new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get());
@@ -56,13 +60,15 @@ public class ClickGUIModule extends Module {
         if(styleValue.get().contains("Novoline")) {
             mc.displayGuiScreen(new ClickyUI());
             this.setState(false);
-        } else
-            if (styleValue.get().equals("Tenacity")){
-                mc.displayGuiScreen(new DropdownClickGui());
-                this.setState(false);
-            } else {
-            updateStyle();
-            mc.displayGuiScreen(LegacyUiLaunchOption.clickGui);
+        } else if (styleValue.get().equals("Tenacity")){
+            mc.displayGuiScreen(new DropdownClickGui());
+            this.setState(false);
+        } else if (styleValue.get().equals("LBP")) {
+            mc.displayGuiScreen(new NewUi());
+            this.setState(false);
+        } else {
+                updateStyle();
+                mc.displayGuiScreen(LegacyUiLaunchOption.clickGui);
         }
     }
 

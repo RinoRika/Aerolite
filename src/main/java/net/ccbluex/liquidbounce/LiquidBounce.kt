@@ -44,15 +44,13 @@ object LiquidBounce {
     // Client information
     const val CLIENT_NAME = "Aerolite"
     const val COLORED_NAME = "§b§lAerolite"
-    const val BUILD_CODE = "3.1.3"                       //更完改
-    const val CLIENT_REAL_VERSION = "3.1.3"                            //更完改
+    const val BUILD_CODE = "4.0.0"                       //更完改
+    const val CLIENT_REAL_VERSION = "4.0.0 Pre1"                            //更完改
     const val CLIENT_CREATOR = "AeroTeam"
     const val CLIENT_WEBSITE = "Aerolite.tk"
     const val MINECRAFT_VERSION = "1.8.9"
-    const val REL_SAYING = "114514"
     const val CLIENT_DEV = "Stars&Packet&Crazy"
-    const val DEV_SAYING = "Very good hypixel bypasses"
-    const val IN_Dev_VERSION = false
+  //  const val DEV_SAYING = "Back"
 
     // Tasks
     var FinishChoosingScreen = false

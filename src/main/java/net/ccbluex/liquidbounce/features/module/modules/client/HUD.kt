@@ -11,10 +11,7 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.client.button.AbstractButtonRenderer
-import net.ccbluex.liquidbounce.features.module.modules.client.button.FLineButtonRenderer
-import net.ccbluex.liquidbounce.features.module.modules.client.button.RiseButtonRenderer
-import net.ccbluex.liquidbounce.features.module.modules.client.button.RoundedButtonRenderer
+import net.ccbluex.liquidbounce.features.module.modules.client.button.*
 import net.ccbluex.liquidbounce.features.module.modules.render.button.XiaoChiBounceRenderer
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Text
@@ -60,7 +57,7 @@ object HUD : Module() {
     val arraylistYAxisAnimTypeValue = EaseUtils.getEnumEasingList("ArraylistYAxisAnimType")
     val arraylistYAxisAnimOrderValue = EaseUtils.getEnumEasingOrderList("ArraylistYAxisHotbarAnimOrder")
     val fontEpsilonValue = FloatValue("FontVectorEpsilon", 0.5f, 0f, 1.5f)
-    private val buttonValue = ListValue("Button", arrayOf("FLine", "Rounded", "Rise",  "xiaochibounce", "Vanilla"), "Rise")
+    private val buttonValue = ListValue("Button", arrayOf("FLine", "Better", "Rounded", "Hyperium", "RGB", "Badlion", "Rise", "Xiaochibounce", "Vanilla"), "Rise")
     val thirtyfpsnoworld = BoolValue("30FPSInGui", false)
 
 
@@ -151,9 +148,13 @@ object HUD : Module() {
 
     fun getButtonRenderer(button: GuiButton): AbstractButtonRenderer? {
         return when (buttonValue.get().lowercase()) {
-            "fline" -> FLineButtonRenderer(button)
+            "better" -> BetterButtonRenderer(button)
             "rounded" -> RoundedButtonRenderer(button)
+            "fline" -> FLineButtonRenderer(button)
             "rise" -> RiseButtonRenderer(button)
+            "hyperium" -> HyperiumButtonRenderer(button)
+            "rgb" -> RGBButtonRenderer(button)
+            "badlion" -> BadlionTwoButtonRenderer(button)
             "xiaochibounce" -> XiaoChiBounceRenderer(button)
             else -> null // vanilla or unknown
         }

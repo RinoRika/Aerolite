@@ -1,6 +1,5 @@
 package net.ccbluex.liquidbounce.cn.Fonts.newdropdown.impl;
 
-
 import net.ccbluex.liquidbounce.cn.Fonts.Module.fonts.impl.Fonts;
 import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.WbxMain;
 import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.utils.animations.Animation;
@@ -86,8 +85,6 @@ public class ModuleRect extends Component {
         if (module.getExpanded() || !settingAnimation.isDone()) {
             //绘制下拉列表背景颜色
             DrRenderUtils.drawRect2(x, y + height, width, settingHeight * height, settingRectColor.getRGB());
-
-            boolean hoveringSettingsOrModule = DrRenderUtils.isHovering(x, y, width, (float) (height + (settingHeight * height)), mouseX, mouseY);
 
 
             if (ClickGUIModule.backback.get()) {

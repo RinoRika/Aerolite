@@ -32,9 +32,20 @@ public class Fonts {
     @FontDetails(fontName = "Medium3", fontSize = 100, fileName = "regular.ttf")
     public static GameFontRenderer font100;
 
+    @FontDetails(fontName = "Medium4", fontSize = 72, fileName = "regular.ttf")
+    public static GameFontRenderer font72;
+
     @FontDetails(fontName = "abcdwwqqd", fontSize = 32, fileName = "regular.ttf")
     public static GameFontRenderer font32;
 
+    @FontDetails(fontName = "Medium5", fontSize = 52, fileName = "regular.ttf")
+    public static GameFontRenderer font52;
+
+    @FontDetails(fontName = "abcdwwqqd2352", fontSize = 30, fileName = "regular.ttf")
+    public static GameFontRenderer font30;
+
+    @FontDetails(fontName = "abcdwwqqd1342", fontSize = 30, fileName = "regular.ttf")
+    public static GameFontRenderer font24;
     @FontDetails(fontName = "abcdwwqqds", fontSize = 37, fileName = "PS.ttf")
     public static GameFontRenderer font37;
 

@@ -3,7 +3,7 @@
  None of this code to be reused without my written permission
  Intellectual Rights owned by Alan Wood
  */
-package net.ccbluex.liquidbounce.features.module.modules.visual;
+package net.ccbluex.liquidbounce.features.module.modules.render;
 
 
 import me.stars.vec.EvictingList;
@@ -25,7 +25,7 @@ import net.minecraft.entity.EntityLivingBase;
 
 import java.util.List;
 
-@ModuleInfo(name = "Particles", category = ModuleCategory.VISUAL)
+@ModuleInfo(name = "Particles", category = ModuleCategory.RENDER)
 public final class Particles extends Module {
 
     private final IntegerValue amount = new IntegerValue("Amount", 10, 1, 20);

@@ -564,6 +564,6 @@ public class SettingComponents extends Component {
 
 
     public boolean isClickable(float y) {
-        return y > panelLimitY && y < panelLimitY + 17 + Main.allowedClickGuiHeight;
+        return y > panelLimitY && y < panelLimitY + 17 + Main.getAllowedClickGUIHeight();
     }
 }
