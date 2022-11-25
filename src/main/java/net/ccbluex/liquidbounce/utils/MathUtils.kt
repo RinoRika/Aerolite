@@ -31,6 +31,18 @@ object MathUtils {
         return distanceSq(p, lerp(v, w, (((p[0] - v[0]) * (w[0] - v[0]) + (p[1] - v[1]) * (w[1] - v[1])) / l2).coerceAtMost(1.0).coerceAtLeast(0.0)))
     }
 
+    fun interpolate(oldValue: Double, newValue: Double, interpolationValue: Double): Double {
+        return oldValue + (newValue - oldValue) * interpolationValue
+    }
+
+    fun interpolateFloat(oldValue: Float, newValue: Float, interpolationValue: Double): Float {
+        return interpolate(oldValue.toDouble(), newValue.toDouble(), interpolationValue.toFloat().toDouble()).toFloat()
+    }
+
+    fun interpolateInt(oldValue: Int, newValue: Int, interpolationValue: Double): Int {
+        return interpolate(oldValue.toDouble(), newValue.toDouble(), interpolationValue.toFloat().toDouble()).toInt()
+    }
+
     @JvmStatic
     fun calcCurvePoint(points: Array<Array<Double>>, t: Double): Array<Double> {
         val cpoints = mutableListOf<Array<Double>>()

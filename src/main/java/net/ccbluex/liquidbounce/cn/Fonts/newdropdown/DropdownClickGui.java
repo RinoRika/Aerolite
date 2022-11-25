@@ -24,7 +24,7 @@ public class DropdownClickGui extends GuiScreen {
     private Animation openingAnimation;
     private EaseBackIn fadeAnimation;
     private DecelerateAnimation configHover;
-    private final ResourceLocation hudIcon = new ResourceLocation("liquidbounce/custom_hud_icon.png");
+    private final ResourceLocation hudIcon = new ResourceLocation("aerolite/clickgui/brush.png");
     public static List<MainScreen> categoryPanels;
 
 

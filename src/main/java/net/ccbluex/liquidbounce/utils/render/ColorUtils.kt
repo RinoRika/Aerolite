@@ -6,6 +6,8 @@
 package net.ccbluex.liquidbounce.utils.render
 
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD
+import net.ccbluex.liquidbounce.utils.MathUtils.interpolateFloat
+import net.ccbluex.liquidbounce.utils.MathUtils.interpolateInt
 import net.minecraft.util.ChatAllowedCharacters
 import java.awt.Color
 import java.util.*
@@ -47,7 +49,7 @@ object ColorUtils {
     fun astolfoRainbow(delay: Int, offset: Int, index: Int): Int {
         var rainbowDelay = Math.ceil((System.currentTimeMillis() + (delay * index).toLong()).toDouble()) / offset
         return Color.getHSBColor(if ((360.0.also { rainbowDelay %= it } / 360.0).toFloat()
-                .toDouble() < 0.5) -(rainbowDelay / 360.0).toFloat() else (rainbowDelay / 360.0).toFloat(),
+                 < 0.5) -(rainbowDelay / 360.0).toFloat() else (rainbowDelay / 360.0).toFloat(),
             0.5f,
             1.0f).rgb
     }
@@ -65,8 +67,53 @@ object ColorUtils {
         return String(chars)
     }
 
+    fun interpolateColorsBackAndForth(speed: Int, index: Int, start: Color, end: Color, trueColor: Boolean): Color {
+        var angle = ((System.currentTimeMillis() / speed + index) % 360).toInt()
+        angle = (if (angle >= 180) 360 - angle else angle) * 2
+        return if (trueColor) interpolateColorHue(start, end, angle / 360f) else interpolateColorC(
+            start,
+            end,
+            angle / 360f
+        )
+    }
+
+    fun interpolateColor(color1: Int, color2: Int, amount: Float): Int {
+        var amount = amount
+        amount = Math.min(1f, Math.max(0f, amount))
+        val cColor1 = Color(color1)
+        val cColor2 = Color(color2)
+        return interpolateColorC(cColor1, cColor2, amount).rgb
+    }
+    fun interpolateColorC(color1: Color, color2: Color, amount: Float): Color {
+        var amount1 = amount
+        amount1 = Math.min(1f, Math.max(0f, amount))
+        val amount = amount1.toDouble()
+        return Color(
+            interpolateInt(color1.red, color2.red, amount),
+            interpolateInt(color1.green, color2.green, amount),
+            interpolateInt(color1.blue, color2.blue, amount),
+            interpolateInt(color1.alpha, color2.alpha, amount)
+        )
+    }
+
+    fun interpolateColorHue(color1: Color, color2: Color, amount: Float): Color {
+        var amount1 = amount
+        amount1 = Math.min(1f, Math.max(0f, amount))
+        val amount = amount1.toDouble()
+        val color1HSB = Color.RGBtoHSB(color1.red, color1.green, color1.blue, null)
+        val color2HSB = Color.RGBtoHSB(color2.red, color2.green, color2.blue, null)
+        val resultColor = Color.getHSBColor(
+            interpolateFloat(color1HSB[0], color2HSB[0], amount),
+            interpolateFloat(color1HSB[1], color2HSB[1], amount), interpolateFloat(color1HSB[2], color2HSB[2], amount)
+        )
+        return Color(
+            resultColor.red, resultColor.green, resultColor.blue,
+            interpolateInt(color1.alpha, color2.alpha, amount)
+        )
+    }
+
     @JvmStatic
-    fun LiquidSlowly(time: Long, count: Int, qd: Float, sq: Float): Color? {
+    fun LiquidSlowly(time: Long, count: Int, qd: Float, sq: Float): Color {
         val color = Color(Color.HSBtoRGB((time.toFloat() + count * -3000000f) / 2 / 1.0E9f, qd, sq))
         return Color(color.red / 255.0f * 1, color.green / 255.0f * 1, color.blue / 255.0f * 1, color.alpha / 255.0f)
     }

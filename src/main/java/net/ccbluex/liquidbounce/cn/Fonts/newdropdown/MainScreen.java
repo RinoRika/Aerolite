@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.utils.render.StencilUtil;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.launch.data.legacyui.ClickGUIModule;
-import net.ccbluex.liquidbounce.utils.ClientUtils;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.ScaledResolution;
 
 import java.awt.*;
@@ -119,10 +119,6 @@ public class MainScreen implements Screen {
 
 
         boolean hoveringMods = DrRenderUtils.isHovering(x, y + categoryRectHeight, rectWidth, allowedHeight, mouseX, mouseY);
-
-
-        float scaleAnim = Math.max(1, (float) openingAnimation.getOutput() + .7f);
-        float width = rectWidth;
 
         StencilUtil.initStencilToWrite();
         DrRenderUtils.drawRect2(x - 100, y + categoryRectHeight, rectWidth + 150, allowedHeight, -1);

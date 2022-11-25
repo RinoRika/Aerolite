@@ -1,6 +1,7 @@
 package net.ccbluex.liquidbounce.ui.font.renderer
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.FontsGC
 import net.ccbluex.liquidbounce.ui.font.renderer.glyph.GlyphFontRenderer
 import net.ccbluex.liquidbounce.ui.font.renderer.vector.VectorFontRenderer
@@ -31,18 +32,18 @@ abstract class AbstractAwtFontRender(val font: Font) {
      * @param color of the text
      */
     open fun drawString(text: String, x: Double, y: Double, color: Int) {
-        val scale = 0.25
+            val scale = 0.25
 
-        GL11.glPushMatrix()
-        GL11.glScaled(scale, scale, scale)
-        GL11.glTranslated(x * 2F, y * 2.0 - 2.0, 0.0)
-        RenderUtils.glColor(color)
+            GL11.glPushMatrix()
+            GL11.glScaled(scale, scale, scale)
+            GL11.glTranslated(x * 2F, y * 2.0 - 2.0, 0.0)
+            RenderUtils.glColor(color)
 
-        text.forEach { // this is faster than toCharArray()
-            GL11.glTranslatef(drawChar(it.toString()).toFloat(), 0f, 0f)
-        }
+            text.forEach { // this is faster than toCharArray()
+                GL11.glTranslatef(drawChar(it.toString()).toFloat(), 0f, 0f)
+            }
 
-        GL11.glPopMatrix()
+            GL11.glPopMatrix()
     }
 
     /**

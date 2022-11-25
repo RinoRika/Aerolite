@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.module.modules.client.Interpolate
 import net.ccbluex.liquidbounce.features.module.modules.render.LiquidBouncePlus.ColorMixer
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
@@ -41,7 +42,7 @@ import kotlin.math.roundToInt
 @ElementInfo(name = "Targets")
 open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
-    val modeValue = ListValue("Mode", arrayOf("Aerolite", "AeroliteOld", "FDP", "Bar", "Chill", "Rice", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "ExhibitionOld", "Zamorozka", "Arris", "Tenacity", "TenacityNew", "WaterMelon", "SparklingWater"), "FDP")
+    val modeValue = ListValue("Mode", arrayOf("Aerolite", "Aerolite2", "AeroliteOld", "FDP", "Bar", "Chill", "Rice", "Slowly", "Remix", "Novoline", "Novoline2" , "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "ExhibitionOld", "Zamorozka", "Arris", "Tenacity", "TenacityNew", "WaterMelon", "SparklingWater"), "FDP")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2", "Rise6"), "Rise6")
 
     private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
@@ -137,6 +138,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     var easingHealth = 0F
     var barColor = Color(-1)
     var bgColor = Color(-1)
+    var recorded = false
 
     private var prevTarget: EntityLivingBase? = null
     private var displayPercent = 0f
@@ -161,7 +163,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     private var hpEaseAnimation: Animation? = null
     private var pastHP = 0f
     private var easingHP = 0f
-    private var ease = 0f
         get() {
             if (hpEaseAnimation != null) {
                 field = hpEaseAnimation!!.value.toFloat()
@@ -183,13 +184,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     private var calcScaleY = 0F
     private var calcTranslateX = 0F
     private var calcTranslateY = 0F
-
-    fun updateData(_a: Float, _b: Float, _c: Float, _d: Float) {
-        calcTranslateX = _a
-        calcTranslateY = _b
-        calcScaleX = _c
-        calcScaleY = _d
-    }
 
     private fun getHealth(entity: EntityLivingBase?): Float {
         return entity?.health ?: 0f
@@ -319,7 +313,10 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "arris" -> drawArris(prevTarget!!)
             "tenacity" -> drawTenacity(prevTarget!!)
             "tenacitynew" -> drawTenacityNew(prevTarget!!)
-            "chill" -> drawChill(prevTarget!! as EntityPlayer)
+            "chill" -> {
+                drawChill(prevTarget!! as EntityPlayer)
+                updateData(renderX.toFloat() + calcTranslateX, renderY.toFloat() + calcTranslateY, calcScaleX, calcScaleY)
+            }
             "remix" -> drawRemix(prevTarget!! as EntityPlayer)
             "rice" -> drawRice(prevTarget!!)
             "slowly" -> drawSlowly(prevTarget!!)
@@ -329,11 +326,19 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "exhibitionold" -> drawExhibitionOld(prevTarget!! as EntityPlayer)
             "bar" -> drawBar(prevTarget!!)
             "aerolite" -> drawAerolite(prevTarget!!)
+            "aerolite2" -> drawAerolite2(prevTarget!!)
             "aeroliteold" -> drawAeroliteOld(prevTarget!!)
         }
 
         return getTBorder()
 
+    }
+
+    fun updateData(_a: Float, _b: Float, _c: Float, _d: Float) {
+        calcTranslateX = _a
+        calcTranslateY = _b
+        calcScaleX = _c
+        calcScaleY = _d
     }
 
     private fun drawAerolite(target: EntityLivingBase) {
@@ -1582,49 +1587,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             Color(255, 255, 255).rgb,
             true
         )
-/* 
-        // draw items
-         GlStateManager.resetColor()
-        GL11.glPushMatrix()
-        GL11.glColor4f(1f, 1f, 1f, 1f - getFadeProgress())
-        GlStateManager.enableRescaleNormal()
-        GlStateManager.enableBlend()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        RenderHelper.enableGUIStandardItemLighting()
-
-        val renderItem = mc.renderItem
-
-        var x = 45
-        var y = 28
-
-        for (index in 3 downTo 0) {
-            val stack = entity.inventory.armorInventory[index] ?: continue
-
-            if (stack.item == null)
-                continue
-
-            renderItem.renderItemIntoGUI(stack, x, y)
-            renderItem.renderItemOverlays(mc.fontRendererObj, stack, x, y)
-            RenderUtils.drawExhiEnchants(stack, x.toFloat(), y.toFloat())
-
-            x += 16
-        }
-
-        val mainStack = entity.heldItem
-        if (mainStack != null && mainStack.item != null) {
-            renderItem.renderItemIntoGUI(mainStack, x, y)
-            renderItem.renderItemOverlays(mc.fontRendererObj, mainStack, x, y)
-            RenderUtils.drawExhiEnchants(mainStack, x.toFloat(), y.toFloat())
-        }
-
-        RenderHelper.disableStandardItemLighting()
-        GlStateManager.disableRescaleNormal()
-        GlStateManager.enableAlpha()
-        GlStateManager.disableBlend()
-        GlStateManager.disableLighting()
-        GlStateManager.disableCull()
-        GL11.glPopMatrix()
-         */
     }
 
     private fun drawRice(entity: EntityLivingBase) {
@@ -1922,6 +1884,82 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         RenderUtils.drawRect(40f, yPos + 9, 40 + (target.totalArmorValue / 20F) * additionalWidth, yPos + 13, Color(77, 128, 255).rgb)
     }
 
+    private fun drawAerolite2(target: EntityLivingBase) {
+        val font = Fonts.font40
+        val hurtPercent = target.hurtPercent
+        val yPos = 5 + font.FONT_HEIGHT + 3f
+        val additionalWidth = font.getStringWidth("${target.name} ").coerceAtLeast(100)
+        val additionalWidth2 = 60
+        if ((getHealth(target).roundToInt() / target.maxHealth) <= 1) {
+            if ((getHealth(target).roundToInt() / target.maxHealth) >= 0.7) {
+                val dgc1 = ColorUtils.interpolateColorsBackAndForth(15, 0, Color(80,200,80,255),Color(0,255,0,255), Interpolate.interpolateHue.get())
+                val dgc2 = ColorUtils.interpolateColorsBackAndForth(15, 180, Color(80,200,80,255),Color(0,255,0,255), Interpolate.interpolateHue.get())
+                val dgc3 = ColorMixer.getMixedColor(80,200,80,0,255,0,-25,2)
+                RenderUtils.drawBorder(-1f, -1f, 46f + additionalWidth, 41f, 1f, dgc3.rgb)
+             //   RenderUtils.drawGradientSidewaysNormal(40.0, yPos.toDouble(), 40.0 + (easingHP / target.maxHealth).toInt() * additionalWidth2, yPos.toInt() + 4.0, dgc1.rgb, dgc2.rgb)
+                RenderUtils.drawRect(40f, yPos, 40 + (getHealth(target).roundToInt() / target.maxHealth) * additionalWidth2, yPos + 4, Color.GREEN.rgb)
+            }
+            else if ((getHealth(target).roundToInt() / target.maxHealth) < 0.7 && (getHealth(target).roundToInt() / target.maxHealth) >= 0.4) {
+                val dgc1 = ColorUtils.interpolateColorsBackAndForth(15, 0, Color(200,200,80,255),Color(255,255,0,255), Interpolate.interpolateHue.get())
+                val dgc2 = ColorUtils.interpolateColorsBackAndForth(15, 180, Color(200,200,80,255),Color(255,255,0,255), Interpolate.interpolateHue.get())
+                val dgc3 = ColorMixer.getMixedColor(200,200,80,255,255,0,-25,2)
+                RenderUtils.drawBorder(-1f, -1f, 46f + additionalWidth, 41f, 1f, dgc3.rgb)
+             //   RenderUtils.drawGradientSidewaysNormal(40.0, yPos.toDouble(), 40.0 + (easingHP / target.maxHealth).toInt() * additionalWidth2, yPos.toInt() + 4.0, dgc1.rgb, dgc2.rgb)
+                RenderUtils.drawRect(40f, yPos, 40 + (getHealth(target).roundToInt() / target.maxHealth) * additionalWidth2, yPos + 4, Color.YELLOW.rgb)
+            }
+            else if ((getHealth(target).roundToInt() / target.maxHealth) < 0.4) {
+                val dgc1 = ColorUtils.interpolateColorsBackAndForth(15, 0, Color(200,80,80),Color(255,0,0,255), Interpolate.interpolateHue.get())
+                val dgc2 = ColorUtils.interpolateColorsBackAndForth(15, 180, Color(200,80,80),Color(255,0,0,255), Interpolate.interpolateHue.get())
+                val dgc3 = ColorMixer.getMixedColor(200,80,80,255,0,0,-25,2)
+                RenderUtils.drawBorder(-1f, -1f, 46f + additionalWidth, 41f, 1f, dgc3.rgb)
+              //  RenderUtils.drawGradientSidewaysNormal(40.0, yPos.toDouble(), 40.0 + (easingHP / target.maxHealth).toInt() * additionalWidth2, yPos.toInt() + 4.0, dgc1.rgb, dgc2.rgb)
+                RenderUtils.drawRect(40f, yPos, 40 + (getHealth(target).roundToInt() / target.maxHealth) * additionalWidth2, yPos + 4, Color.RED.rgb)
+            }
+        } else {
+            val dgc1 = ColorUtils.interpolateColorsBackAndForth(15, 0, Color(200,80,80),Color(255,0,0,255), Interpolate.interpolateHue.get())
+            val dgc2 = ColorUtils.interpolateColorsBackAndForth(15, 180, Color(200,80,80),Color(255,0,0,255), Interpolate.interpolateHue.get())
+            val dgc3 = ColorMixer.getMixedColor(200,80,80,255,0,0,-25,2)
+            RenderUtils.drawBorder(-1f, -1f, 46f + additionalWidth, 41f, 1f, dgc3.rgb)
+            RenderUtils.drawRect(40f, yPos, 40 + (getHealth(target).roundToInt() / target.maxHealth) * additionalWidth2, yPos + 4, Color.RED.rgb)
+        }
+        RenderUtils.drawRect(0f, 0f, 46f + additionalWidth, 40f, Color(0, 0, 0, 110).rgb)
+        font.drawString(target.name, 40, 5, Color.WHITE.rgb)
+        GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
+        RenderUtils.drawCircle(40f + additionalWidth - 20f, 20f, 15f, 0, (getHealth(target).roundToInt() * 18).coerceAtMost(360))
+
+        Fonts.font52.drawString(getHealth(target).toInt().toString(), 40f + additionalWidth - 15.5.toInt() - font.getStringWidth(getHealth(target).toInt().toString()), 25f - font.FONT_HEIGHT, Color.WHITE.rgb)
+        RenderUtils.drawRect(40f, yPos + 9, 40 + (target.totalArmorValue / 20F) * additionalWidth, yPos + 13, Color(77, 128, 255).rgb)
+
+        GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
+        RenderUtils.quickDrawHead(target.skin, 5, 4.5.toInt(), 32, 32)
+   //     RenderUtils.drawEntityOnScreen(5,5,16, target)
+        if (shadowValue.get()) {
+            GL11.glTranslated(-renderX, -renderY, 0.0)
+            GL11.glPushMatrix()
+            ShadowUtils.shadow(shadowStrength.get(), {
+                GL11.glPushMatrix()
+                GL11.glTranslated(renderX, renderY, 0.0)
+                if (fadeValue.get()) {
+                    GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
+                    GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
+                }
+                RenderUtils.drawRect(-1F, -1F, 45f + additionalWidth, 41F, ColorUtils.rainbow().rgb)
+                GL11.glPopMatrix()
+            }, {
+                GL11.glPushMatrix()
+                GL11.glTranslated(renderX, renderY, 0.0)
+                if (fadeValue.get()) {
+                    GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
+                    GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
+                }
+                RenderUtils.drawRect(-1F, -1F, 45f + additionalWidth, 41F, ColorUtils.rainbow().rgb)
+                GL11.glPopMatrix()
+            })
+            GL11.glPopMatrix()
+            GL11.glTranslated(renderX, renderY, 0.0)
+        }
+    }
+
     fun getColor(color: Color) = ColorUtils.reAlpha(color, color.alpha / 255F * (1F - getFadeProgress()))
     fun getColor(color: Int) = getColor(Color(color))
 
@@ -1968,6 +2006,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "bar" -> Border(3F, 22F, 115F, 42F)
             "aerolite" -> Border(0F, 0F, 140F, 40F)
             "aeroliteold" -> Border(0F, 0F, 120F, 40F)
+            "aerolite2" -> Border(0F, 0F, 160F, 40F)
             else -> null
         }
     }

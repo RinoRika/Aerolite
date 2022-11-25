@@ -73,7 +73,7 @@ public class GuiMainMenuLLL extends GuiScreen {
         mc.getTextureManager().bindTexture(new ResourceLocation("aerolite/main/game.png"));
         Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width, height);
         GlStateManager.disableAlpha();
-        RenderUtils.drawImage(logoFile, sr.getScaledWidth() / 2 - 25, sr.getScaledHeight() / 2 - 110, 250,250);
+   //     RenderUtils.drawImage(logoFile, sr.getScaledWidth() / 2 - 25, sr.getScaledHeight() / 2 - 110, 250,250);
         GlStateManager.enableAlpha();
         //    GlStateManager.pushMatrix();
         if (useParallax) {

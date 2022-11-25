@@ -50,6 +50,7 @@ object HUD : Module() {
     val rainbowSaturationValue = FloatValue("RainbowSaturation", 0.7f, 0f, 1f)
     val rainbowBrightnessValue = FloatValue("RainbowBrightness", 1f, 0f, 1f)
     val rainbowSpeedValue = IntegerValue("RainbowSpeed", 1500, 500, 7000)
+    val interpolateHue = BoolValue("InterpolateHue", true)
     val arraylistXAxisAnimSpeedValue = IntegerValue("ArraylistXAxisAnimSpeed", 10, 5, 20)
     val arraylistXAxisAnimTypeValue = EaseUtils.getEnumEasingList("ArraylistXAxisAnimType")
     val arraylistXAxisAnimOrderValue = EaseUtils.getEnumEasingOrderList("ArraylistXAxisHotbarAnimOrder")

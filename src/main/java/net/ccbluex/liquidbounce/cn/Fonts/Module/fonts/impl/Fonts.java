@@ -23,6 +23,13 @@ public interface Fonts {
 		final class OXIDE_18 { public static final FontRenderer OXIDE_18 = OXIDE.ofSize(16); private OXIDE_18() {} }
 	}
 
+	interface NORMAL {
+		FontFamily NORMAL = FONT_MANAGER.fontFamily(FontType.NORMAL);
+
+		final class font40 { public static final FontRenderer font40 = NORMAL.ofSize(40); private font40() {} }
+		final class font35 { public static final FontRenderer font35 = NORMAL.ofSize(35); private font35() {} }
+	}
+
 	interface ICONFONT {
 
 		FontFamily ICONFONT = FONT_MANAGER.fontFamily(FontType.ICONFONT);

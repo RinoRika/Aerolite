@@ -2,6 +2,8 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.module.modules.client.HUD
+import net.ccbluex.liquidbounce.features.module.modules.client.Interpolate
 import net.ccbluex.liquidbounce.features.module.modules.render.LiquidBouncePlus.ColorMixer
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
@@ -184,13 +186,15 @@ class Session : Element() {
             Fonts.tc45.drawString("PlayerKills                                ${LiquidBounce.combatManager.getTotalPlayed()}",5F, 64f, Color(textredValue.get(), textgreenValue.get(), textblueValue.get(), 255).rgb)
         }
         if(modeValue.get().equals("Novoline")){
+            val c1 = ColorUtils.interpolateColorsBackAndForth(15,0, Color(0,255,50), Color(50,0,255), Interpolate.interpolateHue.get())
+            val c2 = ColorUtils.interpolateColorsBackAndForth(15,180, Color(0,255,50), Color(50,0,255), Interpolate.interpolateHue.get())
             RenderUtils.drawRoundedCornerRect(0f,0f,170f,80f,4f,Color(0,0,0,100).rgb)
-            RenderUtils.drawRect(0.0, 16.0,170.0,18.0,ColorMixer.getMixedColor(0,255,50,50,0,255,(if (indexfu.get()) -index.get() else index.get()) * mixerDistValue.get() * 10, mixerSecValue.get()).rgb)
+            RenderUtils.drawGradientSidewaysNormal(0.0, 16.0,170.0,18.0, c1.rgb, c2.rgb)
             Fonts.font40.drawCenteredString("Session Info",85f,5f,Color(255,255,255,255).rgb)
-            Fonts.font37.drawString("Play Time:                                   ${HOUR_FORMAT.format(System.currentTimeMillis())}",5f,25f,Color.WHITE.rgb)
-            Fonts.font37.drawString("Games Won:                                     ${LiquidBounce.combatManager.getWin()}",5f,40f,Color.WHITE.rgb)
-            Fonts.font37.drawString("Players Killed:                                   ${LiquidBounce.combatManager.getKillCounts()}",5f,55f,Color.WHITE.rgb)
-            Fonts.font37.drawString("Banned:                                            0",5f,70f,Color.WHITE.rgb)
+            Fonts.font35.drawString("Play Time:                                           ${HOUR_FORMAT.format(System.currentTimeMillis())}",5f,25f,Color.WHITE.rgb)
+            Fonts.font35.drawString("Games Won:                                             ${LiquidBounce.combatManager.getWin()}",5f,40f,Color.WHITE.rgb)
+            Fonts.font35.drawString("Players Killed:                                          ${LiquidBounce.combatManager.getKillCounts()}",5f,55f,Color.WHITE.rgb)
+            Fonts.font35.drawString("Banned:                                                    0",5f,70f,Color.WHITE.rgb)
         }
         return getBorderSize()
     }

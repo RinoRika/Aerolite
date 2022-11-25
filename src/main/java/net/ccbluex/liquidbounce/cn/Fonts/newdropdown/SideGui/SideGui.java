@@ -73,6 +73,8 @@ public class SideGui extends GuiPanel {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks, int alpha) {
+        float y2 = drag.getY();
+      //  net.ccbluex.liquidbounce.ui.font.Fonts.font40.drawCenteredString("Not finished!", 11, y2 + 30, Color.RED.getRGB());
        // if (configPanel.reInit) {
         //    configPanel.initGui();
        //     configPanel.reInit = false;
@@ -141,7 +143,6 @@ public class SideGui extends GuiPanel {
 
             DrRenderUtils.resetColor();
             Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawCenteredString(category, xVal, y + 15, textColor);
-            Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawCenteredString("Not finished!", xVal, y - 15, textColor);
             seperation += 100;
         }
 

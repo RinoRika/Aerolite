@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.module.modules.client.Interpolate
 import net.ccbluex.liquidbounce.features.module.modules.render.LiquidBouncePlus.ColorMixer
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
@@ -186,7 +187,9 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
                 RenderUtils.drawGradientRect(-1, -5, fontRenderer.getStringWidth(displayText) +1, -2,ColorMixer.getMixedColor(1 * mixerDistValue.get(), mixerSecValue.get()).rgb,ColorMixer.getMixedColor((-1) * mixerDistValue.get(), mixerSecValue.get()).rgb)
             }
             "novoline" -> { // really awful
-                RenderUtils.drawGradientRoundedNoAlphaOutline(-4, if (lineValue.get()) -5 else -4, fontRenderer.getStringWidth(displayText) + 4, fontRenderer.FONT_HEIGHT + 2,5,Color(0,255,50,255).rgb,Color(50,0,255,255).rgb,1)
+                val c1 = ColorUtils.interpolateColorsBackAndForth(15,0, Color(0,255,50), Color(50,0,255), Interpolate.interpolateHue.get())
+                val c2 = ColorUtils.interpolateColorsBackAndForth(15,180, Color(0,255,50), Color(50,0,255), Interpolate.interpolateHue.get())
+                RenderUtils.drawGradientRoundedNoAlphaOutline(-4, if (lineValue.get()) -5 else -4, fontRenderer.getStringWidth(displayText) + 4, fontRenderer.FONT_HEIGHT + 2,5,c1.rgb,c2.rgb,1)
             }
         }
 

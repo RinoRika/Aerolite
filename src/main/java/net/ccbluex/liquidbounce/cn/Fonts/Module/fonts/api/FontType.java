@@ -19,7 +19,8 @@ public enum FontType {
 	Tahoma("Tahoma.ttf"),
 	TahomaBold("Tahoma-Bold.ttf"),
 	SFTHIN("SFREGULAR.ttf"),
-	OXIDE("oxide.ttf");
+	OXIDE("oxide.ttf"),
+	NORMAL("regular.ttf");
 
 	private final String fileName;
 

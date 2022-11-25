@@ -43,7 +43,7 @@ enum class ModuleCategory(val displayName: String, val configName: String, val N
         else if (moduleCategory == WORLD) return Drag(605f, posY.toFloat())
         else if (moduleCategory == MISC) return Drag(725f, posY.toFloat())
         else if (moduleCategory == EXPLOIT) return Drag(845f, posY.toFloat())
-        else if (moduleCategory == ADDIT) return Drag(485f, posY.toFloat() + 70f)
+        else if (moduleCategory == ADDIT) return Drag(605f, posY.toFloat() + 320f)
         else return Drag(0f, 0f)
     }
 }
