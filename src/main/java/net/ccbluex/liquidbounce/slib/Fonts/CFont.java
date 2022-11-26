@@ -6,7 +6,7 @@
  */
 package net.ccbluex.liquidbounce.slib.Fonts;
 
-import net.ccbluex.liquidbounce.ui.font.renderer.AbstractAwtFontRender;
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import org.lwjgl.opengl.GL11;
 
@@ -17,21 +17,21 @@ import java.awt.image.BufferedImage;
 public class CFont {
     private final float imgSize = 512.0f;
     public CharData[] charData = new CharData[256];
-    protected AbstractAwtFontRender font;
+    protected AWTFontRenderer font;
     protected boolean antiAlias;
     protected boolean fractionalMetrics;
     protected int fontHeight = -1;
     protected int charOffset = 0;
     protected DynamicTexture tex;
 
-    public CFont(AbstractAwtFontRender font, boolean antiAlias, boolean fractionalMetrics) {
+    public CFont(AWTFontRenderer font, boolean antiAlias, boolean fractionalMetrics) {
         this.font = font;
         this.antiAlias = antiAlias;
         this.fractionalMetrics = fractionalMetrics;
         this.tex = this.setupTexture(font, antiAlias, fractionalMetrics, this.charData);
     }
 
-    protected DynamicTexture setupTexture(AbstractAwtFontRender font, boolean antiAlias, boolean fractionalMetrics, CharData[] chars) {
+    protected DynamicTexture setupTexture(AWTFontRenderer font, boolean antiAlias, boolean fractionalMetrics, CharData[] chars) {
         BufferedImage img = this.generateFontImage(font, antiAlias, fractionalMetrics, chars);
         try {
             return new DynamicTexture(img);
@@ -42,7 +42,7 @@ public class CFont {
         }
     }
 
-    protected BufferedImage generateFontImage(AbstractAwtFontRender font, boolean antiAlias, boolean fractionalMetrics, CharData[] chars) {
+    protected BufferedImage generateFontImage(AWTFontRenderer font, boolean antiAlias, boolean fractionalMetrics, CharData[] chars) {
         int imgSize = 512;
         BufferedImage bufferedImage = new BufferedImage(imgSize, imgSize, 2);
         Graphics2D g = (Graphics2D)bufferedImage.getGraphics();
@@ -157,11 +157,11 @@ public class CFont {
         }
     }
 
-    public AbstractAwtFontRender getFont() {
+    public AWTFontRenderer getFont() {
         return this.font;
     }
 
-    public void setFont(AbstractAwtFontRender font) {
+    public void setFont(AWTFontRenderer font) {
         this.font = font;
         this.tex = this.setupTexture(font, this.antiAlias, this.fractionalMetrics, this.charData);
     }

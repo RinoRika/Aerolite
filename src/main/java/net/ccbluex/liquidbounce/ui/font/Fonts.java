@@ -15,81 +15,81 @@ import java.util.List;
 
 public class Fonts {
 
-    @FontDetails(fontName = "Small", fontSize = 35, fileName = "regular.ttf")
+    @FontDetails(fontName = "Small", fontSize = 19, fileName = "regular.ttf")
     public static GameFontRenderer font35;
 
-    @FontDetails(fontName = "Medium", fontSize = 40, fileName = "regular.ttf")
+    @FontDetails(fontName = "Medium", fontSize = 20, fileName = "regular.ttf")
     public static GameFontRenderer font40;
 
-    @FontDetails(fontName = "Medium2", fontSize = 70, fileName = "regular.ttf")
+    @FontDetails(fontName = "Medium2", fontSize = 35, fileName = "regular.ttf")
     public static GameFontRenderer font70;
 
-    @FontDetails(fontName = "Medium3", fontSize = 100, fileName = "regular.ttf")
+    @FontDetails(fontName = "Medium3", fontSize = 40, fileName = "regular.ttf")
     public static GameFontRenderer font100;
 
-    @FontDetails(fontName = "Medium4", fontSize = 72, fileName = "regular.ttf")
+    @FontDetails(fontName = "Medium4", fontSize = 36, fileName = "regular.ttf")
     public static GameFontRenderer font72;
 
-    @FontDetails(fontName = "abcdwwqqd", fontSize = 32, fileName = "regular.ttf")
+    @FontDetails(fontName = "abcdwwqqd", fontSize = 16, fileName = "regular.ttf")
     public static GameFontRenderer font32;
 
-    @FontDetails(fontName = "Medium5", fontSize = 52, fileName = "regular.ttf")
+    @FontDetails(fontName = "Medium5", fontSize = 26, fileName = "regular.ttf")
     public static GameFontRenderer font52;
 
-    @FontDetails(fontName = "abcdwwqqd2352", fontSize = 30, fileName = "regular.ttf")
+    @FontDetails(fontName = "abcdwwqqd2352", fontSize = 15, fileName = "regular.ttf")
     public static GameFontRenderer font30;
 
-    @FontDetails(fontName = "abcdwwqqd1342", fontSize = 30, fileName = "regular.ttf")
+    @FontDetails(fontName = "abcdwwqqd1342", fontSize = 15, fileName = "regular.ttf")
     public static GameFontRenderer font24;
-    @FontDetails(fontName = "abcdwwqqds", fontSize = 37, fileName = "PS.ttf")
+    @FontDetails(fontName = "abcdwwqqds", fontSize = 19, fileName = "PS.ttf")
     public static GameFontRenderer font37;
 
-    @FontDetails(fontName = "wd1qqds", fontSize = 55, fileName = "mainmenu.ttf")
+    @FontDetails(fontName = "wd1qqds", fontSize = 28, fileName = "mainmenu.ttf")
     public static GameFontRenderer mainmenu;
 
-    @FontDetails(fontName = "iconsnovo", fontSize = 80, fileName = "novoline.ttf")
+    @FontDetails(fontName = "iconsnovo", fontSize = 40, fileName = "novoline.ttf")
     public static GameFontRenderer Nicon80;
 
-    @FontDetails(fontName = "GoogleSans", fontSize = 35, fileName = "GoogleSans.ttf")
+    @FontDetails(fontName = "GoogleSans", fontSize = 18, fileName = "GoogleSans.ttf")
     public static GameFontRenderer gs35;
 
 
-    @FontDetails(fontName = "Jello", fontSize = 35, fileName = "Jello.ttf")
+    @FontDetails(fontName = "Jello", fontSize = 18, fileName = "Jello.ttf")
     public static GameFontRenderer fontJello;
-    @FontDetails(fontName = "GoogleSans", fontSize = 35, fileName = "GoogleSans.ttf")
+    @FontDetails(fontName = "GoogleSans", fontSize = 18, fileName = "GoogleSans.ttf")
     public static GameFontRenderer gs15;
 
-    @FontDetails(fontName = "GoogleSans", fontSize = 40, fileName = "GoogleSans.ttf")
+    @FontDetails(fontName = "GoogleSans", fontSize = 20, fileName = "GoogleSans.ttf")
     public static GameFontRenderer gs40;
 
-    @FontDetails(fontName = "GoogleSans", fontSize = 60, fileName = "GoogleSans.ttf")
+    @FontDetails(fontName = "GoogleSans", fontSize = 30, fileName = "GoogleSans.ttf")
     public static GameFontRenderer gs60;
 
-    @FontDetails(fontName = "PR", fontSize = 35, fileName = "PR.ttf")
+    @FontDetails(fontName = "PR", fontSize = 18, fileName = "PR.ttf")
     public static GameFontRenderer poppinsBold20;
 
-    @FontDetails(fontName = "PS", fontSize = 35, fileName = "PS.ttf")
+    @FontDetails(fontName = "PS", fontSize = 18, fileName = "PS.ttf")
     public static GameFontRenderer poppins16;
 
-    @FontDetails(fontName = "Tenacity", fontSize = 35, fileName = "Tenacity.ttf")
+    @FontDetails(fontName = "Tenacity", fontSize = 18, fileName = "Tenacity.ttf")
     public static GameFontRenderer tc35;
 
-    @FontDetails(fontName = "Tenacity", fontSize = 40, fileName = "Tenacity.ttf")
+    @FontDetails(fontName = "Tenacity", fontSize = 20, fileName = "Tenacity.ttf")
     public static GameFontRenderer tc40;
 
-    @FontDetails(fontName = "Tenacity", fontSize = 45, fileName = "Tenacity.ttf")
+    @FontDetails(fontName = "Tenacity", fontSize = 23, fileName = "Tenacity.ttf")
     public static GameFontRenderer tc45;
 
-    @FontDetails(fontName = "Tenacity", fontSize = 50, fileName = "Tenacity.ttf")
+    @FontDetails(fontName = "Tenacity", fontSize = 25, fileName = "Tenacity.ttf")
     public static GameFontRenderer tc50;
 
-    @FontDetails(fontName = "Icons", fontSize = 40, fileName = "Icon.ttf")
+    @FontDetails(fontName = "Icons", fontSize = 20, fileName = "Icon.ttf")
     public static GameFontRenderer icon30;
 
-    @FontDetails(fontName = "Icons", fontSize = 50, fileName = "Icon.ttf")
+    @FontDetails(fontName = "Icons", fontSize = 25, fileName = "Icon.ttf")
     public static GameFontRenderer icon40;
 
-    @FontDetails(fontName = "Bangers", fontSize = 45, fileName = "Bangers.ttf")
+    @FontDetails(fontName = "Bangers", fontSize = 23, fileName = "Bangers.ttf")
     public static GameFontRenderer fontBangers;
 
     @FontDetails(fontName = "Minecraft Font")

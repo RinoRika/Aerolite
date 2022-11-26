@@ -11,7 +11,7 @@ class RGBButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) {
         var index = 1
         var index2 = 10
         // RenderUtils.drawGradientSidewaysV(
-        RenderUtils.drawGradientSidewaysH(button.xPosition.toDouble(), button.yPosition.toDouble(), button.xPosition + button.width.toDouble(), button.yPosition + button.height.toDouble(), (if(button.hovered) { ColorUtils.hslRainbow( index + 1, indexOffset = 100 * 1) } else { Color(0, 0, 0, 255) }).rgb, (if(button.hovered) { ColorUtils.hslRainbow( index2 + 1, indexOffset = 100 * 1)  } else { Color(0, 0, 0, 255) }).rgb)
-        RenderUtils.drawRect(button.xPosition.toFloat() + 1F , button.yPosition.toFloat() + 1, button.xPosition + button.width.toFloat() - 1, button.yPosition + button.height.toFloat() - 1, Color(0,0,0).rgb)
+        RenderUtils.drawGradientSidewaysH(button.xPosition.toDouble(), button.yPosition.toDouble(), button.xPosition + button.width.toDouble(), button.yPosition + button.height.toDouble(), (if(button.hovered) { ColorUtils.hslRainbow( index + 1, indexOffset = 100 * 1) } else { Color(20,20,20,100) }).rgb, (if(button.hovered) { ColorUtils.hslRainbow( index2 + 1, indexOffset = 100 * 1)  } else { Color(20,20,20,100) }).rgb)
+        RenderUtils.drawRect(button.xPosition.toFloat() + 1F , button.yPosition.toFloat() + 1, button.xPosition + button.width.toFloat() - 1, button.yPosition + button.height.toFloat() - 1, Color(0,0,0, 200).rgb)
     }
 }

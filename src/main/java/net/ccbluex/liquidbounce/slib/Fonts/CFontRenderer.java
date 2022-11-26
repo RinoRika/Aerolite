@@ -7,7 +7,7 @@
 package net.ccbluex.liquidbounce.slib.Fonts;
 
 import net.ccbluex.liquidbounce.slib.RenderUtils;
-import net.ccbluex.liquidbounce.ui.font.renderer.AbstractAwtFontRender;
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import org.lwjgl.opengl.GL11;
@@ -27,7 +27,7 @@ public class CFontRenderer
     protected DynamicTexture texItalic;
     protected DynamicTexture texItalicBold;
 
-    public CFontRenderer(AbstractAwtFontRender font, boolean antiAlias, boolean fractionalMetrics) {
+    public CFontRenderer(AWTFontRenderer font, boolean antiAlias, boolean fractionalMetrics) {
         super(font, antiAlias, fractionalMetrics);
         this.setupMinecraftColorcodes();
         this.setupBoldItalicIDs();
@@ -218,7 +218,7 @@ public class CFontRenderer
     }
 
     @Override
-    public void setFont(AbstractAwtFontRender font) {
+    public void setFont(AWTFontRenderer font) {
         super.setFont(font);
         this.setupBoldItalicIDs();
     }

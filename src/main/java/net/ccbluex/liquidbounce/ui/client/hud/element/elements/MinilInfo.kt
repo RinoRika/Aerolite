@@ -39,7 +39,7 @@ class MinilInfo : Element() {
         val timer= "${h}h ${m}m ${s}s"
 
 
-        RenderUtils.drawRect(0f, -1f, 152f, 96f, Color(10, 10, 10, bgAlphaValue.get()).rgb)
+        RenderUtils.drawRect(0f, 0f, 152f, 96f, Color(10, 10, 10, bgAlphaValue.get()).rgb)
         RenderUtils.drawRect(0f,0f,152f,17f,Color(60,60,60).rgb)
 
 

@@ -146,12 +146,10 @@ class Notification(val title: String, val content: String, val type: NotifyType,
             (width * ((nowTime - displayTime) / (animeTime * 2F + time))).toDouble(), height.toDouble(), ColorUtils.rainbow().rgb, ColorUtils.rainbow(10).rgb)
         Fonts.font37.drawStringWithShadow(title, 27F, 6F, Color.WHITE.rgb)
         Fonts.font32.drawStringWithShadow(content + " (" + displayingTime.toString() + "s)", 27F, 17.3F, Color.WHITE.rgb)
-        RenderUtils.drawFilledCircle(13, 15, 8.5F, Color(0,0,0,70))
+        RenderUtils.drawFilledCircle(14, 16, 8.5F, Color(0,0,0,70))
         Fonts.Nicon80.drawString(string, 4.5f, 8f, Color.WHITE.rgb)
-        RenderUtils.drawCircle(12.7f,15.1f,9.0f, 0, 360)
+
         GlStateManager.resetColor()
-
-
         return false
     }
 }

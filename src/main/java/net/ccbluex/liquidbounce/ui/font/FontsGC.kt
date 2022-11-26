@@ -3,10 +3,10 @@ package net.ccbluex.liquidbounce.ui.font
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.TickEvent
-import net.ccbluex.liquidbounce.ui.font.renderer.AbstractAwtFontRender
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer
 
 object FontsGC : Listenable {
-    private val fontRenderers = mutableListOf<AbstractAwtFontRender>()
+    private val fontRenderers = mutableListOf<AWTFontRenderer>()
 
     private var gcTicks = 0
     const val GC_TICKS = 200
@@ -20,7 +20,7 @@ object FontsGC : Listenable {
         }
     }
 
-    fun register(fontRender: AbstractAwtFontRender) {
+    fun register(fontRender: AWTFontRenderer) {
         fontRenderers.add(fontRender)
     }
 

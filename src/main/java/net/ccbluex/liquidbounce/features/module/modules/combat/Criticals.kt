@@ -34,7 +34,7 @@ class Criticals : Module() {
         "NCP", "NCP2", "Vanilla", "Vulcan", "AntiCheat",
         "Edit", "Hypixel", "Mineland", "Edit2",
         "AACNoGround", "NoGround", "Redesky",
-        "VerusSmart", "MatrixSmart", "Blocksmc", "Minemora", "HVH",
+        "VerusSmart", "MatrixSmart", "Blocksmc", "Minemora", "HVH","HVH2",
         "Motion", "Hover", "Custom"),
         "packet")
     // Other Lists
@@ -144,6 +144,12 @@ class Criticals : Module() {
                 "hvh" -> {
                     sendCriticalPacket(yOffset = 0.05250000001304, ground = false)
                     sendCriticalPacket(yOffset = 0.00150000001304, ground = false)
+                }
+
+                "hvh" -> {
+                    if (mc.thePlayer.onGround) {
+                        mc.thePlayer.motionY += 0.01
+                    }
                 }
 
                 "ncp2" -> {
