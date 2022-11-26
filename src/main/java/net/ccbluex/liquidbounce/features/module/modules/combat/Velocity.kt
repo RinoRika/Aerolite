@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.modules.client.Modules
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
@@ -98,7 +99,7 @@ class Velocity : Module() {
     private var row = 0
 
     override val tag: String
-        get() = "${modeValue.get()} ${horizontalValue.get()}% ${verticalValue.get()}%"
+        get() = if (Modules.showFullTag.get()) "${modeValue.get()},${horizontalValue.get() * 100}% ${verticalValue.get() * 100}%" else "${modeValue.get()}"
 
     override fun onEnable() {
         countingTicks = false

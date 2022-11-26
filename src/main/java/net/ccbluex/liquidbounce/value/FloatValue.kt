@@ -2,13 +2,14 @@ package net.ccbluex.liquidbounce.value
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
+import net.ccbluex.liquidbounce.utils.render.Translate
 
 /**
  * Float value represents a value with a float
  */
 open class FloatValue(name: String, value: Float, val minimum: Float = 0F, val maximum: Float = Float.MAX_VALUE) : Value<Float>(name, value) {
 
-
+    val translate = Translate(0F, 0F)
     fun set(newValue: Number) {
         set(newValue.toFloat())
     }

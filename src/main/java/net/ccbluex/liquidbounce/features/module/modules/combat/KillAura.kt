@@ -1303,6 +1303,6 @@ class KillAura : Module() {
      */
 
     override val tag: String
-        get() = "${maxCpsValue.get()}-${minCpsValue.get()},${rangeValue.get()},${rotationModeValue.get()}"
+        get() =  "${maxCpsValue.get()}-${minCpsValue.get()},${rangeValue.get()}b,${rotationModeValue.get()}"
 
 }

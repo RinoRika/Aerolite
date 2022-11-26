@@ -8,7 +8,7 @@ import kotlin.jvm.internal.Intrinsics
 
 private val <T> Array<T>.length: Int
     get() {
-        TODO("Not yet implemented")
+        return length
     }
 /**
  * List value represents a selectable list of values

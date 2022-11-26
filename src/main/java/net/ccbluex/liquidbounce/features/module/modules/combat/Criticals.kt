@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.modules.client.Modules
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
@@ -587,7 +588,7 @@ class Criticals : Module() {
     }
 
     override val tag: String
-        get() = "${modeValue.get()} ${delayValue.get()}"
+        get() = if (Modules.showFullTag.get()) "${modeValue.get()},${hurtTimeValue.get()},${delayValue.get()}ms" else "${modeValue.get()}"
 
     private fun sendPacket(y: Double = 0.0, ground: Boolean) {
         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + y, mc.thePlayer.posZ, ground))
