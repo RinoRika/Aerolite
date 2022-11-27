@@ -47,12 +47,12 @@ object LiquidBounce {
     const val CLIENT_NAME = "Aerolite"
     const val COLORED_NAME = "§b§lAerolite"
     const val BUILD_CODE = "4.0.0"                       //更完改
-    const val CLIENT_REAL_VERSION = "4.0.0 Pre4"                            //更完改
+    const val CLIENT_REAL_VERSION = "4.0.0 Pre5"                            //更完改
     const val CLIENT_CREATOR = "AeroTeam"
     const val CLIENT_WEBSITE = "Aerolite.tk"
     const val MINECRAFT_VERSION = "1.8.9"
     const val CLIENT_DEV = "Stars&Packet&Crazy&Ry4nnnnn"
-    const val DEV_SAYING = "Ry4nnnnn Edition"
+    const val DEV_SAYING = "Obf?"
 
     // Tasks
     var FinishChoosingScreen = false

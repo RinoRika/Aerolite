@@ -100,6 +100,7 @@ public class GuiMainMenuLLL extends GuiScreen {
             button.draw(startX, (float) this.height / 2.0F + 20.0F, mouseX, mouseY);
         }
 
+        Fonts.font32.drawCenteredString("建议删除你的HUD否则字体会有问题" + LiquidBounce.CLIENT_DEV, (float)this.width / 2.0f, (float)this.height - 24f, Color.WHITE.getRGB());
         Fonts.font32.drawCenteredString("Made with <3 by " + LiquidBounce.CLIENT_DEV, (float)this.width / 2.0f, (float)this.height - 12f, Color.WHITE.getRGB());
 
         renderSwitchButton();
