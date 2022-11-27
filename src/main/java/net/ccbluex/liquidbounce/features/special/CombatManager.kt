@@ -9,7 +9,10 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.S02PacketChat
+import oh.yalan.NativeClass
+import oh.yalan.NativeMethod
 
+@NativeClass
 class CombatManager : Listenable, MinecraftInstance() {
     private val lastAttackTimer = MSTimer()
 

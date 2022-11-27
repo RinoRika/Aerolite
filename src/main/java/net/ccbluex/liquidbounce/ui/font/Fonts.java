@@ -83,6 +83,9 @@ public class Fonts {
     @FontDetails(fontName = "Tenacity", fontSize = 25, fileName = "Tenacity.ttf")
     public static GameFontRenderer tc50;
 
+    @FontDetails(fontName = "Tenacity", fontSize = 50, fileName = "Tenacity.ttf")
+    public static GameFontRenderer tc100;
+
     @FontDetails(fontName = "Icons", fontSize = 20, fileName = "Icon.ttf")
     public static GameFontRenderer icon30;
 

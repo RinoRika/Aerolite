@@ -1,11 +1,13 @@
-package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
+package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.ncp
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.potion.Potion
+import oh.yalan.NativeClass
 
+@NativeClass
 class NCP : SpeedMode("NCP") {
     private val strafeboost = IntegerValue("StrafeBoost", 1, 0, 100)
     private val jumpboost = IntegerValue("JumpBoost", 1, 0, 100)
@@ -20,18 +22,18 @@ class NCP : SpeedMode("NCP") {
                 mc.gameSettings.keyBindJump.pressed = false
                 if (mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
-                    MovementUtils.strafe(0.484f + deSt.toFloat() + getPotionAmplifier())
-                    mc.timer.timerSpeed = 1.066f
+                    MovementUtils.strafe(0.481f + deSt.toFloat() + getPotionAmplifier())
+                    mc.timer.timerSpeed = 1.07f
                     mc.thePlayer.jumpMovementFactor = 0.02f
                 }
-                mc.timer.timerSpeed = 1.06f
-                MovementUtils.strafe()
+                mc.timer.timerSpeed = 1.05f
+                MovementUtils.strafe(MovementUtils.getSpeed() + 0.1f + deSt.toFloat() + getPotionAmplifier())
             }
             if (MovementUtils.isOnGround(0.2)) {
-                mc.timer.timerSpeed = 1.16f
+                mc.timer.timerSpeed = 1.14f
             }
-            if (MovementUtils.isOnGround(0.41)) {
-                mc.timer.timerSpeed = 1.1f
+            if (MovementUtils.isOnGround(0.4)) {
+                mc.timer.timerSpeed = 1.05f
             }
             if (mc.thePlayer.fallDistance > 0.7) {
                 mc.thePlayer.jumpMovementFactor = 0.02f + deJu.toFloat()
@@ -42,8 +44,7 @@ class NCP : SpeedMode("NCP") {
     private fun getPotionAmplifier(): Float {
         if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
             return 0.06f + (boostCount.get() * 0.01f)
-        }
-        return 0.001f
+        } else return 0.0f
     }
 
     override fun onDisable() {

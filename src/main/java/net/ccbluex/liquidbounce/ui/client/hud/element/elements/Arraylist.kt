@@ -24,6 +24,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.ShadowUtils
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.renderer.GlStateManager
+import oh.yalan.NativeClass
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
@@ -32,6 +33,7 @@ import java.awt.Color
  *
  * Shows a list of enabled modules
  */
+@NativeClass
 @ElementInfo(name = "Arraylist", blur = true)
 class Arraylist(
     x: Double = 1.0,

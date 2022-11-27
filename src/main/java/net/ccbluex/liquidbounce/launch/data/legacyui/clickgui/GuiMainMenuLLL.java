@@ -14,6 +14,7 @@ import net.minecraft.client.gui.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.GuiModList;
+import oh.yalan.NativeClass;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -22,6 +23,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+@NativeClass
 public class GuiMainMenuLLL extends GuiScreen {
     public ArrayList<Button> butt = new ArrayList<Button>();
     ScaledResolution sr;

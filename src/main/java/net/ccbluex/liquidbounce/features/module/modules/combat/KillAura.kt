@@ -36,6 +36,7 @@ import net.minecraft.network.play.client.*
 import net.minecraft.potion.Potion
 import net.minecraft.util.*
 import net.minecraft.world.WorldSettings
+import oh.yalan.NativeClass
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.Cylinder
@@ -46,6 +47,7 @@ import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.sin
 
+@NativeClass
 @ModuleInfo(name = "Aura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_R)
 class KillAura : Module() {
     /**

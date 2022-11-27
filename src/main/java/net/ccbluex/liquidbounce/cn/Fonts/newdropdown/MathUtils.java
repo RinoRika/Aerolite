@@ -1,7 +1,10 @@
 package net.ccbluex.liquidbounce.cn.Fonts.newdropdown;
 
+import oh.yalan.NativeClass;
+
 import java.math.BigDecimal;
 
+@NativeClass
 public final class MathUtils {
     public static double round(final double value, final double inc) {
         if (inc == 0.0) return value;

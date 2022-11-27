@@ -30,6 +30,7 @@ import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
+import oh.yalan.NativeClass
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -39,6 +40,7 @@ import java.util.*
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
+@NativeClass
 @ElementInfo(name = "Targets")
 open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
@@ -55,6 +57,8 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     val shadowValue = BoolValue("Shadow", false)
     val shadowStrength = FloatValue("Shadow-Strength", 1F, 0.01F, 40F).displayable { shadowValue.get() }
     val shadowColorMode = ListValue("Shadow-Color", arrayOf("Background", "Custom", "Bar"), "Background").displayable { shadowValue.get() }
+    private val shadowX = FloatValue("ShadowX", 0f, 0f, 300f)
+    private val shadowY = FloatValue("ShadowY", 0f, 0f, 60f)
 
     val shadowColorRedValue = IntegerValue("Shadow-Red", 0, 0, 255).displayable { shadowValue.get() && shadowColorMode.get().equals("custom", true) }
     val shadowColorGreenValue = IntegerValue("Shadow-Green", 111, 0, 255).displayable { shadowValue.get() && shadowColorMode.get().equals("custom", true) }
@@ -1927,7 +1931,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
         RenderUtils.drawCircle(40f + additionalWidth - 20f, 20f, 15f, 0, (getHealth(target).roundToInt() * 18).coerceAtMost(360))
 
-        Fonts.font52.drawString(getHealth(target).toInt().toString(), 40f + additionalWidth - 15.5.toInt() - font.getStringWidth(getHealth(target).toInt().toString()), 25f - font.FONT_HEIGHT, Color.WHITE.rgb)
+        Fonts.font52.drawString(getHealth(target).toInt().toString(), 40f + additionalWidth - 16.5f - font.getStringWidth(getHealth(target).toInt().toString()), 26f - font.FONT_HEIGHT, Color.WHITE.rgb)
         RenderUtils.drawRect(40f, yPos + 9, 40 + (target.totalArmorValue / 20F) * additionalWidth, yPos + 13, Color(77, 128, 255).rgb)
 
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
@@ -1943,7 +1947,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
                     GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
                     GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
                 }
-                RenderUtils.drawRect(-1F, -1F, 45f + additionalWidth, 41F, ColorUtils.rainbow().rgb)
+                RenderUtils.drawRect(-1F + shadowX.get(), -1F + shadowY.get(), 45f + additionalWidth + shadowX.get(), 41F + shadowY.get(), ColorUtils.rainbow().rgb)
                 GL11.glPopMatrix()
             }, {
                 GL11.glPushMatrix()
@@ -1952,7 +1956,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
                     GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
                     GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
                 }
-                RenderUtils.drawRect(-1F, -1F, 45f + additionalWidth, 41F, ColorUtils.rainbow().rgb)
+                RenderUtils.drawRect(-1F + shadowX.get(), -1F + shadowY.get(), 45f + additionalWidth + shadowX.get(), 41F + shadowY.get(), ColorUtils.rainbow().rgb)
                 GL11.glPopMatrix()
             })
             GL11.glPopMatrix()

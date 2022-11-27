@@ -17,10 +17,12 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import oh.yalan.NativeClass
 import java.awt.Color
 
 
 // Session Info Reloaded by Stars
+@NativeClass
 @ElementInfo(name = "Session")
 class Session : Element() {
     private val modeValue = ListValue("Mode", arrayOf("Normal", "Hreith", "NightSense","Tenacity", "Novoline"), "Normal")
@@ -191,11 +193,11 @@ class Session : Element() {
             RenderUtils.drawRoundedCornerRect(0f,0f,170f,80f,4f,Color(0,0,0,100).rgb)
             RenderUtils.drawGradientSidewaysNormal(0.0, 16.0,170.0,18.0, c1.rgb, c2.rgb)
             Fonts.font40.drawCenteredString("Session Info",85f,5f,Color(255,255,255,255).rgb)
-            Fonts.font35.drawString("Play Time:                                           ${HOUR_FORMAT.format(System.currentTimeMillis())}",5f,25f,Color.WHITE.rgb)
-            Fonts.font35.drawString("Games Won:                                             ${LiquidBounce.combatManager.getWin()}",5f,40f,Color.WHITE.rgb)
-            Fonts.font35.drawString("Players Killed:                                          ${LiquidBounce.combatManager.getKillCounts()}",5f,55f,Color.WHITE.rgb)
-            Fonts.font35.drawString("Banned:                                                    0",5f,70f,Color.WHITE.rgb)
-        }
+            Fonts.font35.drawString("Play Time:                                      ${HOUR_FORMAT.format(System.currentTimeMillis())}",5f,25f,Color.WHITE.rgb)
+            Fonts.font35.drawString("Games Won:                                         ${LiquidBounce.combatManager.getWin()}",5f,40f,Color.WHITE.rgb)
+            Fonts.font35.drawString("Players Killed:                                      ${LiquidBounce.combatManager.getKillCounts()}",5f,55f,Color.WHITE.rgb)
+            Fonts.font35.drawString("Banned:                                                0",5f,70f,Color.WHITE.rgb)
+}
         return getBorderSize()
     }
 

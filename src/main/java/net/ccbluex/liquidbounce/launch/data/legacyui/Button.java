@@ -3,8 +3,11 @@ package net.ccbluex.liquidbounce.launch.data.legacyui;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.GuiMainMenuLLL;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
+import oh.yalan.NativeClass;
 
 import java.awt.*;
+
+@NativeClass
 public class Button {
     public GuiMainMenuLLL parent;
     public String icon;

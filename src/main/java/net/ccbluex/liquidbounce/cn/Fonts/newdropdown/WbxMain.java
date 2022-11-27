@@ -5,7 +5,9 @@ package net.ccbluex.liquidbounce.cn.Fonts.newdropdown;
 import net.ccbluex.liquidbounce.cn.Fonts.Module.fonts.api.FontManager;
 import net.ccbluex.liquidbounce.cn.Fonts.Module.fonts.impl.SimpleFontManager;
 import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.SideGui.SideGui;
+import oh.yalan.NativeClass;
 
+@NativeClass
 public class WbxMain {
     public static String Name = "Aerolite";
     public static String version = "";

@@ -28,10 +28,12 @@ import net.minecraft.network.play.client.C0FPacketConfirmTransaction
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.util.BlockPos
 import net.minecraft.util.MathHelper
+import oh.yalan.NativeClass
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
+@NativeClass
 @ModuleInfo(name = "Velocity", category = ModuleCategory.COMBAT)
 class Velocity : Module() {
 

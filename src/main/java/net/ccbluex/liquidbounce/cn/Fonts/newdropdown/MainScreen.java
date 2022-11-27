@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.launch.data.legacyui.ClickGUIModule;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.ScaledResolution;
+import oh.yalan.NativeClass;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+@NativeClass
 public class MainScreen implements Screen {
 
     private final ModuleCategory category;

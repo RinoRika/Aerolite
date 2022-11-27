@@ -22,9 +22,11 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.minecraft.entity.EntityLivingBase;
+import oh.yalan.NativeClass;
 
 import java.util.List;
 
+@NativeClass
 @ModuleInfo(name = "Particles", category = ModuleCategory.RENDER)
 public final class Particles extends Module {
 

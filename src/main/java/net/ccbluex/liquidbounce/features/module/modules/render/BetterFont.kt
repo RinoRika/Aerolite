@@ -8,5 +8,5 @@ import net.ccbluex.liquidbounce.value.FontValue
 
 @ModuleInfo(name = "BetterFont", category = ModuleCategory.RENDER)
 object BetterFont : Module() {
-    val fontValue = FontValue("Font", Fonts.font35)
+ //   val fontValue = FontValue("Font", Fonts.font35)
 }

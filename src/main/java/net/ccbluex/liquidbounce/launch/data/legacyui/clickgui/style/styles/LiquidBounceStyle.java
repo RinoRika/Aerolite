@@ -40,8 +40,8 @@ public class LiquidBounceStyle extends Style {
     @Override
     public void drawPanel(int mouseX, int mouseY, Panel panel) {
         RenderUtils.drawBorderedRect((float) panel.getX() - (panel.getScrollbar() ? 4 : 0), (float) panel.getY(), (float) panel.getX() + panel.getWidth(), (float) panel.getY() + 19 + panel.getFade(), 1F, new Color(255, 255, 255, 90).getRGB(), Integer.MIN_VALUE);
-        float textWidth = Fonts.font35.getStringWidth("§f" + StringUtils.stripControlCodes(panel.getName()));
-        Fonts.font35.drawString("§f" + panel.getName(), (int) (panel.getX() - (textWidth - 100.0F) / 2F), panel.getY() + 7, -16777216);
+        float textWidth = Fonts.font35.getStringWidth("§f     " + StringUtils.stripControlCodes(panel.getName()));
+        Fonts.font35.drawString("§f     " + panel.getName(), (int) (panel.getX() - (textWidth - 100.0F) / 2F), panel.getY() + 7, -16777216);
 
         if(panel.getScrollbar() && panel.getFade() > 0) {
             RenderUtils.drawRect(panel.getX() - 2, panel.getY() + 21, panel.getX(), panel.getY() + 16 + panel.getFade(), Integer.MAX_VALUE);

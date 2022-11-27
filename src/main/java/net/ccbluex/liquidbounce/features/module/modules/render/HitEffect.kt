@@ -19,7 +19,9 @@ import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S2CPacketSpawnGlobalEntity
 import net.minecraft.util.EnumParticleTypes
 import net.minecraft.util.ResourceLocation
+import oh.yalan.NativeClass
 
+@NativeClass
 @ModuleInfo(name = "HitEffect", category = ModuleCategory.RENDER)
 class HitEffect : Module() {
 

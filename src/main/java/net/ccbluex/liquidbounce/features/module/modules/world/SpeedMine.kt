@@ -11,7 +11,9 @@ import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
+import oh.yalan.NativeClass
 
+@NativeClass
 @ModuleInfo("SpeedMine", ModuleCategory.WORLD)
 class SpeedMine : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Hypixel", "Packet", "CustomPacket", "Instant"),"Hypixel")

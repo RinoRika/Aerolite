@@ -36,21 +36,23 @@ import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
+import oh.yalan.NativeClass
 import org.lwjgl.opengl.Display
+import javax.swing.JOptionPane
 
-
+@NativeClass
 object LiquidBounce {
 
     // Client information
     const val CLIENT_NAME = "Aerolite"
     const val COLORED_NAME = "§b§lAerolite"
-    const val BUILD_CODE = "4.0.0"                                          //TODO:更完改
-    const val CLIENT_REAL_VERSION = "4.0.0 Pre4"                            //TODO"更完改
+    const val BUILD_CODE = "4.0.0"                       //更完改
+    const val CLIENT_REAL_VERSION = "4.0.0 Pre4"                            //更完改
     const val CLIENT_CREATOR = "AeroTeam"
     const val CLIENT_WEBSITE = "Aerolite.tk"
     const val MINECRAFT_VERSION = "1.8.9"
-    const val CLIENT_DEV = "Stars&Packet&Crazy"
-  //  const val DEV_SAYING = "Back"
+    const val CLIENT_DEV = "Stars&Packet&Crazy&Ry4nnnnn"
+    const val DEV_SAYING = "Ry4nnnnn Edition"
 
     // Tasks
     var FinishChoosingScreen = false

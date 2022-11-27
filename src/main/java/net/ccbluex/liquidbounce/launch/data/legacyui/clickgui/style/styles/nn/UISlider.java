@@ -7,10 +7,12 @@ import net.ccbluex.liquidbounce.value.FloatValue;
 import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import oh.yalan.NativeClass;
 import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 
+@NativeClass
 public class UISlider {
 
     FloatValue value;

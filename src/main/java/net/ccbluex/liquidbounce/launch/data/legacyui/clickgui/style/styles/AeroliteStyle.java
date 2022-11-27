@@ -22,12 +22,14 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
+import oh.yalan.NativeClass;
 import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.math.BigDecimal;
 import java.util.List;
 
+@NativeClass
 public class AeroliteStyle extends Style {
     private boolean mouseDown;
     private boolean rightMouseDown;

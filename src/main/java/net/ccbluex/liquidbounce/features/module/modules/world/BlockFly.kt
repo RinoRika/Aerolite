@@ -41,12 +41,14 @@ import net.minecraft.network.play.client.*
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.stats.StatList
 import net.minecraft.util.*
+import oh.yalan.NativeClass
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.security.SecureRandom
 import kotlin.math.*
 
+@NativeClass
 @ModuleInfo(name = "BlockFly", category = ModuleCategory.WORLD, keyBind = Keyboard.KEY_G)
 class BlockFly : Module() {
 

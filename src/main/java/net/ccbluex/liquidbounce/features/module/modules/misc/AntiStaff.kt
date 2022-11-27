@@ -15,7 +15,9 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.ccbluex.liquidbounce.value.TextValue
 import net.minecraft.network.play.server.S14PacketEntity
 import net.minecraft.network.play.server.S1DPacketEntityEffect
+import oh.yalan.NativeClass
 
+@NativeClass
 @ModuleInfo(name = "AntiStaff", category = ModuleCategory.MISC)
 class AntiStaff : Module() {
 

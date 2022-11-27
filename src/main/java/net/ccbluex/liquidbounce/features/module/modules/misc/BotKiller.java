@@ -24,6 +24,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S0BPacketAnimation;
 import net.minecraft.network.play.server.S14PacketEntity;
 import net.minecraft.network.play.server.S38PacketPlayerListItem;
+import oh.yalan.NativeClass;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ import java.util.Map;
 
 import static net.minecraft.network.play.server.S38PacketPlayerListItem.Action.ADD_PLAYER;
 
+@NativeClass
 @ModuleInfo(name = "BotKiller", category = ModuleCategory.MISC)
 public final class BotKiller extends Module {
     public static final ListValue modeValue = new ListValue("Mode", new String[] {"Normal", "AntiCheat","Hypixel","Mineplex","Syuu","TestMatrix","Matrix"}, "Normal");

@@ -10,10 +10,12 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.FloatValue;
 import net.ccbluex.liquidbounce.value.IntegerValue;
+import oh.yalan.NativeClass;
 import org.lwjgl.opengl.GL11;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
+@NativeClass
 @ModuleInfo(name = "JumpCircle", category = ModuleCategory.RENDER)
 public class JumpCircle extends Module {
     private final IntegerValue redValue = new IntegerValue("Red", 255, 0, 255);
@@ -60,7 +62,7 @@ public class JumpCircle extends Module {
                 GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
                 GL11.glLineWidth(circle.width);
-                if (rainbow.get()) GL11.glColor4f(ColorUtils.INSTANCE.rainbow().getRed(),ColorUtils.INSTANCE.rainbow().getGreen(),ColorUtils.INSTANCE.rainbow().getBlue(),(radiusValue.get() - circle.radius) / radiusValue.get());
+                if (rainbow.get()) GL11.glColor4f(ColorUtils.INSTANCE.rainbow().getRed() / 255.0F,ColorUtils.INSTANCE.rainbow().getGreen() / 255.0F,ColorUtils.INSTANCE.rainbow().getBlue() / 255.0F,(radiusValue.get() - circle.radius) / radiusValue.get());
                 else GL11.glColor4f(redValue.get() / 255.0F, greenValue.get() / 255.0F, blueValue.get() / 255.0F, (radiusValue.get() - circle.radius) / radiusValue.get());
                 GL11.glRotatef(90F, 1F, 0F, 0F);
 

@@ -10,11 +10,13 @@ import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.utils.normal.Main;
 import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.utils.render.DrRenderUtils;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.launch.data.legacyui.ClickGUIModule;
+import oh.yalan.NativeClass;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
+@NativeClass
 public class ModuleRect extends Component {
     public final WbxMain client = WbxMain.getInstance();
     public final Module module;

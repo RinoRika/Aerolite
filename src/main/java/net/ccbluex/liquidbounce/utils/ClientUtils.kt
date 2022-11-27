@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.Metrics.SimplePie
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.util.IChatComponent
+import oh.yalan.NativeMethod
 import org.apache.logging.log4j.LogManager
 import org.lwjgl.opengl.Display
 import oshi.SystemInfo
@@ -107,15 +108,18 @@ object ClientUtils : MinecraftInstance() {
        // displayChatMessage("§8*-----------------------*")
     }
 
+    @NativeMethod
     fun setTitle() {
         //Display.setTitle("${LiquidBounce.CLIENT_NAME}正在注入核心,请稍后!")
         Display.setTitle("Aerolite is waiting for coremod injection.")
     }
 
+    @NativeMethod
     fun finishTitle() {
-        Display.setTitle(LiquidBounce.CLIENT_NAME + " " + LiquidBounce.CLIENT_REAL_VERSION/* + " | " + LiquidBounce.DEV_SAYING */)
+        Display.setTitle(LiquidBounce.CLIENT_NAME + " " + LiquidBounce.CLIENT_REAL_VERSION + " | " + LiquidBounce.DEV_SAYING)
     }
 
+    @NativeMethod
     fun displayAlert(message: String) {
         displayChatMessage("§8[" + LiquidBounce.COLORED_NAME + "§8] §f" + message)
     }

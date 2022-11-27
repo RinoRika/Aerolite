@@ -12,10 +12,12 @@ import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.utils.render.DrRenderUtils;
 import net.ccbluex.liquidbounce.launch.data.legacyui.ClickGUIModule;
 import net.ccbluex.liquidbounce.utils.render.RoundedUtil;
 import net.minecraft.client.gui.ScaledResolution;
+import oh.yalan.NativeClass;
 
 import java.awt.*;
 import java.util.HashMap;
 
+@NativeClass
 public class SideGui extends GuiPanel {
 
   //  private final ConfigPanel configPanel = new ConfigPanel();

@@ -29,9 +29,11 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.network.play.server.S30PacketWindowItems
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
+import oh.yalan.NativeClass
 import java.util.*
 import kotlin.math.sqrt
 
+@NativeClass
 @ModuleInfo(name = "NoSlow", category = ModuleCategory.MOVEMENT)
 class NoSlow : Module() {
     private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom","Watchdog", "NCP" , "AAC5", "Matrix", "Vulcan", "Medusa", "Noteless"), "Vanilla")

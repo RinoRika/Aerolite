@@ -4,7 +4,9 @@ import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.network.play.server.S02PacketChat
+import oh.yalan.NativeClass
 
+@NativeClass
 class CoreManager : Listenable, MinecraftInstance() {
     var kills = 0
     var finalKills = 0

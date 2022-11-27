@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.renderer.GlStateManager
+import oh.yalan.NativeMethod
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.math.BigDecimal
@@ -74,6 +75,7 @@ class Notification(val title: String, val content: String, val type: NotifyType,
     /**
      * Draw notification
      */
+    @NativeMethod
     fun drawNotification(index: Int): Boolean {
         val realY = -(index + 1) * (height + 10)
         val nowTime = System.currentTimeMillis()

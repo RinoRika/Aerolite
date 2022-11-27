@@ -17,8 +17,10 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.*
 import net.minecraft.world.WorldSettings
+import oh.yalan.NativeClass
 import java.util.*
 
+@NativeClass
 @ModuleInfo(name = "AntiBot", category = ModuleCategory.MISC)
 object AntiBot : Module() {
 

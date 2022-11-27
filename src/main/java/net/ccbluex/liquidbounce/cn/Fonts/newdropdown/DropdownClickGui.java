@@ -14,12 +14,14 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
+import oh.yalan.NativeClass;
 import org.lwjgl.input.Mouse;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@NativeClass
 public class DropdownClickGui extends GuiScreen {
     private Animation openingAnimation;
     private EaseBackIn fadeAnimation;
