@@ -27,7 +27,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
-@NativeClass
 @SideOnly(Side.CLIENT)
 public class NeonStyle extends Style {
 

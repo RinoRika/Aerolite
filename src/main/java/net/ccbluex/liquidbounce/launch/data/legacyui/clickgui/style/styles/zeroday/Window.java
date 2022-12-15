@@ -1,7 +1,7 @@
 package net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.zeroday;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.utils.render.DrRenderUtils;
+import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.newdropdown.utils.render.DrRenderUtils;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.RenderUtils;
@@ -10,8 +10,6 @@ import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.utils.render.Stencil;
 import net.ccbluex.liquidbounce.utils.render.Translate;
 import net.ccbluex.liquidbounce.value.*;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;

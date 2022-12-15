@@ -29,7 +29,6 @@ import java.awt.*;
 import java.math.BigDecimal;
 import java.util.List;
 
-@NativeClass
 public class AeroliteStyle extends Style {
     private boolean mouseDown;
     private boolean rightMouseDown;

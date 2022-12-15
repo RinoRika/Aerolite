@@ -41,8 +41,8 @@ public class Button {
         this.x = x;
         this.y = y;
         RenderUtils.drawRoundedCornerRect(x-30F,y-30F,x+30f,y+30f,15f,new Color(0,0,0,40).getRGB());
-    //    BlurUtils.INSTANCE.draw(x-40F,y-40F,80f,80f,20f);
-        this.yAnimation = RenderUtils.smoothAnimation(this.yAnimation, RenderUtils.isHovering(mouseX, mouseY, this.x-30f, this.y-30f, this.x + 30.0F, this.y + 30.0F) ? 4.0F : 0.0F, 50.0F, 0.3F);
+    //    BlurUtilsOld.INSTANCE.draw(x-40F,y-40F,80f,80f,20f);
+        this.yAnimation = RenderUtils.smoothAnimation(this.yAnimation, RenderUtils.isHovering(mouseX, mouseY, this.x-30f, this.y-30f, this.x + 30.0F, this.y + 30.0F) ? 4.0F : 0.0F, 30.0F, 0.3F);
         Fonts.mainmenu.drawString(this.icon, x - (float) Fonts.mainmenu.getStringWidth(this.icon) / 2.0F, y-6f+(this.yAnimation*-1f), Color.WHITE.getRGB(),false);
         if(this.yAnimation>=0.11) {
             Fonts.gs15.drawString(this.text, x - (float) Fonts.gs15.getStringWidth(this.text) / 2.0F, y + 12f +(this.yAnimation*-1f), new Color(255,255,255, ((((this.yAnimation/4.0f)) * 254.0f * 1f)<=255.0f) ? (int)(((this.yAnimation/4.0f)) * 254.0f + 1f) : 25).getRGB());

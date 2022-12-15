@@ -160,8 +160,9 @@ public abstract class MixinGuiSlot {
         if(this.field_178041_q) {
             this.mouseX = mouseXIn;
             this.mouseY = mouseYIn;
-            mc.getTextureManager().bindTexture(new ResourceLocation("main/game.png"));
-            Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width, height);
+        //    mc.getTextureManager().bindTexture(new ResourceLocation("main/game.png"));
+        //    Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width, height);
+            drawBackground();
             int i = this.getScrollBarX();
             int j = i + 6;
             this.bindAmountScrolled();

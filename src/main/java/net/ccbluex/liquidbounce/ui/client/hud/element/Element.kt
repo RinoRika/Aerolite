@@ -86,6 +86,26 @@ abstract class Element(
      */
     open fun destroyElement() {}
 
+    open fun animate(target: Double, current: Double, speed: Double): Double {
+        var current = current
+        var speed = speed
+        val larger: Boolean
+        larger = target > current
+        val bl = larger
+        if (speed < 0.0) {
+            speed = 0.0
+        } else if (speed > 1.0) {
+            speed = 1.0
+        }
+        val dif = Math.max(target, current) - Math.min(target, current)
+        var factor = dif * speed
+        if (factor < 0.1) {
+            factor = 0.1
+        }
+        current = if (larger) factor.let { current += it; current } else factor.let { current -= it; current }
+        return current
+    }
+
     /**
      * Draw element
      */
@@ -203,5 +223,5 @@ data class Border(val x: Float, val y: Float, val x2: Float, val y2: Float) {
 
     val size = abs(x2 - x) * abs(y2 - y)
 
-    fun draw() = RenderUtils.drawBorderedRect(x, y, x2, y2, 3F, Int.MIN_VALUE, 0)
+    fun draw() = if (!(x == 0f && y == 0f && x2 == 0f && y2 == 0f)) RenderUtils.drawBorderedRect(x, y, x2, y2, 3F, Int.MIN_VALUE, 0) else {}
 }

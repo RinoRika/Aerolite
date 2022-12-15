@@ -33,7 +33,6 @@ import java.util.Map;
 
 import static net.minecraft.network.play.server.S38PacketPlayerListItem.Action.ADD_PLAYER;
 
-@NativeClass
 @ModuleInfo(name = "BotKiller", category = ModuleCategory.MISC)
 public final class BotKiller extends Module {
     public static final ListValue modeValue = new ListValue("Mode", new String[] {"Normal", "AntiCheat","Hypixel","Mineplex","Syuu","TestMatrix","Matrix"}, "Normal");

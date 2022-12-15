@@ -26,8 +26,6 @@ import java.awt.Color
 @ElementInfo(name = "Session")
 class Session : Element() {
     private val modeValue = ListValue("Mode", arrayOf("Normal", "Hreith", "NightSense","Tenacity", "Novoline"), "Normal")
-    private val indexfu = BoolValue("IndexFu", false)
-    private val index = IntegerValue("Index", 10, 1, 1000)
     private val mixerSecValue = IntegerValue("Mixer-Seconds", 2, 1, 10)
     private val mixerDistValue = IntegerValue("Mixer-Distance", 2, 0, 100)
     private val textredValue = IntegerValue("HreithTextRed", 255, 0, 255)
@@ -188,14 +186,14 @@ class Session : Element() {
             Fonts.tc45.drawString("PlayerKills                                ${LiquidBounce.combatManager.getTotalPlayed()}",5F, 64f, Color(textredValue.get(), textgreenValue.get(), textblueValue.get(), 255).rgb)
         }
         if(modeValue.get().equals("Novoline")){
-            val c1 = ColorUtils.interpolateColorsBackAndForth(15,0, Color(0,255,50), Color(50,0,255), Interpolate.interpolateHue.get())
-            val c2 = ColorUtils.interpolateColorsBackAndForth(15,180, Color(0,255,50), Color(50,0,255), Interpolate.interpolateHue.get())
+            val c1 = ColorUtils.interpolateColorsBackAndForth(30,0, Color(0,255,50), Color(50,0,255), Interpolate.interpolateHue.get())
+            val c2 = ColorUtils.interpolateColorsBackAndForth(30,360, Color(50,0,255), Color(0,255,50), Interpolate.interpolateHue.get())
             RenderUtils.drawRoundedCornerRect(0f,0f,170f,80f,4f,Color(0,0,0,100).rgb)
-            RenderUtils.drawGradientSidewaysNormal(0.0, 16.0,170.0,18.0, c1.rgb, c2.rgb)
+            RenderUtils.drawGradientSidewaysH(0.0, 16.0,170.0,18.0, c1.rgb, c2.rgb)
             Fonts.font40.drawCenteredString("Session Info",85f,5f,Color(255,255,255,255).rgb)
             Fonts.font35.drawString("Play Time:                                      ${HOUR_FORMAT.format(System.currentTimeMillis())}",5f,25f,Color.WHITE.rgb)
             Fonts.font35.drawString("Games Won:                                         ${LiquidBounce.combatManager.getWin()}",5f,40f,Color.WHITE.rgb)
-            Fonts.font35.drawString("Players Killed:                                      ${LiquidBounce.combatManager.getKillCounts()}",5f,55f,Color.WHITE.rgb)
+            Fonts.font35.drawString("Players Killed:                                     ${LiquidBounce.combatManager.getKillCounts()}",5f,55f,Color.WHITE.rgb)
             Fonts.font35.drawString("Banned:                                                0",5f,70f,Color.WHITE.rgb)
 }
         return getBorderSize()

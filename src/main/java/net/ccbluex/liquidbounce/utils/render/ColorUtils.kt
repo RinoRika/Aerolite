@@ -36,8 +36,45 @@ object ColorUtils {
         }
     }
 
+    fun applyOpacity(color: Int, opacity: Float): Int {
+        val old = Color(color)
+        return applyOpacity(old, opacity).rgb
+    }
+
+    //Opacity value ranges from 0-1
+    fun applyOpacity(color: Color, opacity: Float): Color {
+        var opacity = opacity
+        opacity = Math.min(1f, Math.max(0f, opacity))
+        return Color(color.red, color.green, color.blue, (color.alpha * opacity).toInt())
+    }
+
     fun stripColor(input: String): String {
         return COLOR_PATTERN.matcher(input).replaceAll("")
+    }
+
+    @JvmStatic
+    fun blend(color1: Color, color2: Color, ratio: Double): Color {
+        val r = ratio.toFloat()
+        val ir = 1.0f - r
+        val rgb1 = FloatArray(3)
+        val rgb2 = FloatArray(3)
+        color1.getColorComponents(rgb1)
+        color2.getColorComponents(rgb2)
+        return Color(
+            rgb1[0] * r + rgb2[0] * ir,
+            rgb1[1] * r + rgb2[1] * ir,
+            rgb1[2] * r + rgb2[2] * ir
+        )
+    }
+
+    @JvmStatic
+    fun blend(color1: Color, color2: Color): Color {
+        return blend(color1, color2, 0.5)
+    }
+    @JvmStatic
+    fun colorFromInt(color: Int): Color {
+        val c = Color(color)
+        return Color(c.red, c.green, c.blue, 255)
     }
 
     @JvmStatic

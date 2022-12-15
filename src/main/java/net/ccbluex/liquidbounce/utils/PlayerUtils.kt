@@ -1,13 +1,17 @@
 package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.utils.MinecraftInstance.mc
+import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacketNoEvent
 import net.minecraft.block.Block
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.item.ItemBucketMilk
 import net.minecraft.item.ItemFood
 import net.minecraft.item.ItemPotion
+import net.minecraft.network.play.client.C07PacketPlayerDigging
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.MathHelper
 
 object PlayerUtils {
@@ -38,6 +42,35 @@ object PlayerUtils {
         return if (mc.thePlayer.itemInUse != null) {
             mc.thePlayer.isUsingItem && (usingItem is ItemFood || usingItem is ItemBucketMilk || usingItem is ItemPotion)
         } else false
+    }
+    fun sendBlocking(callEvent: Boolean, placement: Boolean) {
+        if (mc.thePlayer == null) return
+        if (placement) {
+            val packet = C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.heldItem, 0f, 0f, 0f)
+            if (callEvent) {
+                mc.netHandler.addToSendQueue(packet)
+            } else {
+                sendPacketNoEvent(packet)
+            }
+        } else {
+            val packet = C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem)
+            if (callEvent) {
+                mc.netHandler.addToSendQueue(packet)
+            } else {
+                sendPacketNoEvent(packet)
+            }
+        }
+    }
+
+    fun releaseUseItem(callEvent: Boolean) {
+        if (mc.thePlayer == null) return
+        val packet =
+            C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN)
+        if (callEvent) {
+            mc.netHandler.addToSendQueue(packet)
+        } else {
+            sendPacketNoEvent(packet)
+        }
     }
     fun isBlockUnder(): Boolean {
         if (mc.thePlayer.posY < 0) return false

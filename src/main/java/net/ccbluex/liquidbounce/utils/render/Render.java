@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.utils.render;
 
-import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.utils.animations.Animation;
+import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.newdropdown.utils.animations.Animation;
 import net.ccbluex.liquidbounce.utils.GLUtil;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.minecraft.client.gui.ScaledResolution;
@@ -10,8 +10,8 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
-import static net.ccbluex.liquidbounce.cn.Fonts.newdropdown.MathUtils.interpolate;
-import static net.ccbluex.liquidbounce.cn.Fonts.newdropdown.utils.render.DrRenderUtils.drawRect2;
+import static net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.newdropdown.MathUtils.interpolate;
+import static net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.newdropdown.utils.render.DrRenderUtils.drawRect2;
 import static org.lwjgl.opengl.GL11.*;
 
 public final class Render extends MinecraftInstance {

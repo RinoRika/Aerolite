@@ -5,9 +5,9 @@
  */
 package net.ccbluex.liquidbounce.features.module
 
-import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.utils.normal.Main
-import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.utils.objects.Drag
-import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.utils.render.Scroll
+import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.newdropdown.utils.normal.Main
+import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.newdropdown.utils.objects.Drag
+import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.newdropdown.utils.render.Scroll
 import oh.yalan.NativeMethod
 
 

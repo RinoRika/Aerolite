@@ -26,7 +26,6 @@ import oh.yalan.NativeClass;
 
 import java.util.List;
 
-@NativeClass
 @ModuleInfo(name = "Particles", category = ModuleCategory.RENDER)
 public final class Particles extends Module {
 

@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-@NativeClass
 public class nn extends GuiScreen implements GuiYesNoCallback {
 
     public static ModuleCategory currentModuleType = ModuleCategory.COMBAT;

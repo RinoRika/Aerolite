@@ -29,14 +29,12 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.network.play.server.S30PacketWindowItems
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
-import oh.yalan.NativeClass
 import java.util.*
 import kotlin.math.sqrt
 
-@NativeClass
 @ModuleInfo(name = "NoSlow", category = ModuleCategory.MOVEMENT)
 class NoSlow : Module() {
-    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom","Watchdog", "NCP" , "AAC5", "Matrix", "Vulcan", "Medusa", "Noteless"), "Vanilla")
+    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom","Watchdog", "NCP" , "AAC5", "Matrix", "Vulcan", "Medusa", "Noteless", "Hypixel", "Hawk"), "Vanilla")
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F)
     private val blockStrafeMultiplier = FloatValue("BlockStrafeMultiplier", 1.0F, 0.2F, 1.0F)
     private val consumeForwardMultiplier = FloatValue("ConsumeForwardMultiplier", 1.0F, 0.2F, 1.0F)
@@ -45,6 +43,7 @@ class NoSlow : Module() {
     private val bowStrafeMultiplier = FloatValue("BowStrafeMultiplier", 1.0F, 0.2F, 1.0F)
     private val customOnGround = BoolValue("CustomOnGround", false).displayable { modeValue.equals("Custom") }
     private val customDelayValue = IntegerValue("CustomDelay", 60, 10, 200).displayable { modeValue.equals("Custom") }
+    private val eatFixValue = BoolValue("EatingFix", true)
 
     //testvalue
     private val testValue = BoolValue("SendPacket", false)
@@ -161,6 +160,23 @@ class NoSlow : Module() {
                         PacketUtils.sendPacketNoEvent(C0BPacketEntityAction(mc.thePlayer,C0BPacketEntityAction.Action.STOP_SPRINTING))
                     }
                 }
+                "hawk" -> {
+                    if (event.eventState == EventState.PRE) {
+                        if (mc.thePlayer.ticksExisted % 30 == 0) {
+                            mc.netHandler.addToSendQueue(
+                                C08PacketPlayerBlockPlacement(null)
+                            )
+                        }
+                    } else {
+                        mc.netHandler.addToSendQueue(
+                            C07PacketPlayerDigging(
+                                C07PacketPlayerDigging.Action.RELEASE_USE_ITEM,
+                                BlockPos(-1, -1, -1),
+                                EnumFacing.DOWN
+                            )
+                        )
+                    }
+                }
 
                 "watchdog" -> {
                     if (testValue.get() && event.eventState == EventState.PRE && (!killAura.state || !killAura.blockingStatus)
@@ -168,6 +184,15 @@ class NoSlow : Module() {
                         val item = mc.thePlayer.itemInUse.item
                         if (mc.thePlayer.isUsingItem && (item is ItemFood || item is ItemBucketMilk || item is ItemPotion) && mc.thePlayer.getItemInUseCount() >= 1)
                             PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
+                    }
+                }
+
+                "hypixel" -> {
+                    if (mc.thePlayer.ticksExisted % 2 == 0) {
+                        sendPacket(event, true, false, false, 50, true)
+                    }
+                    else {
+                        sendPacket(event, false, true, false, 0, true, true)
                     }
                 }
 
@@ -256,7 +281,7 @@ class NoSlow : Module() {
         if(mc.thePlayer == null || mc.theWorld == null)
             return
         val packet = event.packet
-        if (modeValue.get().equals("Watchdog", true) && packet is S30PacketWindowItems && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking)) {
+        if (eatFixValue.get() && packet is S30PacketWindowItems && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking)) {
             event.cancelEvent()
             ClientUtils.displayChatMessage("[NoSlow] Detected reset item packet")
         }

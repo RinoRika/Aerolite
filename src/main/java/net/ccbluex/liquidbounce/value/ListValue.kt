@@ -5,20 +5,34 @@ import com.google.gson.JsonPrimitive
 import org.jetbrains.annotations.NotNull
 import java.util.*
 import kotlin.jvm.internal.Intrinsics
-
-private val <T> Array<T>.length: Int
-    get() {
-        return length
-    }
 /**
  * List value represents a selectable list of values
  */
 open class ListValue(name: String, val values: Array<String>, value: String) : Value<String>(name, value) {
     @JvmField
     var openList = false
+    var anim=0;
+    var open=true;
 
     init {
         this.value = value
+    }
+
+    fun indexOf(mode: String): Int {
+        for (i in values.indices) {
+            if (values[i].equals(mode, true)) return i
+        }
+        return 0
+    }
+
+    open fun getModes() : List<String> {
+        return this.values.toList()
+    }
+    open fun getModeGet(i: Int): String {
+        return values[i]
+    }
+    fun isMode(string: String): Boolean {
+        return this.value.equals(string, ignoreCase = true)
     }
 
     fun containsValue(string: String): Boolean {
@@ -34,15 +48,11 @@ open class ListValue(name: String, val values: Array<String>, value: String) : V
         }
     }
 
-    fun getModeListNumber(@NotNull modeName: String?): Int {
-        Intrinsics.checkParameterIsNotNull(modeName, "modeName")
-        var b: Byte
-        val i: Int
-        b = 0
-        i = values.length
-        while (b < i) {
-            if (Intrinsics.areEqual(values[b.toInt()], modeName)) return b.toInt()
-            b++
+    fun getModeListNumber(modeName: String) : Int {
+        for(i in this.values.indices) {
+            if(values[i] == modeName) {
+                return i
+            }
         }
         return 0
     }

@@ -26,14 +26,13 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.network.play.client.C0FPacketConfirmTransaction
 import net.minecraft.network.play.server.S12PacketEntityVelocity
+import net.minecraft.network.play.server.S27PacketExplosion
 import net.minecraft.util.BlockPos
 import net.minecraft.util.MathHelper
-import oh.yalan.NativeClass
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-@NativeClass
 @ModuleInfo(name = "Velocity", category = ModuleCategory.COMBAT)
 class Velocity : Module() {
 
@@ -44,10 +43,10 @@ class Velocity : Module() {
     private val verticalValue = FloatValue("Vertical", 0F, -2F, 2F)
     private val velocityTickValue = IntegerValue("VelocityTick", 1, 0, 10).displayable { modeValue.equals("Tick") || modeValue.equals("OldSpartan")}
     private val modeValue = ListValue("Mode", arrayOf(
-        "Simple", "Tick", "Cancel",
+        "Simple", "Tick", "Cancel", "Hypixel",
         "Redesky1", "Redesky2", "Redesky3", "Redesky4",
         "Matrix", "MatrixTest", "MatrixTest2",
-        "AGC",
+        "AGC", "Intave",
         "Reverse", "SmoothReverse",
         "Jump", "Legit",
         "Phase", "PacketPhase", "Glitch", "Spoof",
@@ -117,6 +116,21 @@ class Velocity : Module() {
     @EventTarget
     fun onMotion(event: MotionEvent) {
         if (countingTicks) cancelTicks++
+        if (modeValue.get().equals("Intave")) {
+            if (event.eventState == EventState.PRE) {
+                if (mc.thePlayer.hurtTime in 2..9) {
+                    mc.thePlayer.motionX *= 0.75
+                    mc.thePlayer.motionZ *= 0.75
+                    if (mc.thePlayer.hurtTime < 4) {
+                        if (mc.thePlayer.motionY > 0) {
+                            mc.thePlayer.motionY *= 0.9
+                        } else {
+                            mc.thePlayer.motionY *= 1.1
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @EventTarget
@@ -199,6 +213,21 @@ class Velocity : Module() {
         }
     }
 
+    fun handleDirection(packet: S12PacketEntityVelocity) {
+        if(!overrideDirectionValue.equals("None")) {
+            val yaw = Math.toRadians(if(overrideDirectionValue.get() == "Hard") {
+                overrideDirectionYawValue.get()
+            } else {
+                mc.thePlayer.rotationYaw + overrideDirectionYawValue.get() + 90
+            }.toDouble())
+            val dist = sqrt((packet.motionX * packet.motionX + packet.motionZ * packet.motionZ).toDouble())
+            val x = cos(yaw) * dist
+            val z = sin(yaw) * dist
+            packet.motionX = x.toInt()
+            packet.motionZ = z.toInt()
+        }
+    }
+
     @EventTarget
     fun onPacket(event: PacketEvent) {
         if ((onlyGroundValue.get() && !mc.thePlayer.onGround) || (onlyCombatValue.get() && !LiquidBounce.combatManager.inCombat)) {
@@ -209,6 +238,25 @@ class Velocity : Module() {
         if (modeValue.equals("Vulcan") && mc.thePlayer.hurtTime > 0 && packet is C0FPacketConfirmTransaction) {
             event.cancelEvent()
         }
+        if (modeValue.equals("Hypixel")) {
+            if (packet is S12PacketEntityVelocity) {
+                if (packet.entityID != mc.thePlayer.entityId || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer) {
+                    alert("§c§lWARNING!!! The staff might be checking you!!!")
+                    return
+                }
+                if (horizontalValue.get() == 0f && verticalValue.get() == 0f) {
+                    event.cancelEvent()
+                } else {
+                    handleDirection(packet)
+                    packet.motionX = (packet.getMotionX() * horizontalValue.get()).toInt()
+                    packet.motionY = (packet.getMotionY() * verticalValue.get()).toInt()
+                    packet.motionZ = (packet.getMotionZ() * horizontalValue.get()).toInt()
+                }
+            }
+            if (packet is S27PacketExplosion) {
+                event.cancelEvent()
+            }
+        }
         if (packet is S12PacketEntityVelocity) {
             if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer) {
                 return
@@ -218,18 +266,7 @@ class Velocity : Module() {
             velocityTimer.reset()
             velocityTick = 0
 
-            if(!overrideDirectionValue.equals("None")) {
-                val yaw = Math.toRadians(if(overrideDirectionValue.get() == "Hard") {
-                    overrideDirectionYawValue.get()
-                } else {
-                    mc.thePlayer.rotationYaw + overrideDirectionYawValue.get() + 90
-                }.toDouble())
-                val dist = sqrt((packet.motionX * packet.motionX + packet.motionZ * packet.motionZ).toDouble())
-                val x = cos(yaw) * dist
-                val z = sin(yaw) * dist
-                packet.motionX = x.toInt()
-                packet.motionZ = z.toInt()
-            }
+            handleDirection(packet)
 
             when (modeValue.get().lowercase()) {
                 "tick" -> {

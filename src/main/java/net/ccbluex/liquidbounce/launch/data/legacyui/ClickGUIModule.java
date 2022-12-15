@@ -5,7 +5,8 @@
  */
 package net.ccbluex.liquidbounce.launch.data.legacyui;
 
-import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.DropdownClickGui;
+import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.flux.otc.click;
+import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.newdropdown.DropdownClickGui;
 import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
@@ -13,12 +14,13 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.ClickGui;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.*;
+import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.flux.classic.FluxClassic;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.newVer.NewUi;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.nn.nn;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.novoline.ClickyUI;
+import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.skeet.HyperGui;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.zeroday.ClickUI;
 import net.ccbluex.liquidbounce.launch.options.LegacyUiLaunchOption;
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Arraylist;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.FloatValue;
@@ -29,11 +31,10 @@ import net.minecraft.network.play.server.S2EPacketCloseWindow;
 import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
-import java.util.Objects;
 
 @ModuleInfo(name = "ClickGUI", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
 public class ClickGUIModule extends Module {
-    private final ListValue styleValue = new ListValue("Style", new String[] {"Novoline","LiquidBounce", "Null", "Slowly", "Black", "astolfo", "Aerolite", "Neon" ,"Tenacity", "LBP", "NeverLose", "Zeroday"}, "Liquidbounce") {
+    private final ListValue styleValue = new ListValue("Style", new String[] {"Novoline","LiquidBounce", "Null", "Slowly", "Black", "astolfo", "Aerolite", "Neon" ,"Tenacity", "LBP", "NeverLose", "Zeroday", "Flux", "Flux2"}, "Liquidbounce") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -57,6 +58,10 @@ public class ClickGUIModule extends Module {
         return colorRainbow.get() ? ColorUtils.INSTANCE.rainbow() : new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get());
     }
 
+    public ModuleCategory moduleCategory = ModuleCategory.COMBAT;
+    public float animationHeight = 0;
+    public String configName = "Basic";
+
     @Override
     public void onEnable() {
         if(styleValue.get().contains("Novoline")) {
@@ -69,10 +74,16 @@ public class ClickGUIModule extends Module {
             mc.displayGuiScreen(new NewUi());
             this.setState(false);
         } else if (styleValue.get().equals("NeverLose")) {
-            mc.displayGuiScreen(new nn());
+            mc.displayGuiScreen(new HyperGui());
             this.setState(false);
         } else if (styleValue.get().equals("Zeroday")) {
             mc.displayGuiScreen(new ClickUI());
+            this.setState(false);
+        } else if (styleValue.get().equals("Flux")) {
+            mc.displayGuiScreen(new FluxClassic());
+            this.setState(false);
+        } else if (styleValue.get().equals("Flux2")) {
+            mc.displayGuiScreen(new click());
             this.setState(false);
         } else {
                 updateStyle();

@@ -17,7 +17,7 @@ import java.awt.*;
 import java.lang.reflect.Field;
 import java.util.Objects;
 
-@ModuleInfo(name = "ColorMixer", category = ModuleCategory.RENDER, defaultOn = true)
+@ModuleInfo(name = "ColorMixer", category = ModuleCategory.RENDER, canEnable = false)
 public class ColorMixer extends Module {
 
     private static float[] lastFraction = new float[]{};

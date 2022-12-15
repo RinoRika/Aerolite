@@ -8,9 +8,11 @@ package net.ccbluex.liquidbounce.value
 import com.google.gson.JsonElement
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.utils.render.Translate
 
 abstract class Value<T>(val name: String, open var value: T) {
     val default = value
+    val ValueTranslate = Translate(0F, 0F)
 
     private var displayableFunc: () -> Boolean = { true }
 
@@ -18,6 +20,13 @@ abstract class Value<T>(val name: String, open var value: T) {
         displayableFunc = func
         return this
     }
+    private var displayN: () -> String = { "" }
+    fun displayN(func: () -> String): Value<T> {
+        displayN = func
+        return this
+    }
+    val displayName: String
+        get() = name
 
     val displayable: Boolean
         get() = displayableFunc()

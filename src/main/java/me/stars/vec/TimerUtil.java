@@ -28,6 +28,13 @@ public class TimerUtil {
         return false;
     }
 
+    public boolean hasReached(double milliseconds) {
+        if ((double)(this.getCurrentMS() - this.lastMS) >= milliseconds) {
+            return true;
+        }
+        return false;
+    }
+
     public long getTime() {
         return System.nanoTime() / 1000000L;
     }

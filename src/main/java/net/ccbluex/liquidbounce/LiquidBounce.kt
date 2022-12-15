@@ -8,8 +8,11 @@ import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.features.macro.MacroManager
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleManager
+import net.ccbluex.liquidbounce.features.module.modules.client.ClientSettings
+import net.ccbluex.liquidbounce.features.module.modules.render.LiquidBouncePlus.ColorMixer
 import net.ccbluex.liquidbounce.features.special.AntiForge
 import net.ccbluex.liquidbounce.features.special.CombatManager
 import net.ccbluex.liquidbounce.features.special.CoreManager
@@ -47,12 +50,12 @@ object LiquidBounce {
     const val CLIENT_NAME = "Aerolite"
     const val COLORED_NAME = "§b§lAerolite"
     const val BUILD_CODE = "4.0.0"                       //更完改
-    const val CLIENT_REAL_VERSION = "4.0.0 Pre5"                            //更完改
+    const val CLIENT_REAL_VERSION = "4.0.0 Pre12"                            //更完改
     const val CLIENT_CREATOR = "AeroTeam"
     const val CLIENT_WEBSITE = "Aerolite.tk"
     const val MINECRAFT_VERSION = "1.8.9"
     const val CLIENT_DEV = "Stars&Packet&Crazy&Ry4nnnnn"
-    const val DEV_SAYING = "Obf?"
+    const val DEV_SAYING = "yby360LLLLLLLLLLLLLLL"
 
     // Tasks
     var FinishChoosingScreen = false
@@ -72,6 +75,7 @@ object LiquidBounce {
     lateinit var configManager: ConfigManager
     lateinit var coreManager: CoreManager
     var category: ModuleCategory? = null
+    var module: Module? =null
 
     // Some UI things
     lateinit var hud: HUD
@@ -197,6 +201,10 @@ object LiquidBounce {
         // Set is starting status
         isStarting = false
         isLoadingConfig = false
+
+        // Client Settings
+        ClientSettings.state = true
+        ColorMixer.regenerateColors(true)
 
         // Check Version and set title (Author:Stars)
         ClientUtils.logInfo("$CLIENT_NAME $CLIENT_REAL_VERSION started!")

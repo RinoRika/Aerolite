@@ -1,5 +1,6 @@
 package net.ccbluex.liquidbounce.utils
 
+import io.netty.util.concurrent.GenericFutureListener
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayClient
 import net.minecraft.network.play.INetHandlerPlayServer

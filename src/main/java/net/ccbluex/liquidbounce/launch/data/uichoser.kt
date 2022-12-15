@@ -1,6 +1,7 @@
 package net.ccbluex.liquidbounce.launch.data
 
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.module.modules.client.ClientSettings
 import net.ccbluex.liquidbounce.launch.EnumLaunchFilter
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.GuiMainMenuLLL
 import net.minecraft.client.gui.GuiButton
@@ -12,8 +13,9 @@ class uichoser : GuiScreen() {
     override fun initGui() {
         this.buttonList.add(GuiButton(0, this.width / 2 - 50, height / 2 - 20, 120, 20, "HACK NOW"))
         LiquidBounce.launchFilters.addAll(arrayListOf(EnumLaunchFilter.LEGACY_UI))
+        LiquidBounce.mainMenu = ClientSettings.getMainMenuType()
         LiquidBounce.startClient()
-        mc.displayGuiScreen(GuiMainMenuLLL())
+        mc.displayGuiScreen(LiquidBounce.mainMenu)
     }
 
 

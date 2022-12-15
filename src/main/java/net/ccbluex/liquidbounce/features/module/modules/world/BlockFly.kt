@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.world
 
+import me.stars.utils.BlurUtilsOld
 import me.stars.utils.Renderer
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
@@ -41,18 +42,17 @@ import net.minecraft.network.play.client.*
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.stats.StatList
 import net.minecraft.util.*
-import oh.yalan.NativeClass
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.security.SecureRandom
 import kotlin.math.*
 
-@NativeClass
 @ModuleInfo(name = "BlockFly", category = ModuleCategory.WORLD, keyBind = Keyboard.KEY_G)
 class BlockFly : Module() {
 
     // Delay
+    private val modeValue = ListValue("Mode", arrayOf("Basic", "Jello", "AAC", "NCP", "Matrix", "BuzzTest", "GrimTest"), "Basic")
     private val placeableDelayValue = ListValue("PlaceableDelay", arrayOf("Normal", "Smart", "OFF"), "Normal")
     private val placeDelayTower = BoolValue("TowerPlaceableDelay", true)
     private val maxDelayValue: IntegerValue = object : IntegerValue("MaxDelay", 0, 0, 1000) {
@@ -87,8 +87,8 @@ class BlockFly : Module() {
     private val expandLengthValue = IntegerValue("ExpandLength", 1, 1, 6)
 
     // Rotations
-    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC", "Test1", "Test2", "Custom", "Advanced"), "AAC")
-    private val towerrotationsValue = ListValue("TowerRotations", arrayOf("None", "Vanilla", "AAC", "Test1", "Test2", "Custom", "Advanced"), "AAC")
+    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC", "Test1", "Test2", "Custom", "Advanced", "NCP", "AAC4"), "AAC")
+    private val towerrotationsValue = ListValue("TowerRotations", arrayOf("None", "Vanilla", "AAC", "Test1", "Test2", "Custom", "Advanced", "NCP", "AAC4"), "AAC")
     private val aacYawValue = IntegerValue("AACYawOffset", 0, 0, 90).displayable { rotationsValue.equals("AAC") }
     private val advancedYawModeValue = ListValue("AdvancedYawRotations", arrayOf("Offset", "Static", "RoundStatic", "Vanilla", "Round", "MoveDirection", "OffsetMove"), "MoveDirection").displayable { rotationsValue.equals("Advanced") }
     private val advancedPitchModeValue = ListValue("AdvancedPitchRotations", arrayOf("Offset", "Static", "Vanilla"), "Static").displayable { rotationsValue.equals("Advanced") }
@@ -103,8 +103,6 @@ class BlockFly : Module() {
     private val changeMaxYawValue = IntegerValue("ChangeMaxYaw", 1, -179, 179).displayable { randomChangeValue.get() }
     private val customYawValue = IntegerValue("CustomYaw", -145, -180, 180).displayable { rotationsValue.equals("Custom") }
     private val customPitchValue = IntegerValue("CustomPitch", 79, -90, 90).displayable { rotationsValue.equals("Custom") }
-    // private val tolleyBridgeValue = IntegerValue("TolleyBridgeTick", 0, 0, 10)
-    // private val tolleyYawValue = IntegerValue("TolleyYaw", 0, 0, 90)
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationsValue.equals("None") }
     private val minRotationSpeedValue: IntegerValue = object : IntegerValue("MinRotationSpeed", 180, 0, 180) {
         override fun onChanged(oldValue: Int, newValue: Int) {
@@ -288,9 +286,6 @@ class BlockFly : Module() {
      */
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        // if(!mc.thePlayer.onGround) tolleyStayTick=0
-        //    else tolleyStayTick++
-        // if(tolleyStayTick>100) tolleyStayTick=100
         if (towerStatus && towerModeValue.get().lowercase() != "aac3.3.9" && towerModeValue.get().lowercase() != "aac4.4constant" && towerModeValue.get().lowercase() != "aac4jump") mc.timer.timerSpeed = towerTimerValue.get()
         if (!towerStatus) {
             when (timerModeValue.get().lowercase()) {
@@ -1006,7 +1001,7 @@ class BlockFly : Module() {
                 "advanced" -> {
                     val canRenderStack =
                         slot >= 0 && slot < 9 && mc.thePlayer.inventory.mainInventory[slot] != null && mc.thePlayer.inventory.mainInventory[slot].item != null && mc.thePlayer.inventory.mainInventory[slot].item is ItemBlock
-                    if (blurValue.get()) me.stars.utils.BlurUtils.blurArea(
+                    if (blurValue.get()) BlurUtilsOld.blurArea(
                         scaledResolution.scaledWidth / 2 - infoWidth / 2 - 4f,
                         scaledResolution.scaledHeight / 2 - 39f,
                         scaledResolution.scaledWidth / 2 + infoWidth / 2 + 4f,
@@ -1240,6 +1235,25 @@ class BlockFly : Module() {
                     val caluyaw = ((placeRotation.rotation.yaw / 45).roundToInt() * 45).toFloat()
                     Rotation(caluyaw, placeRotation.rotation.pitch)
                 }
+                "ncp" -> {
+                    val arrayOfFloat: FloatArray = getRotations(
+                        placeRotation.placeInfo.blockPos,
+                        placeRotation.placeInfo.enumFacing
+                    )
+                    val yaw = arrayOfFloat[0]
+                    val pitch = arrayOfFloat[1]
+                    Rotation(yaw, pitch)
+                }
+                "aac4" -> {
+                    var diffYaw = 0
+                    if (mc.thePlayer.movementInput.moveForward > 0) diffYaw = 180
+                    if (mc.thePlayer.movementInput.moveForward < 0) diffYaw = 0
+                    RotationUtils.setTargetRotation(
+                        Rotation(mc.thePlayer.rotationYaw + diffYaw, 90f),
+                        keepLengthValue.get()
+                    )
+                    Rotation(mc.thePlayer.rotationYaw + diffYaw, 90f)
+                }
                 "test2" -> {
                     Rotation(((MovementUtils.direction * 180f / Math.PI).toFloat() + 135), placeRotation.rotation.pitch)
                 }
@@ -1287,6 +1301,25 @@ class BlockFly : Module() {
                 }
                 "vanilla" -> {
                     placeRotation.rotation
+                }
+                "ncp" -> {
+                    val arrayOfFloat: FloatArray = getRotations(
+                        placeRotation.placeInfo.blockPos,
+                        placeRotation.placeInfo.enumFacing
+                    )
+                    val yaw = arrayOfFloat[0]
+                    val pitch = arrayOfFloat[1]
+                    Rotation(yaw, pitch)
+                }
+                "aac4" -> {
+                    var diffYaw = 0
+                    if (mc.thePlayer.movementInput.moveForward > 0) diffYaw = 180
+                    if (mc.thePlayer.movementInput.moveForward < 0) diffYaw = 0
+                    RotationUtils.setTargetRotation(
+                        Rotation(mc.thePlayer.rotationYaw + diffYaw, 90f),
+                        keepLengthValue.get()
+                    )
+                    Rotation(mc.thePlayer.rotationYaw + diffYaw, 90f)
                 }
                 "test1" -> {
                     val caluyaw = ((placeRotation.rotation.yaw / 45).roundToInt() * 45).toFloat()
@@ -1357,6 +1390,19 @@ class BlockFly : Module() {
         if (towerStatus) {
             event.cancelEvent()
         }
+    }
+
+    fun getRotations(paramBlockPos: BlockPos, paramEnumFacing: EnumFacing): FloatArray {
+        val d1 = paramBlockPos.x + 0.5 - mc.thePlayer.posX + paramEnumFacing.frontOffsetX / 2.0
+        val d2 = paramBlockPos.z + 0.5 - mc.thePlayer.posZ + paramEnumFacing.frontOffsetZ / 2.0
+        val d3 = mc.thePlayer.posY + mc.thePlayer.getEyeHeight() - (paramBlockPos.y + 0.5)
+        val d4 = MathHelper.sqrt_double(d1 * d1 + d2 * d2).toDouble()
+        var f1 = (atan2(d2, d1) * 180.0 / 3.141592653589793).toFloat() - 90.0f
+        val f2 = (atan2(d3, d4) * 180.0 / 3.141592653589793).toFloat()
+        if (f1 < 0.0f) {
+            f1 += 360.0f
+        }
+        return floatArrayOf(f1, f2)
     }
 
     val canSprint: Boolean

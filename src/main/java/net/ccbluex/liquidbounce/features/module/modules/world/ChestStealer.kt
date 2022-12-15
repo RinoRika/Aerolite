@@ -25,9 +25,10 @@ import net.minecraft.item.ItemStack
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S30PacketWindowItems
 import net.minecraft.util.ResourceLocation
+import org.lwjgl.input.Keyboard
 import kotlin.random.Random
 
-@ModuleInfo(name = "ChestStealer", category = ModuleCategory.WORLD)
+@ModuleInfo(name = "ChestStealer", category = ModuleCategory.WORLD, keyBind = Keyboard.KEY_B)
 class ChestStealer : Module() {
 
     /**

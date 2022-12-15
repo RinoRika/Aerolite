@@ -14,7 +14,6 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
 import oh.yalan.NativeClass
 
-@NativeClass
 @ModuleInfo(name = "AntiObbyTrap", category = ModuleCategory.PLAYER)
 class AntiObbyTrap : Module() {
     @EventTarget

@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.ccbluex.liquidbounce.features.module.modules.client.Modules
+import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.flux.classic.AnimationHelper
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
@@ -18,18 +19,32 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
-import net.ccbluex.liquidbounce.value.Value
+import net.ccbluex.liquidbounce.utils.render.Translate
+import net.ccbluex.liquidbounce.value.*
+import net.minecraft.client.Minecraft
 import org.lwjgl.input.Keyboard
 
-open class Module() : MinecraftInstance(), Listenable {
+open class Module() :MinecraftInstance(), Listenable {
 
     // Module information
     var name: String
+    val tab = Translate(0f , 0f)
     var localizedName = ""
         get() = field.ifEmpty { name }
     var expanded: Boolean = false
     var description: String
     var category: ModuleCategory
+    @JvmField
+    var showSettings = false
+    @JvmField
+    var yPos1 = 30F
+    val valueTranslate = Translate(0F, 0F)
+    val moduleTranslate = Translate(0F, 0F)
+    var Loading = false;
+    var Save = false;
+    var Start=false;
+    val animations = AnimationHelper(this)
+    val animationHelper: AnimationHelper
     var keyBind = Keyboard.CHAR_NONE
         set(keyBind) {
             field = keyBind
@@ -82,7 +97,17 @@ open class Module() : MinecraftInstance(), Listenable {
         autoDisable = moduleInfo.autoDisable
         moduleCommand = moduleInfo.moduleCommand
         triggerType = moduleInfo.triggerType
+        animationHelper = AnimationHelper(this)
     }
+
+    val numberValues: List<Value<*>>
+        get() = values.filter { it is IntegerValue || it is FloatValue }
+
+    val booleanValues: List<BoolValue>
+        get() = values.filterIsInstance<BoolValue>()
+
+    val listValues: List<ListValue>
+        get() = values.filterIsInstance<ListValue>()
 
     open fun onLoad() {
         localizedName = "$name"

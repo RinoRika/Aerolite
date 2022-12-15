@@ -5,7 +5,7 @@ import net.ccbluex.liquidbounce.cn.Fonts.Module.fonts.api.FontFamily;
 import net.ccbluex.liquidbounce.cn.Fonts.Module.fonts.api.FontManager;
 import net.ccbluex.liquidbounce.cn.Fonts.Module.fonts.api.FontRenderer;
 import net.ccbluex.liquidbounce.cn.Fonts.Module.fonts.api.FontType;
-import net.ccbluex.liquidbounce.cn.Fonts.newdropdown.WbxMain;
+import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.newdropdown.WbxMain;
 
 /**
  * @author Artyom Popov
@@ -133,6 +133,7 @@ public interface Fonts {
 
 		final class SFBOLD_11 { public static final FontRenderer SFBOLD_11 = SFBOLD.ofSize(11); private SFBOLD_11() {} }
 		final class SFBOLD_12 { public static final FontRenderer SFBOLD_12 = SFBOLD.ofSize(12); private SFBOLD_12() {} }
+		final class SFBOLD_15 { public static final FontRenderer SFBOLD_15 = SFBOLD.ofSize(15); private SFBOLD_15() {} }
 		final class SFBOLD_16 { public static final FontRenderer SFBOLD_16 = SFBOLD.ofSize(16); private SFBOLD_16() {} }
 		final class SFBOLD_18 { public static final FontRenderer SFBOLD_18 = SFBOLD.ofSize(18); private SFBOLD_18() {} }
 		final class SFBOLD_20 { public static final FontRenderer SFBOLD_20 = SFBOLD.ofSize(20); private SFBOLD_20() {} }

@@ -56,6 +56,9 @@ public class Fonts {
 
     @FontDetails(fontName = "Jello", fontSize = 18, fileName = "Jello.ttf")
     public static GameFontRenderer fontJello;
+
+    @FontDetails(fontName = "ABCD1234", fontSize = 80, fileName = "GoogleSans.ttf")
+    public static GameFontRenderer mainMenu2;
     @FontDetails(fontName = "GoogleSans", fontSize = 18, fileName = "GoogleSans.ttf")
     public static GameFontRenderer gs15;
 
@@ -89,11 +92,29 @@ public class Fonts {
     @FontDetails(fontName = "Icons", fontSize = 20, fileName = "Icon.ttf")
     public static GameFontRenderer icon30;
 
+    @FontDetails(fontName = "Icons", fontSize = 23, fileName = "Icon.ttf")
+    public static GameFontRenderer icon35;
+
     @FontDetails(fontName = "Icons", fontSize = 25, fileName = "Icon.ttf")
     public static GameFontRenderer icon40;
 
     @FontDetails(fontName = "Bangers", fontSize = 23, fileName = "Bangers.ttf")
     public static GameFontRenderer fontBangers;
+
+    @FontDetails(fontName = "Neverlose18", fontSize = 18, fileName = "neverlose500.ttf")
+    public static GameFontRenderer NL18;
+
+    @FontDetails(fontName = "Neverlose16", fontSize = 16, fileName = "neverlose500.ttf")
+    public static GameFontRenderer NL16;
+
+    @FontDetails(fontName = "Neverlose20", fontSize = 20, fileName = "neverlose500.ttf")
+    public static GameFontRenderer NL20;
+
+    @FontDetails(fontName = "Neverlose24", fontSize = 24, fileName = "neverlose500.ttf")
+    public static GameFontRenderer NL24;
+
+    @FontDetails(fontName = "Neverlose35", fontSize = 35, fileName = "neverlose500.ttf")
+    public static GameFontRenderer NL35;
 
     @FontDetails(fontName = "Minecraft Font")
     public static final FontRenderer minecraftFont = Minecraft.getMinecraft().fontRendererObj;
@@ -174,7 +195,8 @@ public class Fonts {
             initSingleFont("Bangers.ttf","assets/minecraft/Fonts/Bangers.ttf");
             initSingleFont("novoline.ttf","assets/minecraft/Fonts/novoline.ttf");
             initSingleFont("mainmenu.ttf","assets/minecraft/Fonts/mainmenu.ttf");
-
+            initSingleFont("Jello.ttf", "assets/minecraft/Fonts/Jello.ttf");
+            initSingleFont("neverlose500.ttf", "assets/minecraft/Fonts/neverlose500.ttf");
         }catch(IOException e) {
             e.printStackTrace();
         }

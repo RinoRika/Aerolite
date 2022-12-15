@@ -75,7 +75,6 @@ class Notification(val title: String, val content: String, val type: NotifyType,
     /**
      * Draw notification
      */
-    @NativeMethod
     fun drawNotification(index: Int): Boolean {
         val realY = -(index + 1) * (height + 10)
         val nowTime = System.currentTimeMillis()

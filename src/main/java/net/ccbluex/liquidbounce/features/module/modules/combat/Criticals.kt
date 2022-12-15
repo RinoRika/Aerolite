@@ -33,7 +33,7 @@ class Criticals : Module() {
 
     val modeValue = ListValue("Mode", arrayOf(
         "Packet", "LitePacket", "AAC5Packet", "AAC4Packet", "HPacket", "NewPacket",
-        "NCP", "NCP2", "Vanilla", "Vulcan", "AntiCheat",
+        "NCP", "NCP2", "Vanilla", "Vulcan", "AntiCheat", "Advanced",
         "Edit", "Hypixel", "Mineland", "Edit2",
         "AACNoGround", "NoGround", "Redesky",
         "VerusSmart", "MatrixSmart", "Blocksmc", "Minemora", "HVH","HVH2",
@@ -136,24 +136,17 @@ class Criticals : Module() {
                     sendCriticalPacket(ground = false)
                 }
 
+                "advanced" -> {
+                    mc.thePlayer.onCriticalHit(entity)
+                    mc.thePlayer.onEnchantmentCritical(entity)
+                }
+
                 "vanilla" -> {
                     val vanillaOffset = doubleArrayOf(0.11,0.1100013579,0.0000013579)
                     vanillaOffset.forEach { offset ->
                         mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x ,y + offset, z, false))
                     }
                 }
-
-                "hvh" -> {
-                    sendCriticalPacket(yOffset = 0.05250000001304, ground = false)
-                    sendCriticalPacket(yOffset = 0.00150000001304, ground = false)
-                }
-
-                "hvh" -> {
-                    if (mc.thePlayer.onGround) {
-                        mc.thePlayer.motionY += 0.01
-                    }
-                }
-
                 "ncp2" -> {
                     mc.thePlayer.sendQueue.addToSendQueue(C04PacketPlayerPosition(x, y + 0.11, z, false))
                     mc.thePlayer.sendQueue.addToSendQueue(C04PacketPlayerPosition(x, y + 0.1100013579, z, false))

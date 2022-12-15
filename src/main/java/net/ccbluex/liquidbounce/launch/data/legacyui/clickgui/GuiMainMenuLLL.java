@@ -72,39 +72,37 @@ public class GuiMainMenuLLL extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         try {
-        mc.getTextureManager().bindTexture(new ResourceLocation("aerolite/main/game.png"));
-        Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width, height);
-        GlStateManager.disableAlpha();
-   //     RenderUtils.drawImage(logoFile, sr.getScaledWidth() / 2 - 25, sr.getScaledHeight() / 2 - 110, 250,250);
-        GlStateManager.enableAlpha();
-        //    GlStateManager.pushMatrix();
-        if (useParallax) {
-            this.moveMouseEffect(mouseX, mouseY, 7.0F);
-        }
+        //    mc.getTextureManager().bindTexture(new ResourceLocation("aerolite/main/game.png"));
+        //    Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width, height);
+            drawDefaultBackground();
+            //    GlStateManager.pushMatrix();
+            if (useParallax) {
+                this.moveMouseEffect(mouseX, mouseY, 7.0F);
+            }
 
 
+     //       ParticleUtils.drawParticles(mouseX, mouseY);
+            if (RenderUtils.isHovering(mouseX, mouseY, (float) this.width / 2.0F - 80.0F * ((float) this.butt.size() / 2.0F) - 3f, (float) this.height / 2.0F - 100.0F - 3f, (float) this.width / 2.0F + 80.0F * ((float) this.butt.size() / 2.0F) + 3f, (float) this.height / 2.0F + 103.0F))
+                RenderUtils.drawRoundedCornerRect((float) this.width / 2.0F - 80.0F * ((float) this.butt.size() / 2.0F) - 3f, (float) this.height / 2.0F - 100.0F - 3f, (float) this.width / 2.0F + 80.0F * ((float) this.butt.size() / 2.0F) + 3f, (float) this.height / 2.0F + 103.0F, 10, new Color(0, 0, 0, 130).getRGB());
+            else
+                RenderUtils.drawRoundedCornerRect((float) this.width / 2.0F - 80.0F * ((float) this.butt.size() / 2.0F) - 3f, (float) this.height / 2.0F - 100.0F - 3f, (float) this.width / 2.0F + 80.0F * ((float) this.butt.size() / 2.0F) + 3f, (float) this.height / 2.0F + 103.0F, 10, new Color(0, 0, 0, 60).getRGB());
+            //   RenderUtils.drawShadow((float) this.width / 2.0F - 82.0F * ((float) this.butt.size() / 2.0F) - 3f, (float) this.height / 2.0F - 102.0F - 3f, (float) this.width / 2.0F + 82.0F * ((float) this.butt.size() / 2.0F) + 3f, (float) this.height / 2.0F + 105.0F);
 
-        ParticleUtils.drawParticles(mouseX,mouseY);
-        if (RenderUtils.isHovering(mouseX, mouseY, (float) this.width / 2.0F - 80.0F * ((float) this.butt.size() / 2.0F) - 3f, (float) this.height / 2.0F - 100.0F - 3f, (float) this.width / 2.0F + 80.0F * ((float) this.butt.size() / 2.0F) + 3f, (float) this.height / 2.0F + 103.0F))
-            RenderUtils.drawRoundedCornerRect((float) this.width / 2.0F - 80.0F * ((float) this.butt.size() / 2.0F) - 3f, (float) this.height / 2.0F - 100.0F - 3f, (float) this.width / 2.0F + 80.0F * ((float) this.butt.size() / 2.0F) + 3f, (float) this.height / 2.0F + 103.0F, 10, new Color(0, 0, 0, 130).getRGB());
-        else RenderUtils.drawRoundedCornerRect((float) this.width / 2.0F - 80.0F * ((float) this.butt.size() / 2.0F) - 3f, (float) this.height / 2.0F - 100.0F - 3f, (float) this.width / 2.0F + 80.0F * ((float) this.butt.size() / 2.0F) + 3f, (float) this.height / 2.0F + 103.0F, 10, new Color(0, 0, 0, 60).getRGB());
-     //   RenderUtils.drawShadow((float) this.width / 2.0F - 82.0F * ((float) this.butt.size() / 2.0F) - 3f, (float) this.height / 2.0F - 102.0F - 3f, (float) this.width / 2.0F + 82.0F * ((float) this.butt.size() / 2.0F) + 3f, (float) this.height / 2.0F + 105.0F);
-
-            Fonts.font100.drawCenteredString("Aerolite", (float) this.width / 2.0F, (float) this.height / 2.0F - 70.0F, ColorUtils.INSTANCE.rainbow().getRGB(),true);
+            Fonts.font100.drawCenteredString("Aerolite", (float) this.width / 2.0F, (float) this.height / 2.0F - 70.0F, ColorUtils.INSTANCE.rainbow().getRGB(), true);
             Fonts.font35.drawCenteredString("You are using " + LiquidBounce.CLIENT_REAL_VERSION + " version! You can check 578251834 for updates.", (float) this.width / 2.0F, (float) this.height / 2.0F + 70.0F, new Color(255, 255, 255, 255).getRGB());
 
-        float startX = (float) this.width / 2.0F - 64.5F * ((float) this.butt.size() / 2.0F);
+            float startX = (float) this.width / 2.0F - 64.5F * ((float) this.butt.size() / 2.0F);
 
-        for (Iterator<Button> var9 = this.butt.iterator(); var9.hasNext(); startX += 75.0F) {
-            Button button = var9.next();
-            button.draw(startX, (float) this.height / 2.0F + 20.0F, mouseX, mouseY);
-        }
+            for (Iterator<Button> var9 = this.butt.iterator(); var9.hasNext(); startX += 75.0F) {
+                Button button = var9.next();
+                button.draw(startX, (float) this.height / 2.0F + 20.0F, mouseX, mouseY);
+            }
 
-        Fonts.font32.drawCenteredString("建议删除你的HUD否则字体会有问题" + LiquidBounce.CLIENT_DEV, (float)this.width / 2.0f, (float)this.height - 24f, Color.WHITE.getRGB());
-        Fonts.font32.drawCenteredString("Made with <3 by " + LiquidBounce.CLIENT_DEV, (float)this.width / 2.0f, (float)this.height - 12f, Color.WHITE.getRGB());
+            Fonts.font35.drawCenteredString("建议删除你的HUD否则字体会有问题", (float) this.width / 2.0f, (float) this.height - 24f, Color.WHITE.getRGB());
+            Fonts.font35.drawCenteredString("Made with <3 by " + LiquidBounce.CLIENT_DEV, (float) this.width / 2.0f, (float) this.height - 12f, Color.WHITE.getRGB());
 
-        renderSwitchButton();
-    //    GlStateManager.popMatrix();
+            renderSwitchButton();
+            //    GlStateManager.popMatrix();
 
         } catch (Exception e) {
             ClientUtils.INSTANCE.logError("Error while loading main menu.", e);

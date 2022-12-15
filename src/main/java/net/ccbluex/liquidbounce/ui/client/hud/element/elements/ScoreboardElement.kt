@@ -7,6 +7,8 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import com.google.common.collect.Iterables
 import com.google.common.collect.Lists
+import me.stars.utils.BlurUtils
+import me.stars.utils.BlurUtilsOld
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
@@ -15,16 +17,16 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FontValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.utils.render.ShadowUtils
+import net.ccbluex.liquidbounce.utils.render.Stencil
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.scoreboard.ScoreObjective
 import net.minecraft.scoreboard.ScorePlayerTeam
 import net.minecraft.scoreboard.Scoreboard
 import net.minecraft.util.EnumChatFormatting
+import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 /**
@@ -49,7 +51,15 @@ class ScoreboardElement(
     private val backgroundColorBlueValue = IntegerValue("Background-B", 0, 0, 255)
     private val backgroundColorAlphaValue = IntegerValue("Background-Alpha", 95, 0, 255)
 
+    private val shadowShaderValue = BoolValue("Shadow", false)
+    private val shadowStrength = FloatValue("Shadow-Strength", 0F, 0F, 30F).displayable{ shadowShaderValue.get() }
+    private val blurValue2 = BoolValue("Blur", false)
+    private val blurStrength = FloatValue("Blur-Strength", 0F, 0F, 30F).displayable { blurValue2.get() }
+
+
     private val rectValue = BoolValue("Rect", false)
+    private val bgRoundedValue = BoolValue("BgRounded", true)
+    private val roundStrength = FloatValue("RoundStrength", 5F, 0F, 30F).displayable { bgRoundedValue.get() }
     private val rectColorModeValue = ListValue("Rect-Color", arrayOf("Custom", "Rainbow"), "Custom")
     private val rectColorRedValue = IntegerValue("Rect-R", 0, 0, 255)
     private val rectColorGreenValue = IntegerValue("Rect-G", 111, 0, 255)
@@ -105,89 +115,212 @@ class ScoreboardElement(
             scores
         }
 
-        var maxWidth = fontRenderer.getStringWidth(objective.displayName)
+        if (scoreCollection.size > 0) {
 
-        for (score in scoreCollection) {
-            val scorePlayerTeam = scoreboard.getPlayersTeam(score.playerName)
-            val width = "${ScorePlayerTeam.formatPlayerName(scorePlayerTeam, score.playerName)}: ${EnumChatFormatting.RED}${score.scorePoints}"
-            maxWidth = maxWidth.coerceAtLeast(fontRenderer.getStringWidth(width))
-        }
+            var maxWidth = fontRenderer.getStringWidth(objective.displayName)
 
-        val maxHeight = scoreCollection.size * fontRenderer.FONT_HEIGHT
-        val l1 = -maxWidth - 3 - if (rectValue.get()) 3 else 0
+            for (score in scoreCollection) {
+                val scorePlayerTeam = scoreboard.getPlayersTeam(score.playerName)
+                val width = "${
+                    ScorePlayerTeam.formatPlayerName(
+                        scorePlayerTeam,
+                        score.playerName
+                    )
+                }: ${EnumChatFormatting.RED}${score.scorePoints}"
+                maxWidth = maxWidth.coerceAtLeast(fontRenderer.getStringWidth(width))
+            }
 
-        if(rainbowBarValue.get()) {
-            Gui.drawRect(l1 - 2, -3, 5, -2, ColorUtils.rainbow().rgb)
-        }
-        Gui.drawRect(l1 - 2, -2, 5, maxHeight + fontRenderer.FONT_HEIGHT, backColor)
-        RenderUtils.drawShadow(l1 - 2f, -2f, 5f - (l1 - 2f), maxHeight + fontRenderer.FONT_HEIGHT.toFloat() + 2f)
+            val maxHeight = scoreCollection.size * fontRenderer.FONT_HEIGHT
+            val l1 = -maxWidth - 3 - if (rectValue.get()) 3 else 0
 
-        scoreCollection.forEachIndexed { index, score ->
-            val team = scoreboard.getPlayersTeam(score.playerName)
+            if (rainbowBarValue.get()) {
+                Gui.drawRect(l1 - 2, -3, 5, -2, ColorUtils.rainbow().rgb)
+            }
+            if (shadowShaderValue.get()) {
+                GL11.glTranslated(-renderX, -renderY, 0.0)
+                GL11.glScalef(1F, 1F, 1F)
+                GL11.glPushMatrix()
+                ShadowUtils.shadow(shadowStrength.get(), {
+                    GL11.glPushMatrix()
+                    GL11.glTranslated(renderX, renderY, 0.0)
+                    GL11.glScalef(scale, scale, scale)
+                    if (bgRoundedValue.get())
+                        RenderUtils.originalRoundedRect(
+                            l1.toFloat() - 2F,
+                            if (rectValue.get()) -2F - 1f else -2F, 5F,
+                            (maxHeight + fontRenderer.FONT_HEIGHT).toFloat(), roundStrength.get(),
+                            ColorUtils.rainbow().rgb
+                        )
+                    else
+                        RenderUtils.newDrawRect(
+                            l1.toFloat() - 2F,
+                            if (rectValue.get()) -2F - 1f else -2F, 5F,
+                            (maxHeight + fontRenderer.FONT_HEIGHT).toFloat(),
+                            ColorUtils.rainbow().rgb
+                        )
+                    GL11.glPopMatrix()
+                }, {
+                    GL11.glPushMatrix()
+                    GL11.glTranslated(renderX, renderY, 0.0)
+                    GL11.glScalef(scale, scale, scale)
+                    GlStateManager.enableBlend()
+                    GlStateManager.disableTexture2D()
+                    GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+                    if (bgRoundedValue.get())
+                        RenderUtils.fastRoundedRect(
+                            l1.toFloat() - 2F,
+                            if (rectValue.get()) -2F - 1f else -2F, 5F,
+                            (maxHeight + fontRenderer.FONT_HEIGHT).toFloat(), roundStrength.get()
+                        )
+                    else
+                        RenderUtils.quickDrawRect(
+                            l1.toFloat() - 2F,
+                            if (rectValue.get()) -2F - 1f else -2F, 5F,
+                            (maxHeight + fontRenderer.FONT_HEIGHT).toFloat()
+                        )
+                    GlStateManager.enableTexture2D()
+                    GlStateManager.disableBlend()
+                    GL11.glPopMatrix()
+                })
+                GL11.glPopMatrix()
+                GL11.glScalef(scale, scale, scale)
+                GL11.glTranslated(renderX, renderY, 0.0)
+            }
+            if (blurValue2.get()) {
+                GL11.glTranslated(-renderX, -renderY, 0.0)
+                GL11.glScalef(1F, 1F, 1F)
+                GL11.glPushMatrix()
 
-            var name = ScorePlayerTeam.formatPlayerName(team, score.playerName)
-            val scorePoints = "${EnumChatFormatting.RED}${score.scorePoints}"
-
-            val width = 5 - if (rectValue.get()) 4 else 0
-            val height = maxHeight - index * fontRenderer.FONT_HEIGHT
-
-            GlStateManager.resetColor()
-
-            var listColor = textColor
-            if (!serverValue.equals("none") && !serverValue.get().equals("Funny")) {
-                for (domain in allowedDomains) {
-                    if (name.contains(domain, true)) {
-                        name = when (serverValue.get().lowercase()) {
-                            "clientname" -> LiquidBounce.COLORED_NAME
-                            "website" -> LiquidBounce.CLIENT_WEBSITE
-                            else -> "null"
-                        }
-                        listColor = ColorUtils.rainbow().rgb
-                        break
-                    }
+                if (bgRoundedValue.get()) {
+                    if (side.horizontal == Side.Horizontal.LEFT)
+                        BlurUtils.blurAreaRounded(renderX.toFloat() + (l1 + 2F) * scale, renderY.toFloat() + -2F * scale,
+                            renderX.toFloat() + -5F * scale, renderY.toFloat() + (maxHeight + fontRenderer.FONT_HEIGHT) * scale, roundStrength.get(), blurStrength.get())
+                    else
+                        BlurUtils.blurAreaRounded(renderX.toFloat() + (l1 - 2F) * scale, renderY.toFloat() + -2F * scale,
+                            renderX.toFloat() + 5F * scale, renderY.toFloat() + (maxHeight + fontRenderer.FONT_HEIGHT) * scale, roundStrength.get(), blurStrength.get())
+                } else {
+                    if (side.horizontal == Side.Horizontal.LEFT)
+                        BlurUtils.blurArea(renderX.toFloat() + (l1 + 2F) * scale, renderY.toFloat() + -2F * scale,
+                            renderX.toFloat() + -5F * scale, renderY.toFloat() + (maxHeight + fontRenderer.FONT_HEIGHT) * scale, blurStrength.get())
+                    else
+                        BlurUtils.blurArea(renderX.toFloat() + (l1 - 2F) * scale, renderY.toFloat() + -2F * scale,
+                            renderX.toFloat() + 5F * scale, renderY.toFloat() + (maxHeight + fontRenderer.FONT_HEIGHT) * scale, blurStrength.get())
                 }
-            }
-            if (serverValue.get().equals("Funny")) {
-                if (name.contains("BlocksMC.net", true)) name = "StaffMC.net"
-                else if (name.contains("mc.hypixel.net", true)) name = "mc.lagpixel.net"
-                else if (name.contains("play.pika", true)) name = "RunningmanNetwork.net"
-                    listColor = ColorUtils.rainbow().rgb
-            }
 
-            fontRenderer.drawString(name, l1.toFloat(), height.toFloat(), listColor, shadowValue.get())
-            if (!noPointValue.get()) {
-                fontRenderer.drawString(
-                    scorePoints,
-                    (width - fontRenderer.getStringWidth(scorePoints)).toFloat(),
-                    height.toFloat(),
-                    textColor,
-                    shadowValue.get()
+                GL11.glPopMatrix()
+                GL11.glScalef(scale, scale, scale)
+                GL11.glTranslated(renderX, renderY, 0.0)
+            }
+            if (bgRoundedValue.get()) {
+                Stencil.write(false)
+                GlStateManager.enableBlend()
+                GlStateManager.disableTexture2D()
+                GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+                RenderUtils.fastRoundedRect(
+                    l1.toFloat() + if (side.horizontal == Side.Horizontal.LEFT) 2F else -2F,
+                    if (rectValue.get()) -2F - 1f else -2F,
+                    if (side.horizontal == Side.Horizontal.LEFT) -5F else 5F,
+                    (maxHeight + fontRenderer.FONT_HEIGHT).toFloat(), roundStrength.get()
                 )
+                GlStateManager.enableTexture2D()
+                GlStateManager.disableBlend()
+                Stencil.erase(true)
             }
+            Gui.drawRect(l1 - 2, -2, 5, maxHeight + fontRenderer.FONT_HEIGHT, backColor)
+                //    RenderUtils.drawShadow(l1 - 2f, -2f, 5f - (l1 - 2f), maxHeight + fontRenderer.FONT_HEIGHT.toFloat() + 2f)
 
-            if (index == scoreCollection.size - 1) {
-                val displayName = objective.displayName
+            scoreCollection.forEachIndexed { index, score ->
+                val team = scoreboard.getPlayersTeam(score.playerName)
+
+                var name = ScorePlayerTeam.formatPlayerName(team, score.playerName)
+                val scorePoints = "${EnumChatFormatting.RED}${score.scorePoints}"
+
+                val width = 5 - if (rectValue.get()) 4 else 0
+                val height = maxHeight - index * fontRenderer.FONT_HEIGHT
 
                 GlStateManager.resetColor()
 
-                fontRenderer.drawString(displayName, (l1 + maxWidth / 2 - fontRenderer.getStringWidth(displayName) / 2).toFloat(), (height -
-                        fontRenderer.FONT_HEIGHT).toFloat(), textColor, shadowValue.get())
+                var listColor = textColor
+                if (!serverValue.equals("none") && !serverValue.get().equals("Funny")) {
+                    for (domain in allowedDomains) {
+                        if (name.contains(domain, true)) {
+                            name = when (serverValue.get().lowercase()) {
+                                "clientname" -> LiquidBounce.COLORED_NAME
+                                "website" -> LiquidBounce.CLIENT_WEBSITE
+                                else -> "null"
+                            }
+                            listColor = ColorUtils.rainbow().rgb
+                            break
+                        }
+                    }
+                }
+                if (serverValue.get().equals("Funny")) {
+                    if (name.contains("BlocksMC.com", true)) name = "StaffMC.net"
+                    else if (name.contains("mc.hypixel.net", true)) name = "mc.lagpixel.net"
+                    listColor = ColorUtils.rainbow().rgb
+                }
+
+                fontRenderer.drawString(name, l1.toFloat(), height.toFloat(), listColor, shadowValue.get())
+                if (!noPointValue.get()) {
+                    fontRenderer.drawString(
+                        scorePoints,
+                        (width - fontRenderer.getStringWidth(scorePoints)).toFloat(),
+                        height.toFloat(),
+                        textColor,
+                        shadowValue.get()
+                    )
+                }
+
+                if (index == scoreCollection.size - 1) {
+                    val displayName = objective.displayName
+
+                    GlStateManager.resetColor()
+
+                    fontRenderer.drawString(
+                        displayName,
+                        (l1 + maxWidth / 2 - fontRenderer.getStringWidth(displayName) / 2).toFloat(),
+                        (height -
+                                fontRenderer.FONT_HEIGHT).toFloat(),
+                        textColor,
+                        shadowValue.get()
+                    )
+                }
+
+                if (rectValue.get()) {
+                    val rectColor = when {
+                        rectColorMode.equals("Rainbow", ignoreCase = true) -> ColorUtils.rainbow(index).rgb
+                        else -> rectCustomColor
+                    }
+                    RenderUtils.drawRect(
+                        2F,
+                        if (index == scoreCollection.size - 1) -2F else height.toFloat(),
+                        5F,
+                        if (index == 0) fontRenderer.FONT_HEIGHT.toFloat() else height.toFloat() + fontRenderer.FONT_HEIGHT * 2F,
+                        rectColor
+                    )
+                    if (rectBlurSet.equals(true)) {
+                        RenderUtils.drawShadow(
+                            2F,
+                            if (index == scoreCollection.size - 1) -2F else height.toFloat(),
+                            3F,
+                            if (index == 0) fontRenderer.FONT_HEIGHT.toFloat() else height.toFloat() + fontRenderer.FONT_HEIGHT * 2F - if (index == scoreCollection.size - 1) -2F else height.toFloat()
+                        )
+                    }
+
+                }
             }
 
-            if (rectValue.get()) {
-                val rectColor = when {
-                    rectColorMode.equals("Rainbow", ignoreCase = true) -> ColorUtils.rainbow(index).rgb
-                    else -> rectCustomColor
-                }
-                RenderUtils.drawRect(2F, if (index == scoreCollection.size - 1) -2F else height.toFloat(), 5F, if (index == 0) fontRenderer.FONT_HEIGHT.toFloat() else height.toFloat() + fontRenderer.FONT_HEIGHT * 2F, rectColor)
-                if(rectBlurSet.equals(true)){
-                    RenderUtils.drawShadow(2F, if (index == scoreCollection.size - 1) -2F else height.toFloat(), 3F, if (index == 0) fontRenderer.FONT_HEIGHT.toFloat() else height.toFloat() + fontRenderer.FONT_HEIGHT * 2F - if (index == scoreCollection.size - 1) -2F else height.toFloat())
-                }
+            if (bgRoundedValue.get())
+                Stencil.dispose()
 
-            }
+            return Border(
+                -maxWidth.toFloat() - 5 - if (rectValue.get()) 3 else 0,
+                -2F,
+                5F,
+                maxHeight.toFloat() + fontRenderer.FONT_HEIGHT
+            )
         }
-
-        return Border(-maxWidth.toFloat() - 5 - if (rectValue.get()) 3 else 0, -2F, 5F, maxHeight.toFloat() + fontRenderer.FONT_HEIGHT)
+        else return Border(0f,0f,0f,0f)
     }
 
     private fun backgroundColor() = Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(),

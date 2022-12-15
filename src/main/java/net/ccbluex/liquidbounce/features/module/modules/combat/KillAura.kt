@@ -29,6 +29,7 @@ import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityArmorStand
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemAxe
 import net.minecraft.item.ItemPickaxe
 import net.minecraft.item.ItemSword
@@ -47,7 +48,6 @@ import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.sin
 
-@NativeClass
 @ModuleInfo(name = "Aura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_R)
 class KillAura : Module() {
     /**
@@ -115,7 +115,8 @@ class KillAura : Module() {
     private val noBadPacketsValue = BoolValue("NoBadPackets", false)
 
     // AutoBlock
-    val autoBlockValue = ListValue("AutoBlock", arrayOf("Range", "NCP", "Fake", "Off"), "Off")
+    val autoBlockValue = ListValue("AutoBlock", arrayOf("Range", "Fake", "Off"), "Off")
+    val autoBlockBypassValue = ListValue("AutoBlockBypass", arrayOf("Vanilla", "NCP", "NCP2", "AAC", "UseItem", "Right", "Hypixel"), "Vanilla").displayable { autoBlockValue.equals("Range") }
 
     // vanilla will send block packet at pre
     private val blockTimingValue =
@@ -137,6 +138,7 @@ class KillAura : Module() {
 
     // Bypass
     private val aacValue = BoolValue("AAC", true)
+    private val moveFix = BoolValue("MoveFix", false)
     // TODO: Divide AAC Opinion into three separated opinions
 
     // Rotations
@@ -145,7 +147,6 @@ class KillAura : Module() {
         arrayOf("None", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView", "OldMatrix", "NCP"),
         "LiquidBounce"
     )
-    // TODO: RotationMode Bypass Intave
 
     private val maxTurnSpeedValue: FloatValue = object : FloatValue("MaxTurnSpeed", 360f, 1f, 360f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
@@ -176,8 +177,6 @@ class KillAura : Module() {
     private val keepDirectionValue = BoolValue("KeepDirection", true).displayable { !rotationModeValue.equals("None") }
     private val keepDirectionTickValue = IntegerValue("KeepDirectionTick", 15, 1, 20).displayable { !rotationModeValue.equals("None") }
     private val backtraceValue = BoolValue("Backtrace", false)
-    private val backtraceMarkValue = BoolValue("BacktraceMark", false).displayable { backtraceValue.get() }
-    private val backtraceTickValue = IntegerValue("BacktraceTick", 2, 1, 10).displayable { backtraceValue.get() }
     private val hitableValue = BoolValue("AlwaysHitable", true).displayable { !rotationModeValue.equals("None") }
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f)
 
@@ -384,6 +383,10 @@ class KillAura : Module() {
         if (strafeOnlyGroundValue.get() && !mc.thePlayer.onGround) {
             strictStrafe = false
             return
+        }
+
+        if (moveFix.get()) {
+            updateRotations(target!!)
         }
 
         // TODO: Fix Rotation issue on Strafe POST Event
@@ -983,9 +986,6 @@ class KillAura : Module() {
      * @throws IllegalStateException when bad packets protection
      */
     private fun attackEntity(entity: EntityLivingBase) {
-        if (packetSent && noBadPacketsValue.get()) {
-            throw java.lang.IllegalStateException("Attack canceled because of bad packets protection")
-        }
         // Call attack event
         val event = AttackEvent(entity)
         LiquidBounce.eventManager.callEvent(event)
@@ -995,17 +995,9 @@ class KillAura : Module() {
 
         // Stop blocking
         if (!autoBlockPacketValue.equals("Vanilla") && (mc.thePlayer.isBlocking || blockingStatus)) {
-            mc.netHandler.addToSendQueue(
-                C07PacketPlayerDigging(
-                    C07PacketPlayerDigging.Action.RELEASE_USE_ITEM,
-                    BlockPos.ORIGIN,
-                    EnumFacing.DOWN
-                )
-            )
-            blockingStatus = false
+            stopBlocking()
             if (noBadPacketsValue.get()) {
                 packetSent = true
-                throw java.lang.IllegalStateException("Attack canceled because of bad packets protection")
             }
         }
 
@@ -1198,7 +1190,7 @@ class KillAura : Module() {
      * Start blocking
      */
     private fun startBlocking(interactEntity: Entity, interact: Boolean) {
-        if ((autoBlockValue.equals("Range") || autoBlockValue.equals("NCP")) && mc.thePlayer.getDistanceToEntityBox(interactEntity) > autoBlockRangeValue.get()) {
+        if (autoBlockValue.equals("Range") && mc.thePlayer.getDistanceToEntityBox(interactEntity) > autoBlockRangeValue.get()) {
             return
         }
 
@@ -1215,13 +1207,28 @@ class KillAura : Module() {
             mc.netHandler.addToSendQueue(C02PacketUseEntity(interactEntity, C02PacketUseEntity.Action.INTERACT))
         }
 
-        if (autoBlockValue.equals("NCP")) {
-            mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, null, 0.0f, 0.0f, 0.0f))
-            blockingStatus = true
-            return
+        when (autoBlockBypassValue.get()) {
+            "Vanilla" -> mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
+            "NCP" -> mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, null, 0.0f, 0.0f, 0.0f))
+            "AAC" -> if (mc.thePlayer.ticksExisted % 2 == 0) {
+                mc.playerController.interactWithEntitySendPacket(mc.thePlayer,interactEntity)
+                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
+            }
+            "UseItem" -> mc.thePlayer!!.setItemInUse(mc.thePlayer.inventory.getCurrentItem(), 51213)
+            "Right" -> mc.gameSettings.keyBindUseItem.pressed = true
+            "Hypixel" -> {
+                if (target is EntityPlayer) {
+                    val player = target as EntityPlayer
+                    if (player.hurtTime < 5 && mc.thePlayer.ticksExisted % 3 === 1) {
+                        PlayerUtils.sendBlocking(false, true)
+                    }
+                }
+            }
+            "NCP2" -> {
+                PlayerUtils.releaseUseItem(false)
+            }
         }
 
-        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
         blockingStatus = true
         packetSent = true
     }
@@ -1234,13 +1241,18 @@ class KillAura : Module() {
             if (packetSent && noBadPacketsValue.get()) {
                 return
             }
-            mc.netHandler.addToSendQueue(
-                C07PacketPlayerDigging(
-                    C07PacketPlayerDigging.Action.RELEASE_USE_ITEM,
-                    if (MovementUtils.isMoving()) BlockPos(-1, -1, -1) else BlockPos.ORIGIN,
-                    EnumFacing.DOWN
-                )
-            )
+            when (autoBlockBypassValue.get()) {
+                "Vanilla", "AAC" -> mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, if (MovementUtils.isMoving()) BlockPos(-1, -1, -1) else BlockPos.ORIGIN, EnumFacing.DOWN))
+                "NCP" -> mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1, -1, -1), EnumFacing.DOWN))
+                "UseItem" -> mc.thePlayer.stopUsingItem()
+                "Right" -> mc.gameSettings.keyBindUseItem.pressed = false
+                "Hypixel" -> {
+                    if (mc.thePlayer.ticksExisted % 3 === 0) {
+                        PlayerUtils.releaseUseItem(false)
+                    }
+                }
+                "NCP2" -> PlayerUtils.sendBlocking(false, false)
+            }
             blockingStatus = false
             packetSent = true
         }

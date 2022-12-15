@@ -107,6 +107,11 @@ public final class RenderUtils extends MinecraftInstance {
         glEndList();
     }
 
+    public static void prepareScissorBox(final float x, final float y, final float x2, final float y2) {
+        final ScaledResolution scale = new ScaledResolution(mc);
+        final int factor = scale.getScaleFactor();
+        GL11.glScissor((int)(x * factor), (int)((scale.getScaledHeight() - y2) * factor), (int)((x2 - x) * factor), (int)((y2 - y) * factor));
+    }
     public static void newDrawRect(float left, float top, float right, float bottom, int color)
     {
         if (left < right)

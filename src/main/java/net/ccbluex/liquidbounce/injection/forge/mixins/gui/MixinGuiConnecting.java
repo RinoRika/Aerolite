@@ -32,9 +32,10 @@ public abstract class MixinGuiConnecting extends GuiScreen {
      */
     @Overwrite
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        mc.getTextureManager().bindTexture(new ResourceLocation("main/game.png"));
-        Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width, height);
+    //    mc.getTextureManager().bindTexture(new ResourceLocation("main/game.png"));
+    //    Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width, height);
 
+        drawDefaultBackground();
         RenderUtils.drawLoadingCircle(this.width / 2, this.height / 4 + 70);
 
         String ip = "Unknown";

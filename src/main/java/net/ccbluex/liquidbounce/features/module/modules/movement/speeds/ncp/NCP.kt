@@ -27,7 +27,7 @@ class NCP : SpeedMode("NCP") {
                     mc.thePlayer.jumpMovementFactor = 0.02f
                 }
                 mc.timer.timerSpeed = 1.05f
-                MovementUtils.strafe(MovementUtils.getSpeed() + 0.1f + deSt.toFloat() + getPotionAmplifier())
+                MovementUtils.strafe()
             }
             if (MovementUtils.isOnGround(0.2)) {
                 mc.timer.timerSpeed = 1.14f

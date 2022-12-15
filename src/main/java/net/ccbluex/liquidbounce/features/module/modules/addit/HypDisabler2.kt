@@ -10,6 +10,11 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.modules.combat.AntiFireBall
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
+import net.ccbluex.liquidbounce.features.module.modules.world.BlockFly
+import net.ccbluex.liquidbounce.features.module.modules.world.ChestAura
+import net.ccbluex.liquidbounce.features.module.modules.world.Fucker
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.ui.font.Fonts
@@ -58,6 +63,7 @@ class HypDisabler2 : Module() {
     private var z = 0.0
 
     private val packets = LinkedBlockingQueue<Packet<INetHandlerPlayServer>>()
+    private val c0fs = LinkedBlockingQueue<C0FPacketConfirmTransaction>()
     private val timerCancelDelay = MSTimer()
     private val timerCancelCounter = MSTimer()
     private var timerShouldCancel = true
@@ -159,7 +165,7 @@ class HypDisabler2 : Module() {
         if (timerDisabler.get() && !inCage) {
             pingspoofactive = true
             if ((packet is C02PacketUseEntity || packet is C03PacketPlayer || packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement ||
-                packet is C0APacketAnimation || packet is C0BPacketEntityAction || (pingSpoofC0F.get() && packet is C0FPacketConfirmTransaction && !isInventory(packet.uid))) && mc.thePlayer.ticksExisted > strafePacketAmount.get() && !ServerUtils.isHypixelLobby()) {
+                packet is C0APacketAnimation || packet is C0BPacketEntityAction || (pingSpoofC0F.get() && packet is C0FPacketConfirmTransaction)) && mc.thePlayer.ticksExisted > strafePacketAmount.get() && !ServerUtils.isHypixelLobby()) {
                 if (timerShouldCancel) {
                     if (!timerCancelCounter.hasTimePassed(50L * pingSpoofSize.get())) {
                         packets.add(packet as Packet<INetHandlerPlayServer>)
@@ -178,6 +184,20 @@ class HypDisabler2 : Module() {
                         timerCancelCounter.reset()
                     }
                 }
+            }
+        }
+
+        if (event.packet is C0FPacketConfirmTransaction) {
+            val c0f = event.packet
+            if (c0f.windowId == 0 && c0f.uid < 0) {
+                event.cancelEvent()
+                c0fs.add(c0f)
+            }
+            if (c0fs.size >= 6) {
+                for (pack in c0fs) {
+                    PacketUtils.sendPacketNoEvent(pack!!)
+                }
+                c0fs.clear()
             }
         }
 
@@ -249,11 +269,16 @@ class HypDisabler2 : Module() {
 
     }
 
+    private fun canEditRotation(): Boolean {
+        val mm = LiquidBounce.moduleManager
+        return !(mm[BlockFly::class.java]!!.state || mm[KillAura::class.java]!!.state || mm[AntiFireBall::class.java]!!.state || mm[ChestAura::class.java]!!.state || mm[Fucker::class.java]!!.state)
+    }
+
     @EventTarget
     fun onMotion(event: MotionEvent) {
         // An old bypass
         val adyaw = MovementUtils.movingYaw
-        rotationactive = if (rotationDisabler.get()) {
+        rotationactive = if (rotationDisabler.get() && canEditRotation()) {
             RotationUtils.setTargetRotation(Rotation(adyaw, mc.thePlayer.rotationPitch), 10)
             true
         } else {
