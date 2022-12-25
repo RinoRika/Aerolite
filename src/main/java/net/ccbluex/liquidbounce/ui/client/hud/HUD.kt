@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.*
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 import kotlin.math.max
 import kotlin.math.min
@@ -50,7 +51,7 @@ open class HUD : MinecraftInstance() {
     fun render(designer: Boolean, partialTicks: Float) {
         for (element in elements) {
             GL11.glPushMatrix()
-            GL11.glScalef(element.scale, element.scale, element.scale)
+            GlStateManager.scale(element.scale, element.scale, element.scale)
             GL11.glTranslated(element.renderX, element.renderY, 0.0)
 
             try {

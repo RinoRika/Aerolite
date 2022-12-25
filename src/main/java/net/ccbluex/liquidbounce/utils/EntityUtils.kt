@@ -67,6 +67,10 @@ object EntityUtils : MinecraftInstance() {
         return false
     }
 
+    fun isRendered(entityToCheck: Entity?): Boolean {
+        return mc.theWorld != null && mc.theWorld.getLoadedEntityList().contains(entityToCheck)
+    }
+
     fun getName(networkPlayerInfoIn: NetworkPlayerInfo): String? {
         return if (networkPlayerInfoIn.displayName != null) networkPlayerInfoIn.displayName.formattedText else ScorePlayerTeam.formatPlayerName(
             networkPlayerInfoIn.playerTeam,

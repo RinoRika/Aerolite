@@ -2,6 +2,8 @@ package net.ccbluex.liquidbounce.features.special
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.MovementUtils
@@ -15,6 +17,7 @@ import oh.yalan.NativeMethod
 @NativeClass
 class CombatManager : Listenable, MinecraftInstance() {
     private val lastAttackTimer = MSTimer()
+    private val shitTimer = MSTimer()
 
     var inCombat = false
         private set
@@ -79,17 +82,18 @@ class CombatManager : Listenable, MinecraftInstance() {
         focusedPlayerList.clear()
     }
 
-//    @EventTarget
-//    fun onPacket(event: PacketEvent) {
-//        val packet = event.packet
-//        if(packet is S02PacketChat) {
-//            val raw = packet.chatComponent.unformattedText
-//            val found = hackerWords.filter { raw.contains(it, true) }
-//            if(raw.contains(mc.session.username, true) && found.isNotEmpty()) {
-//                LiquidBounce.hud.addNotification(Notification("Someone call you a hacker!", found.joinToString(", "), NotifyType.ERROR))
-//            }
-//        }
-//    }
+    @EventTarget
+    fun onPacket(event: PacketEvent) {
+        val packet = event.packet
+        if(packet is S02PacketChat) {
+            val raw = packet.chatComponent.unformattedText
+            val found = hackerWords.filter { raw.contains(it, true) }
+            if(raw.contains(mc.session.username, true) && found.isNotEmpty()) {
+                LiquidBounce.hud.addNotification(Notification("Someone call you a hacker!", found.joinToString(", "), NotifyType.WARNING))
+            }
+        }
+    }
+
     fun getKillCounts(): Long {
     return killCounts
 }

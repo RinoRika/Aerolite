@@ -34,7 +34,7 @@ import java.awt.Color
  *
  * Allows to move and customize minecraft scoreboard
  */
-@ElementInfo(name = "Scoreboard", blur = true)
+@ElementInfo(name = "Scoreboard")
 class ScoreboardElement(
     x: Double = 5.0,
     y: Double = 0.0,
@@ -51,9 +51,9 @@ class ScoreboardElement(
     private val backgroundColorBlueValue = IntegerValue("Background-B", 0, 0, 255)
     private val backgroundColorAlphaValue = IntegerValue("Background-Alpha", 95, 0, 255)
 
-    private val shadowShaderValue = BoolValue("Shadow", false)
+    private val shadowShaderValue = BoolValue("Shadow", true)
     private val shadowStrength = FloatValue("Shadow-Strength", 0F, 0F, 30F).displayable{ shadowShaderValue.get() }
-    private val blurValue2 = BoolValue("Blur", false)
+    private val blurValue2 = BoolValue("Blur", true)
     private val blurStrength = FloatValue("Blur-Strength", 0F, 0F, 30F).displayable { blurValue2.get() }
 
 

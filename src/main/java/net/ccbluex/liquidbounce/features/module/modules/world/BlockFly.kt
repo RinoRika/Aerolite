@@ -14,6 +14,8 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.injection.access.StaticStorage
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
@@ -276,6 +278,10 @@ class BlockFly : Module() {
             mc.thePlayer.isSprinting = false;
             mc.thePlayer.motionX *= 1.19;
             mc.thePlayer.motionZ *= 1.19;
+        }
+        if (getBlocksAmount2() <= 0) {
+            this.state = false
+            LiquidBounce.hud.addNotification(Notification("BlockFly", "No item in inventory!", NotifyType.WARNING))
         }
     }
 

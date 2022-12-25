@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.features.module.modules.client.Interpolate
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.features.module.modules.render.LiquidBouncePlus.ColorMixer
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
@@ -38,7 +37,6 @@ import net.minecraft.util.MathHelper
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
-import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
@@ -48,7 +46,7 @@ import kotlin.math.roundToInt
 @ElementInfo(name = "Targets")
 open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
-    val modeValue = ListValue("Mode", arrayOf("Aerolite", "Aerolite2", "AeroliteOld", "FDP", "Bar", "OverFlow", "Chill", "Rice", "Slowly", "Remix", "Romantic", "Novoline", "Novoline2", "Novoline3", "Novoline4", "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "ExhibitionOld", "Zamorozka", "Arris", "Tenacity", "TenacityNew", "WaterMelon", "SparklingWater", "Hanabi"), "FDP")
+    val modeValue = ListValue("Mode", arrayOf("Aerolite", "Aerolite2", "AeroliteOld", "FDP", "Bar", "OverFlow", "Chill", "Rice", "Slowly", "Remix", "Romantic", "Novoline", "Novoline2", "Novoline3", "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "ExhibitionOld", "Zamorozka", "Arris", "Tenacity", "TenacityNew", "WaterMelon", "SparklingWater", "Hanabi"), "FDP")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2", "Rise6"), "Rise6")
 
     private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
@@ -149,7 +147,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
     var easingHealth = 0F
     var barColor = Color(-1)
     var bgColor = Color(-1)
-    var recorded = false
 
     private var prevTarget: EntityLivingBase? = null
     private var displayPercent = 0f
@@ -207,7 +204,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         val pct = (time - lastUpdate) / (switchAnimSpeedValue.get() * 50f)
         lastUpdate = System.currentTimeMillis()
 
-        if (mc.currentScreen is GuiHudDesigner || mc.currentScreen is GuiChat || mc.currentScreen is GuiNewChat) {
+        if (mc.currentScreen is GuiHudDesigner || mc.currentScreen is GuiChat) {
             target = mc.thePlayer
         }
         if (target != null) {
@@ -268,8 +265,8 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "Custom" -> Color(redValue.get(), greenValue.get(), blueValue.get())
             "Sky" -> ColorUtils.skyRainbow(0, saturationValue.get(), brightnessValue.get(), rainbowSpeed.get().toDouble())
             "Fade" -> ColorUtils.fade(Color(redValue.get(), greenValue.get(), blueValue.get()), 0, 100)
-            "Health" -> if (target != null) BlendUtils.getHealthColor(target.health, target.maxHealth) else Color.green
-            else -> ColorUtils.slowlyRainbow(System.nanoTime(), 0, saturationValue.get(), brightnessValue.get())!!
+            "Health" -> if (target != null) BlendUtils.getHealthColor(target.health, target.maxHealth) else Color.red
+            else -> ColorUtils.slowlyRainbow(System.nanoTime(), 0, saturationValue.get(), brightnessValue.get())
         }
 
         progress += 0.0025F * RenderUtils.deltaTime * if (target != null) -1F else 1F
@@ -303,6 +300,9 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
         GlStateManager.resetColor()
 
+        // FDP You shit
+        // Skid lb+ without methods
+        updateAnim(prevTarget!!.health)
 
         when (modeValue.get().lowercase()) {
             "fdp" -> drawFDP(prevTarget!!)
@@ -328,8 +328,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
                 drawChill(prevTarget!! as EntityPlayer)
                 updateData(renderX.toFloat() + calcTranslateX, renderY.toFloat() + calcTranslateY, calcScaleX, calcScaleY)
             }
-            "novoline3" -> drawNovoline3(prevTarget!!)
-            "novoline4" -> drawNovoline4(prevTarget!!)
+            "novoline3" -> drawNovo3(prevTarget!!)
             "remix" -> drawRemix(prevTarget!! as EntityPlayer)
             "rice" -> drawRice(prevTarget!!)
             "slowly" -> drawSlowly(prevTarget!!)
@@ -446,36 +445,6 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         }
     }
 
-    private fun drawNovoline4(target: EntityLivingBase) {
-        val mainColor = barColor
-        val percent = target.health.toInt()
-        val nameLength = (fontValue.get().getStringWidth(target.name)).coerceAtLeast(
-            fontValue.get().getStringWidth(
-                "${
-                    decimalFormat.format(percent)
-                }"
-            )
-        ).toFloat() + 20F
-        val barWidth = (target.health / target.maxHealth).coerceIn(0F, target.maxHealth) * (nameLength - 2F)
-        RenderUtils.drawRect(-2F, -2F, 3F + nameLength + 36F, 2F + 36F, Color(50, 50, 50, 150).rgb)
-        RenderUtils.drawRect(-1F, -1F, 2F + nameLength + 36F, 1F + 36F, Color(0, 0, 0, 100).rgb)
-        drawPlayerHead(target.skin, 0, 0, 36, 36)
-        Fonts.minecraftFont.drawStringWithShadow(target.name, 2F + 36F, 2F, -1)
-        RenderUtils.drawRect(37F, 14F, 37F + nameLength, 24F, Color(0, 0, 0, 200).rgb)
-        easingHealth += ((target.health - easingHealth) / 2.0F.pow(10.0F - fadeSpeed.get())) * RenderUtils.deltaTime
-        val animateThingy =
-            (easingHealth.coerceIn(target.health, target.maxHealth) / target.maxHealth) * (nameLength - 2F)
-        if (easingHealth > target.health)
-            RenderUtils.drawRect(38F, 15F, 38F + animateThingy, 23F, mainColor.darker().rgb)
-        RenderUtils.drawRect(38F, 15F, 38F + barWidth, 23F, mainColor.rgb)
-        Fonts.minecraftFont.drawStringWithShadow("${decimalFormat.format(percent)}", 38F, 26F, Color.WHITE.rgb)
-        Fonts.font35.drawStringWithShadow(
-            "❤",
-            Fonts.minecraftFont.getStringWidth("${decimalFormat.format(percent)}") + 40F,
-            27F,
-            Color(redValue.get(), greenValue.get(), blueValue.get()).rgb
-        )
-    }
 
     private fun drawNovo(target: EntityLivingBase) {
         val font = fontValue.get()
@@ -1264,6 +1233,33 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         RenderUtils.drawHead(target.skin, 2, 2, 16, 16)
     }
 
+    private fun drawNovo3(target: EntityLivingBase) {
+        val width = (38 + Fonts.font40.getStringWidth(target.name)).coerceAtLeast(118).toFloat()
+        RenderUtils.drawRect(0f, 0f, width + 14f, 44f, Color(0, 0, 0,
+            bgAlphaValue.get()).rgb)
+        drawPlayerHead(target.skin, 3, 3, 30, 30)
+        Fonts.font35.drawString(target.name, 34.5f, 4f, Color.WHITE.rgb)
+        Fonts.font35.drawString("Health: ${decimalFormat.format(target.health)}", 34.5f, 14f, Color.WHITE.rgb)
+        Fonts.font35.drawString(
+            "Distance: ${decimalFormat.format(mc.thePlayer.getDistanceToEntity(target))}m",
+            34.5f,
+            24f,
+            Color.WHITE.rgb
+        )
+        RenderUtils.drawRect(2.5f, 35.5f, width + 11.5f, 37.5f, Color(0, 0, 0, 200).rgb)
+        RenderUtils.drawGradientSidewaysH(3.0, 36.0, 3.0 + (easingHealth / target.maxHealth) * (width + 8f), 37.0,  Palette.fade(barColor).rgb, barColor.rgb)
+        RenderUtils.drawRect(2.5f, 39.5f, width + 11.5f, 41.5f, Color(0, 0, 0, 200).rgb)
+        RenderUtils.drawGradientSidewaysH(
+            3.0,
+            40.0,
+            3.0 + (target.totalArmorValue / 20F) * (width + 8f),
+            41.0,
+            Palette.fade(Color(77, 128, 255)).rgb,
+            Color(77, 128, 255).rgb
+        )
+        easingHealth += ((target.health - easingHealth) / 2.0F.pow(10.0F - fadeSpeed.get())) * RenderUtils.deltaTime
+    }
+
     private fun drawArris(target: EntityLivingBase) {
         val font = fontValue.get()
 
@@ -1735,6 +1731,9 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         // background
         RenderUtils.drawRoundedCornerRect(0F, 0F, 10F + length, 55F, 8F, bgColor.rgb)
 
+        if(entity.hurtTime >= 9) {
+            gotDamaged = true
+        }
         // particle engine
         if (riceParticle.get()) {
             // adding system
@@ -2025,88 +2024,25 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         )
     }
 
-    private fun drawNovoline3(target: EntityLivingBase) {
-        val counter1 = intArrayOf(50)
-        val counter2 = intArrayOf(80)
-        val width = (38 + Fonts.minecraftFont.getStringWidth(target.name))
-            .coerceAtLeast(118)
-            .toFloat()
-        counter1[0] += 1
-        counter2[0] += 1
-        counter1[0] = counter1[0].coerceIn(0, 50)
-        counter2[0] = counter2[0].coerceIn(0, 80)
-        RenderUtils.drawRect(0F, 0F, width, 34.5F, Color(0, 0, 0, 100))
-        val customColor = Color(redValue.get(), greenValue.get(), blueValue.get(), 255)
-        val customColor1 = Color(gredValue.get(), ggreenValue.get(), gblueValue.get(), 255)
-        RenderUtils.drawGradientSidewaysNormal(
-            34.0, 16.0, width.toDouble() - 2,
-            24.0, Color(40, 40, 40, 220).rgb, Color(60, 60, 60, 255).rgb
-        )
-        RenderUtils.drawGradientSidewaysNormal(
-            34.0, 16.0, (36.0F + (easingHealth / target.maxHealth) * (width - 36.0F)).toDouble() - 2,
-            24.0, Palette.fade2(customColor, counter1[0], Fonts.font35.FONT_HEIGHT).rgb,
-            Palette.fade2(customColor1, counter2[0], Fonts.font35.FONT_HEIGHT).rgb
-        )
-        easingHealth += ((target.health - easingHealth) / 2.0F.pow(10.0F - fadeSpeed.get())) * RenderUtils.deltaTime
-        Fonts.minecraftFont.drawString(target.name, 34, 4, Color(255, 255, 255, 255).rgb)
-        drawPlayerHead(target.skin, 2, 2, 30, 30)
-        Fonts.minecraftFont.drawStringWithShadow(
-            BigDecimal((target.health / target.maxHealth * 100).toDouble()).setScale(
-                1,
-                BigDecimal.ROUND_HALF_UP
-            ).toString() + "%", width / 2F + 5.5F, 17F, Color.white.rgb
-        )
-    }
-
     private fun drawAerolite2(target: EntityLivingBase) {
         val font = Fonts.font40
         val hurtPercent = target.hurtPercent
         val yPos = 5 + font.FONT_HEIGHT + 3f
         val additionalWidth = font.getStringWidth("${target.name} ").coerceAtLeast(100)
         val additionalWidth2 = 60
-        if ((getHealth(target).roundToInt() / target.maxHealth) <= 1) {
-            if ((getHealth(target).roundToInt() / target.maxHealth) >= 0.7) {
-                val dgc1 = ColorUtils.interpolateColorsBackAndForth(15, 0, Color(80,200,80,255),Color(0,255,0,255), Interpolate.interpolateHue.get())
-                val dgc2 = ColorUtils.interpolateColorsBackAndForth(15, 180, Color(80,200,80,255),Color(0,255,0,255), Interpolate.interpolateHue.get())
-                val dgc3 = ColorMixer.getMixedColor(80,200,80,0,255,0,-25,2)
-                RenderUtils.drawBorder(-1f, -1f, 46f + additionalWidth, 41f, 1f, dgc3.rgb)
-             //   RenderUtils.drawGradientSidewaysNormal(40.0, yPos.toDouble(), 40.0 + (easingHP / target.maxHealth).toInt() * additionalWidth2, yPos.toInt() + 4.0, dgc1.rgb, dgc2.rgb)
-                RenderUtils.drawRect(40f, yPos, 40 + (getHealth(target).roundToInt() / target.maxHealth) * additionalWidth2, yPos + 4, Color.GREEN.rgb)
-            }
-            else if ((getHealth(target).roundToInt() / target.maxHealth) < 0.7 && (getHealth(target).roundToInt() / target.maxHealth) >= 0.4) {
-                val dgc1 = ColorUtils.interpolateColorsBackAndForth(15, 0, Color(200,200,80,255),Color(255,255,0,255), Interpolate.interpolateHue.get())
-                val dgc2 = ColorUtils.interpolateColorsBackAndForth(15, 180, Color(200,200,80,255),Color(255,255,0,255), Interpolate.interpolateHue.get())
-                val dgc3 = ColorMixer.getMixedColor(200,200,80,255,255,0,-25,2)
-                RenderUtils.drawBorder(-1f, -1f, 46f + additionalWidth, 41f, 1f, dgc3.rgb)
-             //   RenderUtils.drawGradientSidewaysNormal(40.0, yPos.toDouble(), 40.0 + (easingHP / target.maxHealth).toInt() * additionalWidth2, yPos.toInt() + 4.0, dgc1.rgb, dgc2.rgb)
-                RenderUtils.drawRect(40f, yPos, 40 + (getHealth(target).roundToInt() / target.maxHealth) * additionalWidth2, yPos + 4, Color.YELLOW.rgb)
-            }
-            else if ((getHealth(target).roundToInt() / target.maxHealth) < 0.4) {
-                val dgc1 = ColorUtils.interpolateColorsBackAndForth(15, 0, Color(200,80,80),Color(255,0,0,255), Interpolate.interpolateHue.get())
-                val dgc2 = ColorUtils.interpolateColorsBackAndForth(15, 180, Color(200,80,80),Color(255,0,0,255), Interpolate.interpolateHue.get())
-                val dgc3 = ColorMixer.getMixedColor(200,80,80,255,0,0,-25,2)
-                RenderUtils.drawBorder(-1f, -1f, 46f + additionalWidth, 41f, 1f, dgc3.rgb)
-              //  RenderUtils.drawGradientSidewaysNormal(40.0, yPos.toDouble(), 40.0 + (easingHP / target.maxHealth).toInt() * additionalWidth2, yPos.toInt() + 4.0, dgc1.rgb, dgc2.rgb)
-                RenderUtils.drawRect(40f, yPos, 40 + (getHealth(target).roundToInt() / target.maxHealth) * additionalWidth2, yPos + 4, Color.RED.rgb)
-            }
-        } else {
-            val dgc1 = ColorUtils.interpolateColorsBackAndForth(15, 0, Color(200,80,80),Color(255,0,0,255), Interpolate.interpolateHue.get())
-            val dgc2 = ColorUtils.interpolateColorsBackAndForth(15, 180, Color(200,80,80),Color(255,0,0,255), Interpolate.interpolateHue.get())
-            val dgc3 = ColorMixer.getMixedColor(200,80,80,255,0,0,-25,2)
-            RenderUtils.drawBorder(-1f, -1f, 46f + additionalWidth, 41f, 1f, dgc3.rgb)
-            RenderUtils.drawRect(40f, yPos, 40 + (getHealth(target).roundToInt() / target.maxHealth) * additionalWidth2, yPos + 4, Color.RED.rgb)
-        }
+        RenderUtils.drawBorder(-1f, -1f, 46f + additionalWidth, 41f, 1f, barColor.rgb)
+        //   RenderUtils.drawGradientSidewaysNormal(40.0, yPos.toDouble(), 40.0 + (easingHP / target.maxHealth).toInt() * additionalWidth2, yPos.toInt() + 4.0, dgc1.rgb, dgc2.rgb)
+        RenderUtils.drawRect(40f, yPos, 40 + (getHealth(target).roundToInt() / target.maxHealth) * additionalWidth2, yPos + 4, barColor.rgb)
         RenderUtils.drawRect(0f, 0f, 46f + additionalWidth, 40f, Color(0, 0, 0, 110).rgb)
+        RenderUtils.drawRect(40f, yPos + 9, 40 + (target.totalArmorValue / 20F) * additionalWidth, yPos + 13, Color(77, 128, 255).rgb)
         font.drawString(target.name, 40, 5, Color.WHITE.rgb)
+        Fonts.font52.drawString(getHealth(target).toInt().toString(), 40f + additionalWidth - 16.8f - font.getStringWidth(getHealth(target).toInt().toString()), 25f - font.FONT_HEIGHT, Color.WHITE.rgb)
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
         RenderUtils.drawCircle(40f + additionalWidth - 20f, 20f, 15f, 0, (getHealth(target) * 18).roundToInt().coerceAtMost(360))
 
-        Fonts.font52.drawString(getHealth(target).toInt().toString(), 40f + additionalWidth - 16.5f - font.getStringWidth(getHealth(target).toInt().toString()), 26.5f - font.FONT_HEIGHT, Color.WHITE.rgb)
-        RenderUtils.drawRect(40f, yPos + 9, 40 + (target.totalArmorValue / 20F) * additionalWidth, yPos + 13, Color(77, 128, 255).rgb)
 
-        GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
+    //    GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
         RenderUtils.quickDrawHead(target.skin, 5, 4.5.toInt(), 32, 32)
-   //     RenderUtils.drawEntityOnScreen(5,5,16, target)
         if (shadowValue.get()) {
             GL11.glTranslated(-renderX, -renderY, 0.0)
             GL11.glPushMatrix()
@@ -2117,7 +2053,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
                     GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
                     GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
                 }
-                RenderUtils.drawRect(-1F + shadowX.get(), -1F + shadowY.get(), 45f + additionalWidth + shadowX.get(), 41F + shadowY.get(), ColorUtils.rainbow().rgb)
+                RenderUtils.drawRect(-1F + shadowX.get(), -1F + shadowY.get(), 45f + additionalWidth + shadowX.get(), 41F + shadowY.get(), barColor.rgb)
                 GL11.glPopMatrix()
             }, {
                 GL11.glPushMatrix()
@@ -2126,11 +2062,53 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
                     GL11.glTranslatef(calcTranslateX, calcTranslateY, 0F)
                     GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
                 }
-                RenderUtils.drawRect(-1F + shadowX.get(), -1F + shadowY.get(), 45f + additionalWidth + shadowX.get(), 41F + shadowY.get(), ColorUtils.rainbow().rgb)
+                RenderUtils.drawRect(-1F + shadowX.get(), -1F + shadowY.get(), 45f + additionalWidth + shadowX.get(), 41F + shadowY.get(), barColor.rgb)
                 GL11.glPopMatrix()
             })
             GL11.glPopMatrix()
             GL11.glTranslated(renderX, renderY, 0.0)
+        }
+        if(target.hurtTime >= 9) {
+            gotDamaged = true
+        }
+        // particle engine
+        if (riceParticle.get()) {
+            // adding system
+            if (gotDamaged) {
+                for (j in 0..(generateAmountValue.get() / 3)) {
+                    val parSize = RandomUtils.nextFloat(minParticleSize.get(), maxParticleSize.get())
+                    val parDistX = RandomUtils.nextFloat(-particleRange.get(), particleRange.get())
+                    val parDistY = RandomUtils.nextFloat(-particleRange.get(), particleRange.get())
+                    val firstChar = RandomUtils.random(1, "${if (riceParticleCircle.get().equals("none", true)) "" else "c"}${if (riceParticleRect.get().equals("none", true)) "" else "r"}${if (riceParticleTriangle.get().equals("none", true)) "" else "t"}")
+                    val drawType = ShapeType.getTypeFromName(when (firstChar) {
+                        "c" -> "c_${riceParticleCircle.get().lowercase(Locale.getDefault())}"
+                        "r" -> "r_${riceParticleRect.get().lowercase(Locale.getDefault())}"
+                        else -> "t_${riceParticleTriangle.get().lowercase(Locale.getDefault())}"
+                    }) ?: break
+
+                    particleList.add(
+                        Particle(
+                            BlendUtils.blendColors(
+                                floatArrayOf(0F, 1F),
+                                arrayOf<Color>(Color.white, barColor),
+                                if (RandomUtils.nextBoolean()) RandomUtils.nextFloat(0.5F, 1.0F) else 0F),
+                            parDistX, parDistY, parSize, drawType)
+                    )
+                }
+                gotDamaged = false
+            }
+
+            // render and removing system
+            val deleteQueue = mutableListOf<Particle>()
+
+            particleList.forEach { particle ->
+                if (particle.alpha > 0F)
+                    particle.render(18F, 18F, riceParticleFade.get(), riceParticleSpeed.get(), riceParticleFadingSpeed.get(), riceParticleSpin.get())
+                else
+                    deleteQueue.add(particle)
+            }
+
+            particleList.removeAll(deleteQueue)
         }
     }
 
@@ -2203,8 +2181,8 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             (x + 140.0f).toFloat(),
             (y + 40).toFloat()
         )
-        RenderUtils.drawRect(0f, 0f, 140.0f, 40.0f, blackcolor)
-        RenderUtils.drawRect(0f, 37.0f, 140f, 40f, Color(0, 0, 0, 48).rgb)
+        RenderUtils.drawRect(0f, 0f, 170.0f, 40.0f, blackcolor)
+        RenderUtils.drawRect(0f, 37.0f, 170f, 40f, Color(0, 0, 0, 48).rgb)
         drawPlayerHead(target.skin, 2, 2, 33, 33)
         if (easingHealth > target.health)
             RenderUtils.drawRect(
@@ -2249,8 +2227,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
         return when (modeValue.get().lowercase()) {
             "novoline" -> Border(0F, 0F, 140F, 40F)
             "novoline2" -> Border(0F, 0F, 140F, 40F)
-            "novoline3" -> Border(0F, 0F, 140F, 40F)
-            "novoline4" -> Border(0F, 0F, 140F, 40F)
+            "novoline3" -> Border(0F, 0F, 132F, 43F)
             "astolfo" -> Border(0F, 0F, 140F, 60F)
             "liquid" -> Border(0F, 0F, (38 + mc.thePlayer.name.let(Fonts.font40::getStringWidth)).coerceAtLeast(118).toFloat(), 36F)
             "fdp" -> Border(0F, 0F, 150F, 47F)
