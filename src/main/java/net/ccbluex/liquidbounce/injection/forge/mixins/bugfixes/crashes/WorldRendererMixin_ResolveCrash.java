@@ -26,12 +26,10 @@ public class WorldRendererMixin_ResolveCrash {
     @Inject(method = "finishDrawing", at = @At(value = "INVOKE", target = "Ljava/nio/ByteBuffer;limit(I)Ljava/nio/Buffer;", remap = false))
     private void patcher$resetBuffer(CallbackInfo ci) {
         this.rawIntBuffer.position(0);
-        ClientUtils.INSTANCE.tipException("渲染世界时出错，已修复渲染。");
     }
 
     @Inject(method = "endVertex", at = @At("HEAD"))
     private void patcher$adjustBuffer(CallbackInfo ci) {
         this.rawIntBuffer.position(this.rawIntBuffer.position() + this.vertexFormat.getIntegerSize());
-        ClientUtils.INSTANCE.tipException("渲染世界时出错，已修复渲染。");
     }
 }

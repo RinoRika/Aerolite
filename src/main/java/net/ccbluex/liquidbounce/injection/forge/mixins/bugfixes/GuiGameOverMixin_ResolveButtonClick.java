@@ -14,7 +14,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GuiGameOver.class)
 public class GuiGameOverMixin_ResolveButtonClick {
-    @Shadow private int enableButtonsTimer;
+    @Shadow
+    public int enableButtonsTimer;
 
     @Inject(method = "initGui", at = @At("HEAD"))
     private void patcher$allowClickable(CallbackInfo ci) {

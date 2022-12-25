@@ -279,10 +279,6 @@ class BlockFly : Module() {
             mc.thePlayer.motionX *= 1.19;
             mc.thePlayer.motionZ *= 1.19;
         }
-        if (getBlocksAmount2() <= 0) {
-            this.state = false
-            LiquidBounce.hud.addNotification(Notification("BlockFly", "No item in inventory!", NotifyType.WARNING))
-        }
     }
 
     /**
@@ -292,6 +288,10 @@ class BlockFly : Module() {
      */
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+        if (getBlocksAmount2() <= 0) {
+            this.state = false
+            LiquidBounce.hud.addNotification(Notification("BlockFly", "No item in inventory!", NotifyType.WARNING))
+        }
         if (towerStatus && towerModeValue.get().lowercase() != "aac3.3.9" && towerModeValue.get().lowercase() != "aac4.4constant" && towerModeValue.get().lowercase() != "aac4jump") mc.timer.timerSpeed = towerTimerValue.get()
         if (!towerStatus) {
             when (timerModeValue.get().lowercase()) {

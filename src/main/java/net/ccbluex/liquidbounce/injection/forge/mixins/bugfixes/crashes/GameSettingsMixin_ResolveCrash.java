@@ -23,7 +23,6 @@ public class GameSettingsMixin_ResolveCrash {
     @Overwrite
     public static boolean isKeyDown(KeyBinding key) {
         int keyCode = key.getKeyCode();
-        ClientUtils.INSTANCE.tipException("你的键盘输入了Unicode字符导致了游戏的崩溃(MC-102867)，已取消该事件。");
         if (keyCode != 0 && keyCode < 256) {
             return keyCode < 0 ? Mouse.isButtonDown(keyCode + 100) : Keyboard.isKeyDown(keyCode);
         } else {

@@ -23,7 +23,6 @@ public class EntityLivingBaseMixin_ResolveCrash {
     private void patcher$checkPotionEffect(CallbackInfo ci, Iterator<Integer> iterator, Integer integer, PotionEffect potioneffect) {
         if (potioneffect == null) {
             ci.cancel();
-            ClientUtils.INSTANCE.tipException("你获得了一个未知的药水效果，已删除。");
         }
     }
 }

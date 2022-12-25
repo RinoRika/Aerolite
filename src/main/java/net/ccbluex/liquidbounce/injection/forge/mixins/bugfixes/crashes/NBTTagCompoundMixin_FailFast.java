@@ -19,6 +19,5 @@ public class NBTTagCompoundMixin_FailFast {
     @Inject(method = "setTag", at = @At("HEAD"))
     private void patcher$failFast(String key, NBTBase value, CallbackInfo ci) {
         if (value == null) throw new IllegalArgumentException("Invalid null NBT value with key " + key);
-        ClientUtils.INSTANCE.tipException("你获得了一个未知NBT的物品,它即将引起游戏崩溃。已在日志内显示详细信息并取消读取NBT。");
     }
 }

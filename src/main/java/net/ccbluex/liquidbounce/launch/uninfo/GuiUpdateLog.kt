@@ -28,22 +28,31 @@ class GuiUpdateLog : GuiScreen(), GuiYesNoCallback {
 
     override fun initGui() {
         this.buttonList.add(GuiButton(0, this.width / 2 - 50, 460, 100, 20, "Back"))
-        text.add("[+] Better GuiMainMenu")
-        text.add("[+] New Font Renderer")
-        text.add("[+] New Text Rects, Novoline-like round hud, Mixer color, Many targets")
-        text.add("[+] Intave Velocity, Many ab modes, Many rotation modes, Many criticals modes, Hypixel noslow, More speedmines")
-        text.add("[+] A few clickguis(some are broken)")
-        text.add("[*] Fix Aura,BlockFly")
-        text.add("[-] Remove DEATH")
-        text.add("不想写了自己看吧")
+        text.add("★ TargetHUD")
+        text.add("[*] Fix Hanabi rect size")
+        text.add("[*] Fix Rice no particle while hitting")
+        text.add("[+] Mode Novoline3(According to novoline.lol mode \"Styles\")")
+        text.add("[+] Add smart particles to mode Aerolite2 (same as mode Rice)")
+        text.add("★ Text")
+        text.add("[+] Fade rainbow color")
+        text.add("★ Modules")
+        text.add("[+] Auto disable BlockFly if there is no block")
+        text.add("[+] Better CustomTitle")
+        text.add("[+] AntiExploit add LilyPad fix")
+        text.add("[+] Add BackTrack")
+        text.add("[+] HypDisabler2 add NewTimerDisabler (Not tested)")
+        text.add("[+] HypDisabler3 (Not tested)")
+        text.add("★ Client")
+        text.add("[*] Totally deleted shit codes")
+        text.add("[*] A big performance improve")
+        text.add("[+] InputFix")
+        text.add("// TODO: Idk why the rotation isn't as smooth as FDP with the same RotationUtils.kt")
+        text.add("// TODO: Luckily, it doesn't cause bad bypasses")
     }
 
     override fun drawScreen(p_drawScreen_1_: Int, p_drawScreen_2_: Int, p_drawScreen_3_: Float) {
         val sr = ScaledResolution(mc)
-      //  drawBackground(0)
-        mc.textureManager.bindTexture(ResourceLocation("aerolite/main/game.png"))
-        drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width.toFloat(), height.toFloat())
-        GL11.glPushMatrix()
+        drawBackground(0)
         val creditInfo = "Aerolite ${LiquidBounce.CLIENT_REAL_VERSION}"
         Fonts.font35.drawString(creditInfo, 2F, height - 12F, -1)
         GlStateManager.disableAlpha()
@@ -54,14 +63,12 @@ class GuiUpdateLog : GuiScreen(), GuiYesNoCallback {
         // Text
         val fontLeft = sr.scaledWidth / 2 - 297f
         var startY = 130f
-        Fonts.gs40.drawCenteredString("Update Log (v4.0.0)", width / 2f, 115f, Color(0,0,0,200).rgb)
-        // End
-        GL11.glPopMatrix()
-        super.drawScreen(p_drawScreen_1_, p_drawScreen_2_, p_drawScreen_3_)
+        Fonts.gs40.drawCenteredString("Update Log (v4.0.0 Final 2)", width / 2f, 115f, Color(0,0,0,200).rgb)
         text.forEach {
             startY += 10f
             Fonts.gs35.drawString(it, fontLeft, startY, Color(0,0,0,175).rgb)
         }
+        super.drawScreen(p_drawScreen_1_, p_drawScreen_2_, p_drawScreen_3_)
     }
 
     override fun actionPerformed(button: GuiButton) {

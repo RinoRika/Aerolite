@@ -16,7 +16,9 @@ import org.spongepowered.asm.mixin.Mixins;
 
 import java.util.Map;
 
+@IFMLLoadingPlugin.Name("Aerolite")
 @IFMLLoadingPlugin.MCVersion("1.8.9")
+@IFMLLoadingPlugin.TransformerExclusions("lain.mods.inputfix.")
 public class TransformerLoader implements IFMLLoadingPlugin {
 
     public TransformerLoader() {
@@ -32,7 +34,7 @@ public class TransformerLoader implements IFMLLoadingPlugin {
      */
     @Override
     public String[] getASMTransformerClass() {
-        return new String[] {ForgeNetworkTransformer.class.getName(), AbstractJavaLinkerTransformer.class.getName(), ViaForgeSupportTransformer.class.getName(), OptimizeTransformer.class.getName()};
+        return new String[] {ForgeNetworkTransformer.class.getName(), AbstractJavaLinkerTransformer.class.getName(), ViaForgeSupportTransformer.class.getName(), OptimizeTransformer.class.getName(), "lain.mods.inputfix.InputFixTransformer"};
     }
 
     /**
@@ -47,7 +49,7 @@ public class TransformerLoader implements IFMLLoadingPlugin {
      */
     @Override
     public String getModContainerClass() {
-        return null;
+        return "lain.mods.inputfix.InputFixDummyContainer";
     }
 
     /**
@@ -59,7 +61,7 @@ public class TransformerLoader implements IFMLLoadingPlugin {
      */
     @Override
     public String getSetupClass() {
-        return null;
+        return "lain.mods.inputfix.InputFixSetup";
     }
 
     /**
