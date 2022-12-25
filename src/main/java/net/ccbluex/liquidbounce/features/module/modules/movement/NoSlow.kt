@@ -5,8 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import me.stars.utils.ThePlayerUtils.isUsingBow
-import me.stars.utils.ThePlayerUtils.isUsingFood
 import me.stars.vec.PlayerUtil
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
