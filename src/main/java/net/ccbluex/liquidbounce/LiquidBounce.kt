@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.macro.MacroManager
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleManager
+import net.ccbluex.liquidbounce.features.module.modules.addit.CustomTitle
 import net.ccbluex.liquidbounce.features.module.modules.client.ClientSettings
 import net.ccbluex.liquidbounce.features.module.modules.render.LiquidBouncePlus.ColorMixer
 import net.ccbluex.liquidbounce.features.special.AntiForge
@@ -202,14 +203,14 @@ object LiquidBounce {
         isStarting = false
         isLoadingConfig = false
 
-        // Client Settings
+        // Modules
         ClientSettings.state = true
         ColorMixer.regenerateColors(true)
 
-        // Check Version and set title (Author:Stars)
         ClientUtils.logInfo("$CLIENT_NAME $CLIENT_REAL_VERSION started!")
         FinishChoosingScreen = true
-        ClientUtils.finishTitle()
+        if (CustomTitle.state) Display.setTitle(CustomTitle.titleValue.get())
+        else ClientUtils.finishTitle()
     }
 
     /**

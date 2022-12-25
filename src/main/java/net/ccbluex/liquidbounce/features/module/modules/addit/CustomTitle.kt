@@ -8,8 +8,12 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.opengl.Display
 
 @ModuleInfo(name = "CustomTitle", ModuleCategory.ADDIT)
-class CustomTitle : Module() {
-    val titleValue = TextValue("Title", "Liquidbounce b73")
+object CustomTitle : Module() {
+    val titleValue: TextValue = object : TextValue("Title", "Liquidbounce b73") {
+        override fun onChanged(oldValue: String, newValue: String) {
+            Display.setTitle(newValue)
+        }
+    }
 
     var wasRestarted = false
 
