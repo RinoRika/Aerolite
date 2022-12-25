@@ -110,7 +110,7 @@ open class Module() :MinecraftInstance(), Listenable {
         get() = values.filterIsInstance<ListValue>()
 
     open fun onLoad() {
-        localizedName = "$name"
+        localizedName = name
     }
 
     // Current state of module

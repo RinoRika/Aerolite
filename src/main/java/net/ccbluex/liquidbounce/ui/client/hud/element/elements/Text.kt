@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.extensions.ping
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.Palette
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.Minecraft
@@ -55,7 +56,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
     private val greenValue2 = IntegerValue("Green", 255, 0, 255)
     private val blueValue2 = IntegerValue("Blue", 255, 0, 255)
     private val alphaValue2 = IntegerValue("Alpha", 255, 0, 255)
-    val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow", "Mixer"), "Custom")
+    val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow", "Mixer", "RainbowG", "MixerG"), "Custom")
     val shadow = BoolValue("Shadow", true)
     private val mixerSecValue = IntegerValue("Mixer-Seconds", 2, 1, 10)
     private val mixerDistValue = IntegerValue("Mixer-Distance", 2, 0, 10)
@@ -65,13 +66,13 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
     private val rectBlueValue = IntegerValue("RectBlue", 0, 0, 255)
     private val rectAlphaValue = IntegerValue("RectAlpha", 255, 0, 255)
     val rectColorModeValue = ListValue("RectColor", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow", "Mixer"), "Custom")
-    val rectValue = ListValue("Rect", arrayOf("Normal", "Mix", "Skeet", "Artemis", "Flux", "Novoline", "None"), "None")
+    val rectValue = ListValue("Rect", arrayOf("Normal", "Mix", "Skeet", "Artemis", "Flux", "Novoline", "Border", "None"), "None")
     private val lineValue = BoolValue("SkeetLine", true)
     private val rectExpandValue = FloatValue("RectExpand", 0.3F, 0F, 1F)
     private val rainbowSpeed = IntegerValue("RainbowSpeed", 10, 1, 10)
     private val rainbowIndex = IntegerValue("RainbowIndex", 1, 1, 20)
 
-    val fontValue = FontValue("Font", Fonts.tc35)
+    val fontValue = FontValue("Font", Fonts.font35)
 
     private var editMode = false
     private var editTicks = 0
@@ -103,6 +104,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
                 "ping" -> return "${mc.thePlayer.ping}"
                 "speed" -> return DECIMAL_FORMAT.format(MovementUtils.bps)
                 "attackDist" -> return if (LiquidBounce.combatManager.target != null) mc.thePlayer.getDistanceToEntity(LiquidBounce.combatManager.target).toString() + " Blocks" else "Hasn't attacked"
+                "health" -> return mc.thePlayer.health.toString()
             }
         }
 
@@ -161,6 +163,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
 
         val fontRenderer = fontValue.get()
         val mixerColor = ColorMixer.getMixedColor(-mixerIndexValue.get() * mixerDistValue.get() * 10, mixerSecValue.get()).rgb
+        val mixerColor2 = ColorMixer.getMixedColor(-mixerIndexValue.get() * mixerDistValue.get() * 10, mixerSecValue.get())
 
         val rectColor = when (rectColorModeValue.get().lowercase()) {
             "rainbow" -> ColorUtils.rainbow().rgb
@@ -193,19 +196,34 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
                 val c2 = ColorUtils.interpolateColorsBackAndForth(15,180, Color(0,255,50), Color(50,0,255), Interpolate.interpolateHue.get())
                 RenderUtils.drawGradientRoundedNoAlphaOutline(-4, if (lineValue.get()) -5 else -4, fontRenderer.getStringWidth(displayText) + 4, fontRenderer.FONT_HEIGHT + 2,5,c1.rgb,c2.rgb,1)
             }
+            "border" -> {
+                RenderUtils.drawBorder(-expand, -expand - 1, fontRenderer.getStringWidth(displayText) + expand, -expand, 1f, rectColor)
+            }
         }
-
-        fontRenderer.drawString(displayText, 0F, 0F, when (colorModeValue.get().lowercase()) {
-            "rainbow" -> ColorUtils.rainbow().rgb
-            "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
-            "anotherrainbow" -> ColorUtils.fade(color, 100, rainbowIndex.get()).rgb
-            "mixer" -> mixerColor
-            else -> color.rgb
-        }, shadow.get())
-
-        if (editMode && mc.currentScreen is GuiHudDesigner && editTicks <= 40) {
-            fontRenderer.drawString("_", fontRenderer.getStringWidth(displayText) + 2F,
-                    0F, Color.WHITE.rgb, shadow.get())
+        val charArray = displayText.toCharArray()
+        val counter = intArrayOf(0)
+        var length = 0
+        for (charIndex in charArray) {
+            fontRenderer.drawString(
+                charIndex.toString(), length.toFloat(), 0F, when (colorModeValue.get().lowercase()) {
+                    "rainbow" -> ColorUtils.rainbow().rgb
+                    "rainbowg" -> Palette.fade2(ColorUtils.rainbow(), counter[0] * 100, displayText.length * 200).rgb
+                    "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
+                    "anotherrainbow" -> ColorUtils.fade(color, 100, rainbowIndex.get()).rgb
+                    "mixer" -> mixerColor
+                    "mixerg" -> Palette.fade2(mixerColor2, counter[0] * 100, displayText.length * 200).rgb
+                    else -> color.rgb
+                }, shadow.get()
+            )
+            if (editMode && mc.currentScreen is GuiHudDesigner && editTicks <= 40) {
+                fontRenderer.drawString(
+                    "_", fontRenderer.getStringWidth(displayText) + 2F,
+                    0F, Color.WHITE.rgb, shadow.get()
+                )
+            }
+            counter[0] += 1
+            counter[0] = counter[0].coerceIn(0, displayText.length)
+            length += fontRenderer.getCharWidth(charIndex)
         }
 
         if (editMode && mc.currentScreen !is GuiHudDesigner) {

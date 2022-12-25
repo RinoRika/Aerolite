@@ -51,11 +51,10 @@ class HypDisabler2 : Module() {
     private val strafeDisabler = BoolValue("StrafeDisabler", true)
     private val strafePacketAmount = IntegerValue("StrafePacketAmount", 70,60, 120).displayable { strafeDisabler.get() }
     private val timerDisabler = BoolValue("TimerDisabler", true)
-    private val pingSpoofC0F2 = BoolValue("C0FEdit", false)
+    private val newtimerDisabler = BoolValue("NewTimerDisabler", true)
     private val pingSpoofSize = IntegerValue("PingSpoofSize", 7, 4, 10).displayable { timerDisabler.get() }
     private val pingSpoofC0F = BoolValue("PingSpoofC0F", false).displayable { timerDisabler.get() }
     private val pingSpoofListReleaseType = ListValue("PingSpoofReleaseType", arrayOf("Take", "Poll"), "Take").displayable { timerDisabler.get() }
-    private val invMove = BoolValue("InvMoveDisabler", false)
     private val debug = BoolValue("Debug", true)
     private var counter = 0
     private var x = 0.0
@@ -64,6 +63,9 @@ class HypDisabler2 : Module() {
 
     private val packets = LinkedBlockingQueue<Packet<INetHandlerPlayServer>>()
     private val c0fs = LinkedBlockingQueue<C0FPacketConfirmTransaction>()
+    private val c03s = LinkedBlockingQueue<C03PacketPlayer>()
+    private var c03count = 0
+    private val c03timer = MSTimer()
     private val timerCancelDelay = MSTimer()
     private val timerCancelCounter = MSTimer()
     private var timerShouldCancel = true
@@ -152,15 +154,6 @@ class HypDisabler2 : Module() {
             inCage = false
         }
 
-        if (pingSpoofC0F2.get() && packet is C0FPacketConfirmTransaction && !ServerUtils.isHypixelLobby() && invMove.get()) {
-            if (packet.windowId == 0 && packet.uid < 0 && packet.uid != (-1).toShort() && !isInventory(packet.uid)) {
-                if (mc.thePlayer.ticksExisted % 2 == 0) {
-                    event.cancelEvent()
-                    dAlert("Cancel C0F")
-                }
-            }
-        }
-
         // Do Timer Disabler
         if (timerDisabler.get() && !inCage) {
             pingspoofactive = true
@@ -185,6 +178,23 @@ class HypDisabler2 : Module() {
                     }
                 }
             }
+        }
+
+        if (newtimerDisabler.get() && !inCage && !ServerUtils.isHypixelLobby()) {
+            if (c03timer.hasTimePassed(1000L)) {
+                c03s.clear()
+                c03count = 0
+            }
+            if (packet is C03PacketPlayer) {
+                c03count++
+                if (c03count > 20) {
+                    c03s.add(packet)
+                    if(RandomUtils.nextBoolean()) event.cancelEvent()
+                }
+            }
+        } else {
+            c03s.clear()
+            c03count = 0
         }
 
         if (event.packet is C0FPacketConfirmTransaction) {

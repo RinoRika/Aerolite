@@ -1,6 +1,6 @@
 /*
    AeroLite Hack Client - Best Liquid-bounce
-   Made By Stars and Packet:(
+   Made By Stars
  */
 package net.ccbluex.liquidbounce
 
@@ -50,12 +50,12 @@ object LiquidBounce {
     const val CLIENT_NAME = "Aerolite"
     const val COLORED_NAME = "§b§lAerolite"
     const val BUILD_CODE = "4.0.0"                       //更完改
-    const val CLIENT_REAL_VERSION = "4.0.0 Pre12"                            //更完改
+    const val CLIENT_REAL_VERSION = "4.0.0 Final 1"                            //更完改
     const val CLIENT_CREATOR = "AeroTeam"
     const val CLIENT_WEBSITE = "Aerolite.tk"
     const val MINECRAFT_VERSION = "1.8.9"
     const val CLIENT_DEV = "Stars&Packet&Crazy&Ry4nnnnn"
-    const val DEV_SAYING = "yby360LLLLLLLLLLLLLLL"
+    const val DEV_SAYING = "你们是不是人啊 道歉会不会"
 
     // Tasks
     var FinishChoosingScreen = false

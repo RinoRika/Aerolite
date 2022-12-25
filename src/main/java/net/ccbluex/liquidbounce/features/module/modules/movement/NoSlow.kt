@@ -5,6 +5,8 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
+import me.stars.utils.ThePlayerUtils.isUsingBow
+import me.stars.utils.ThePlayerUtils.isUsingFood
 import me.stars.vec.PlayerUtil
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.*
@@ -15,6 +17,7 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
+import net.ccbluex.liquidbounce.utils.PlayerUtils.isUsingFood
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -34,7 +37,7 @@ import kotlin.math.sqrt
 
 @ModuleInfo(name = "NoSlow", category = ModuleCategory.MOVEMENT)
 class NoSlow : Module() {
-    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom","Watchdog", "NCP" , "AAC5", "Matrix", "Vulcan", "Medusa", "Noteless", "Hypixel", "Hawk"), "Vanilla")
+    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom","Watchdog", "NCP" , "AAC5", "Matrix", "Vulcan", "Medusa", "Noteless", "Hawk", "HypixelNew"), "Vanilla")
     private val blockForwardMultiplier = FloatValue("BlockForwardMultiplier", 1.0F, 0.2F, 1.0F)
     private val blockStrafeMultiplier = FloatValue("BlockStrafeMultiplier", 1.0F, 0.2F, 1.0F)
     private val consumeForwardMultiplier = FloatValue("ConsumeForwardMultiplier", 1.0F, 0.2F, 1.0F)
@@ -44,6 +47,7 @@ class NoSlow : Module() {
     private val customOnGround = BoolValue("CustomOnGround", false).displayable { modeValue.equals("Custom") }
     private val customDelayValue = IntegerValue("CustomDelay", 60, 10, 200).displayable { modeValue.equals("Custom") }
     private val eatFixValue = BoolValue("EatingFix", true)
+    private val hypixelDebug = BoolValue("HypixelDebug", false)
 
     //testvalue
     private val testValue = BoolValue("SendPacket", false)
@@ -113,6 +117,10 @@ class NoSlow : Module() {
         }
     }
 
+    private fun debug(msg: String) {
+        if (hypixelDebug.get()) ClientUtils.displayChatMessage(msg)
+    }
+
     @EventTarget
     fun onMotion(event: MotionEvent) {
         if(mc.thePlayer == null || mc.theWorld == null)
@@ -160,6 +168,19 @@ class NoSlow : Module() {
                         PacketUtils.sendPacketNoEvent(C0BPacketEntityAction(mc.thePlayer,C0BPacketEntityAction.Action.STOP_SPRINTING))
                     }
                 }
+                "hypixelnew" -> {
+                    if (mc.thePlayer.heldItem == null || mc.thePlayer.itemInUse == null || mc.thePlayer.itemInUse.item == null || event.eventState != EventState.PRE) {
+                        if (mc.thePlayer.isUsingItem) {
+                            when (mc.thePlayer.itemInUse.item) {
+                                is ItemSword -> PacketUtils.sendPacketNoEvent(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM,
+                                    BlockPos(-1,-1,-1), EnumFacing.DOWN
+                                ))
+                                is ItemFood, is ItemPotion, is ItemBucketMilk -> PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                                is ItemBow -> PacketUtils.sendPacketNoEvent(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
+                            }
+                        }
+                    }
+                }
                 "hawk" -> {
                     if (event.eventState == EventState.PRE) {
                         if (mc.thePlayer.ticksExisted % 30 == 0) {
@@ -184,15 +205,6 @@ class NoSlow : Module() {
                         val item = mc.thePlayer.itemInUse.item
                         if (mc.thePlayer.isUsingItem && (item is ItemFood || item is ItemBucketMilk || item is ItemPotion) && mc.thePlayer.getItemInUseCount() >= 1)
                             PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem));
-                    }
-                }
-
-                "hypixel" -> {
-                    if (mc.thePlayer.ticksExisted % 2 == 0) {
-                        sendPacket(event, true, false, false, 50, true)
-                    }
-                    else {
-                        sendPacket(event, false, true, false, 0, true, true)
                     }
                 }
 

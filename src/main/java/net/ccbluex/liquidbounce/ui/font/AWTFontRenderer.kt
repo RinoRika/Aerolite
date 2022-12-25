@@ -79,9 +79,11 @@ import java.awt.image.BufferedImage
      * @param y     location for target position
      * @param color of the text
      */
-    fun drawString(text: String, x: Double, y: Double, color: Int) {
+    fun drawString(rawtext: String, x: Double, y: Double, color: Int) {
         val scale = 0.5
         val reverse = 1 / scale
+
+        val text = LanguageManager.replace(rawtext)
 
         GlStateManager.pushMatrix()
         GlStateManager.scale(scale, scale, scale)
@@ -120,6 +122,7 @@ import java.awt.image.BufferedImage
         GL11.glBegin(GL11.GL_QUADS)
 
         for (char in text.toCharArray()) {
+            // This will miss the chinese chars, I don't think that's a right way.
             if (char.toInt() >= charLocations.size) {
                 GL11.glEnd()
 

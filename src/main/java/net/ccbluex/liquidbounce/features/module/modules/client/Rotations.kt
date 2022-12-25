@@ -29,42 +29,4 @@ object Rotations : Module() {
     val bodyValue = BoolValue("Body", false)
     val fixedValue = ListValue("SensitivityFixed", arrayOf("None", "Old", "New"), "New")
     val nanValue = BoolValue("NaNCheck", true)
-
-    private fun getState(module: Class<*>) = LiquidBounce.moduleManager.getModule(module.toString())!!.state
-    private fun shouldRotate(): Boolean {
-        val killAura = LiquidBounce.moduleManager.getModule(KillAura::class.java) as KillAura
-        val disabler = LiquidBounce.moduleManager.getModule(Disabler::class.java) as Disabler
-        return getState(BlockFly::class.java) ||
-                (getState(KillAura::class.java) && killAura.target != null) ||
-                (getState(Disabler::class.java) && disabler.canRenderInto3D) ||
-                getState(BowAimbot::class.java) || getState(Fucker::class.java) ||
-                getState(ChestAura::class.java) || getState(Fly::class.java)
-    }
-
-    private var playerYaw: Float? = null
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
-        val packet = event.packet
-        if (packet is C03PacketPlayer.C06PacketPlayerPosLook || packet is C03PacketPlayer.C05PacketPlayerLook) {
-            playerYaw = (packet as C03PacketPlayer).yaw
-            mc.thePlayer.renderYawOffset = packet.getYaw()
-            mc.thePlayer.rotationYawHead = packet.getYaw()
-        } else {
-            if (playerYaw != null)
-                mc.thePlayer.renderYawOffset = this.playerYaw!!
-            mc.thePlayer.rotationYawHead = mc.thePlayer.renderYawOffset
-        }
-    }
-
-//    fun apply(value: Double):Double{
-//        return EaseUtils.apply(toEnumType(), toEnumOrder(),value)
-//    }
-//
-//    fun toEnumType():EaseUtils.EnumEasingType{
-//        return EaseUtils.EnumEasingType.valueOf(rotationHumanizeType.get().uppercase())
-//    }
-//
-//    fun toEnumOrder():EaseUtils.EnumEasingOrder{
-//        return EaseUtils.EnumEasingOrder.valueOf(rotationHumanizeOrder.get().uppercase())
-//    }
 }

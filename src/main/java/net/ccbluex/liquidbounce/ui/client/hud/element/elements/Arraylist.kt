@@ -21,6 +21,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.Palette
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.ShadowUtils
 import net.ccbluex.liquidbounce.value.*
@@ -57,7 +58,6 @@ class Arraylist(
     private val rectColorBlueAlpha = IntegerValue("Rect-Alpha", 255, 0, 255)
     private val saturationValue = FloatValue("Random-Saturation", 0.9f, 0f, 1f)
     private val brightnessValue = FloatValue("Random-Brightness", 1f, 0f, 1f)
-    private val RainbowAlpha = IntegerValue("RainbowAlpha",100,0,255)
     private val mixerSecValue = IntegerValue("Mixer-Seconds", 2, 1, 10)
     private val mixerDistValue = IntegerValue("Mixer-Distance", 2, 0, 10)
     private val tagsValue = ListValue("TagsStyle", arrayOf("-", "|", "()", "[]", "<>", ">", "->", "=", "Space", "None"), "Space")
@@ -128,6 +128,7 @@ class Arraylist(
 
     override fun drawElement(partialTicks: Float): Border? {
         val fontRenderer = fontValue.get()
+        AWTFontRenderer.assumeNonVolatile = true
 
         for (module in LiquidBounce.moduleManager.modules) {
             if (!module.array || shouldExpect(module) || (!module.state && module.slide == 0F && (module.yPosAnimation == null || module.yPosAnimation!!.state == Animation.EnumAnimationState.STOPPED))) continue
@@ -171,6 +172,7 @@ class Arraylist(
                     if (yPos != realYPos) { module.yPos = realYPos }
                     var arrayY = yPos
                     val mixerColor = ColorMixer.getMixedColor(-index * mixerDistValue.get() * 10, mixerSecValue.get()).rgb
+                    val mixerColor2 = ColorMixer.getMixedColor(-index * mixerDistValue.get() * 10, mixerSecValue.get())
                     mixer = mixerColor
                     val rectX = xPos - if (rectMode.equals("right", true)) 5 else 2
                     if (shadowShaderValue.get()) {

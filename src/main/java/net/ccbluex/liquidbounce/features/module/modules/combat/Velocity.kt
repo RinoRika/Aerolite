@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.ServerUtils
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -107,6 +108,9 @@ class Velocity : Module() {
         cancelTicks = 0
         if (modeValue.equals("AGC")) {
             ClientUtils.displayChatMessage("[Velocity] DON'T enable fly/speed/longjump when velocity enabled!!!!")
+        }
+        if (ServerUtils.isHypixelLobby()) {
+            ClientUtils.displayChatMessage("[Velocity] DON'T use vertical 0.0 on Hypixel!")
         }
     }
     override fun onDisable() {
@@ -241,7 +245,6 @@ class Velocity : Module() {
         if (modeValue.equals("Hypixel")) {
             if (packet is S12PacketEntityVelocity) {
                 if (packet.entityID != mc.thePlayer.entityId || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer) {
-                    alert("§c§lWARNING!!! The staff might be checking you!!!")
                     return
                 }
                 if (horizontalValue.get() == 0f && verticalValue.get() == 0f) {
