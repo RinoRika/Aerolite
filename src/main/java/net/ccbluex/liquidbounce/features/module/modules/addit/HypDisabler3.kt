@@ -65,7 +65,7 @@ class HypDisabler3 : Module() {
                     if (packet.uid < 0) {
                         if (ThreadLocalRandom.current().nextBoolean()) {
                             e.cancelEvent()
-                            PacketUtils.sendPacketNoEvent(C0FPacketConfirmTransaction(choose, abs(packet.uid.toInt()).toShort(), true))
+                            PacketUtils.sendPacketNoEvent(C0FPacketConfirmTransaction(choose, abs(packet.uid.toInt()).toShort(), false))
                         }
                         map2de.offer(packet)
                     } else {

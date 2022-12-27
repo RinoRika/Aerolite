@@ -16,7 +16,6 @@ import org.spongepowered.asm.mixin.Mixins;
 
 import java.util.Map;
 
-@IFMLLoadingPlugin.Name("Aerolite")
 @IFMLLoadingPlugin.MCVersion("1.8.9")
 @IFMLLoadingPlugin.TransformerExclusions("lain.mods.inputfix.")
 public class TransformerLoader implements IFMLLoadingPlugin {

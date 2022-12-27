@@ -176,7 +176,6 @@ class KillAura : Module() {
     private val rotationRevTickValue = IntegerValue("RotationReverseTick", 5, 1, 20).displayable { !rotationModeValue.equals("None") }
     private val keepDirectionValue = BoolValue("KeepDirection", true).displayable { !rotationModeValue.equals("None") }
     private val keepDirectionTickValue = IntegerValue("KeepDirectionTick", 15, 1, 20).displayable { !rotationModeValue.equals("None") }
-    private val backtraceValue = BoolValue("Backtrace", false)
     private val hitableValue = BoolValue("AlwaysHitable", true).displayable { !rotationModeValue.equals("None") }
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f)
 
@@ -813,7 +812,6 @@ class KillAura : Module() {
     private fun esp(pos: Vec3, radius: Float) {
         GL11.glPushMatrix()
         GL11.glDisable(3553)
-        Renderer.addSmoothLine(1f)
         GL11.glDisable(2929)
         GL11.glDepthMask(false)
         GL11.glLineWidth(1.0F)
@@ -826,7 +824,6 @@ class KillAura : Module() {
         GL11.glEnd()
         GL11.glDepthMask(true)
         GL11.glEnable(2929)
-        Renderer.removeSmoothLine()
         GL11.glEnable(3553)
         GL11.glPopMatrix()
     }
