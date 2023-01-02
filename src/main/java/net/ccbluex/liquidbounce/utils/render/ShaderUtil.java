@@ -62,9 +62,6 @@ public class ShaderUtil extends MinecraftInstance {
         glUseProgram(0);
     }
 
-    public int getUniform(String name) {
-        return glGetUniformLocation(programID, name);
-    }
 
 
     public void setUniformf(String name, float... args) {
@@ -104,21 +101,6 @@ public class ShaderUtil extends MinecraftInstance {
         glEnd();
     }
 
-    public static void drawQuads() {
-        ScaledResolution sr = new ScaledResolution(mc);
-        float width = (float) sr.getScaledWidth_double();
-        float height = (float) sr.getScaledHeight_double();
-        glBegin(GL_QUADS);
-        glTexCoord2f(0, 1);
-        glVertex2f(0, 0);
-        glTexCoord2f(0, 0);
-        glVertex2f(0, height);
-        glTexCoord2f(1, 0);
-        glVertex2f(width, height);
-        glTexCoord2f(1, 1);
-        glVertex2f(width, 0);
-        glEnd();
-    }
 
     private int createShader(InputStream inputStream, int shaderType) {
         int shader = glCreateShader(shaderType);

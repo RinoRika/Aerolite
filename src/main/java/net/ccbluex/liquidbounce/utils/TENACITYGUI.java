@@ -44,7 +44,7 @@ public class TENACITYGUI {
 
     public static void drawRect2(double x, double y, double width, double height, int color) {
         RenderUtil.resetColor();
-        GLUtil.setup2DRendering(() -> GLUtil.render(GL11.GL_QUADS, () -> {
+        GLUtils.setup2DRendering(() -> GLUtils.render(GL11.GL_QUADS, () -> {
             RenderUtil.color(color);
             GL11.glVertex2d(x, y);
             GL11.glVertex2d(x, y + height);
@@ -88,11 +88,6 @@ public class TENACITYGUI {
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
     }
-
-    public static void drawGradientRectSideways2(double x, double y, double width, double height, int startColor, int endColor) {
-        drawGradientRectSideways(x, y, x + width, y + height, startColor, endColor);
-    }
-
     public static void drawGradientRectSideways(double left, double top, double right, double bottom, int startColor, int endColor) {
         float f = (float) (startColor >> 24 & 255) / 255.0F;
         float f1 = (float) (startColor >> 16 & 255) / 255.0F;
@@ -120,11 +115,6 @@ public class TENACITYGUI {
         GlStateManager.enableAlpha();
         GlStateManager.enableTexture2D();
     }
-
-    public static void drawGradientRect2(double x, double y, double width, double height, int startColor, int endColor) {
-        drawGradientRect(x, y, x + width, y + height, startColor, endColor);
-    }
-
     public static void drawGradientRect(double left, double top, double right, double bottom, int startColor, int endColor) {
         float f = (float) (startColor >> 24 & 255) / 255.0F;
         float f1 = (float) (startColor >> 16 & 255) / 255.0F;
@@ -165,52 +155,6 @@ public class TENACITYGUI {
      */
     public void drawString(FontRenderer fontRendererIn, String text, int x, int y, int color) {
         fontRendererIn.drawStringWithShadow(text, (float) x, (float) y, color);
-    }
-
-    /**
-     * Draws a textured rectangle at the stored z-value. Args: x, y, u, v, width, height
-     */
-    public void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width, int height) {
-        float f = 0.00390625F;
-        float f1 = 0.00390625F;
-        Tessellator tessellator = Tessellator.getInstance();
-        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        worldrenderer.pos((double) (x + 0), (double) (y + height), (double) this.zLevel).tex((double) ((float) (textureX + 0) * f), (double) ((float) (textureY + height) * f1)).endVertex();
-        worldrenderer.pos((double) (x + width), (double) (y + height), (double) this.zLevel).tex((double) ((float) (textureX + width) * f), (double) ((float) (textureY + height) * f1)).endVertex();
-        worldrenderer.pos((double) (x + width), (double) (y + 0), (double) this.zLevel).tex((double) ((float) (textureX + width) * f), (double) ((float) (textureY + 0) * f1)).endVertex();
-        worldrenderer.pos((double) (x + 0), (double) (y + 0), (double) this.zLevel).tex((double) ((float) (textureX + 0) * f), (double) ((float) (textureY + 0) * f1)).endVertex();
-        tessellator.draw();
-    }
-
-    /**
-     * Draws a textured rectangle using the texture currently bound to the TextureManager
-     */
-    public void drawTexturedModalRect(float xCoord, float yCoord, int minU, int minV, int maxU, int maxV) {
-        float f = 0.00390625F;
-        float f1 = 0.00390625F;
-        Tessellator tessellator = Tessellator.getInstance();
-        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        worldrenderer.pos((double) (xCoord + 0.0F), (double) (yCoord + (float) maxV), (double) this.zLevel).tex((double) ((float) (minU + 0) * f), (double) ((float) (minV + maxV) * f1)).endVertex();
-        worldrenderer.pos((double) (xCoord + (float) maxU), (double) (yCoord + (float) maxV), (double) this.zLevel).tex((double) ((float) (minU + maxU) * f), (double) ((float) (minV + maxV) * f1)).endVertex();
-        worldrenderer.pos((double) (xCoord + (float) maxU), (double) (yCoord + 0.0F), (double) this.zLevel).tex((double) ((float) (minU + maxU) * f), (double) ((float) (minV + 0) * f1)).endVertex();
-        worldrenderer.pos((double) (xCoord + 0.0F), (double) (yCoord + 0.0F), (double) this.zLevel).tex((double) ((float) (minU + 0) * f), (double) ((float) (minV + 0) * f1)).endVertex();
-        tessellator.draw();
-    }
-
-    /**
-     * Draws a texture rectangle using the texture currently bound to the TextureManager
-     */
-    public void drawTexturedModalRect(int xCoord, int yCoord, TextureAtlasSprite textureSprite, int widthIn, int heightIn) {
-        Tessellator tessellator = Tessellator.getInstance();
-        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        worldrenderer.pos((double) (xCoord + 0), (double) (yCoord + heightIn), (double) this.zLevel).tex((double) textureSprite.getMinU(), (double) textureSprite.getMaxV()).endVertex();
-        worldrenderer.pos((double) (xCoord + widthIn), (double) (yCoord + heightIn), (double) this.zLevel).tex((double) textureSprite.getMaxU(), (double) textureSprite.getMaxV()).endVertex();
-        worldrenderer.pos((double) (xCoord + widthIn), (double) (yCoord + 0), (double) this.zLevel).tex((double) textureSprite.getMaxU(), (double) textureSprite.getMinV()).endVertex();
-        worldrenderer.pos((double) (xCoord + 0), (double) (yCoord + 0), (double) this.zLevel).tex((double) textureSprite.getMinU(), (double) textureSprite.getMinV()).endVertex();
-        tessellator.draw();
     }
 
     /**

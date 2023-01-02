@@ -146,9 +146,9 @@ public class VisualBase extends MinecraftInstance {
         for (int i = (int)((double)startAngle / 360.0 * 100.0); i <= (int)((double)endAngle / 360.0 * 100.0); ++i) {
             double angle = Math.PI * 2 * (double)i / 100.0 + Math.toRadians(180.0);
             if (color == 1337) {
-                Render.color(astolfoColors(i * 5, 1));
+                color(astolfoColors(i * 5, 1));
             } else {
-                Render.color(color);
+                color(color);
             }
             GL11.glVertex2d((double)(x + Math.sin(angle) * radius), (double)(y + Math.cos(angle) * radius));
         }
@@ -159,6 +159,17 @@ public class VisualBase extends MinecraftInstance {
         GL11.glDisable((int)2848);
         GlStateManager.popMatrix();
         GlStateManager.resetColor();
+    }
+    public static void color(int color, float alpha) {
+        float r = (float) (color >> 16 & 255) / 255.0F;
+        float g = (float) (color >> 8 & 255) / 255.0F;
+        float b = (float) (color & 255) / 255.0F;
+        GlStateManager.color(r, g, b, alpha);
+    }
+
+    // Colors the next texture without a specified alpha value
+    public static void color(int color) {
+        color(color, (float) (color >> 24 & 255) / 255.0F);
     }
     public static int astolfoColors(int yOffset, int yTotal) {
         float hue;

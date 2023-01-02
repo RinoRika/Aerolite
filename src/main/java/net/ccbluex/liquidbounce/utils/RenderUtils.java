@@ -205,11 +205,11 @@ public final class RenderUtils extends MinecraftInstance {
     // TODO: Replace this with a shader as GL_POINTS is not consistent with gui scales
     public static void drawGoodCircle(double x, double y, float radius, int color) {
         color(color);
-        GLUtil.setup2DRendering(() -> {
+        GLUtils.setup2DRendering(() -> {
             glEnable(GL_POINT_SMOOTH);
             glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
             glPointSize(radius * (2 * mc.gameSettings.guiScale));
-            GLUtil.render(GL_POINTS, () -> glVertex2d(x, y));
+            GLUtils.render(GL_POINTS, () -> glVertex2d(x, y));
         });
     }
 
