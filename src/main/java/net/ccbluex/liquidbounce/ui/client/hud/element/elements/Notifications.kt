@@ -76,6 +76,7 @@ class Notification(val title: String, val content: String, val type: NotifyType,
      * Draw notification
      */
     fun drawNotification(index: Int): Boolean {
+        var color = Color(-1)
         val realY = -(index + 1) * (height + 10)
         val nowTime = System.currentTimeMillis()
         //Y-Axis Animation
@@ -138,13 +139,20 @@ class Notification(val title: String, val content: String, val type: NotifyType,
         if (type.toString() == "INFO") {
             string = "C"
         }
+        color = when (type.toString()) {
+            "SUCCESS" -> Color.GREEN
+            "ERROR" -> Color.RED
+            "WARNING" -> Color.YELLOW
+            "INFO" -> Color.GRAY
+            else -> Color.WHITE
+        }
         GL11.glScaled(pct,pct,pct)
         val displayingTime = BigDecimal(((time - time * ((nowTime - displayTime) / (animeTime * 2F + time))) / 1000).toDouble()).setScale(1, BigDecimal.ROUND_HALF_UP)
         GL11.glTranslatef(-width.toFloat()/2 , -height.toFloat()/2, 0F)
         RenderUtils.drawShadow(0F, 0F, width.toFloat(), height.toFloat())
         RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), Color(63, 63, 63, 100))
-        RenderUtils.drawGradientSidewaysV(0.0, height - 1.7,
-            (width * ((nowTime - displayTime) / (animeTime * 2F + time))).toDouble(), height.toDouble(), ColorUtils.rainbow().rgb, ColorUtils.rainbow(10).rgb)
+        RenderUtils.drawRect(0.0, height - 1.7,
+            (width * ((nowTime - displayTime) / (animeTime * 2F + time))).toDouble(), height.toDouble(), color.rgb)
         Fonts.font37.drawStringWithShadow(title, 27F, 6F, Color.WHITE.rgb)
         Fonts.font32.drawStringWithShadow(content + " (" + displayingTime.toString() + "s)", 27F, 17.3F, Color.WHITE.rgb)
         RenderUtils.drawFilledCircle(14, 16, 8.5F, Color(0,0,0,70))

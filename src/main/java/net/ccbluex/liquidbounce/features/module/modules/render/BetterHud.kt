@@ -15,7 +15,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.util.ResourceLocation
 import oh.yalan.NativeClass
 import java.awt.Color
-
+// TODO: This module was made by Packet! We are the first writer instead of skidder! SB Hyt skidder skid our codes and make it sh1t.
 @ModuleInfo(name = "BetterHud", category = ModuleCategory.RENDER)
 class BetterHud : Module() {
     private val modeValue = ListValue("bar", arrayOf("Black","Lite", "Off"), "Off")

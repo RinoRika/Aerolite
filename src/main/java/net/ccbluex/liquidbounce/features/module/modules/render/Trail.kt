@@ -12,6 +12,7 @@ import net.minecraft.util.EnumParticleTypes
 import oh.yalan.NativeClass
 import java.util.*
 
+
 @ModuleInfo(name = "Trail", category = ModuleCategory.RENDER)
 class Trail : Module() {
     private val mode = ListValue(

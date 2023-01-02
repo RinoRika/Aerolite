@@ -1247,14 +1247,14 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             Color.WHITE.rgb
         )
         RenderUtils.drawRect(2.5f, 35.5f, width + 11.5f, 37.5f, Color(0, 0, 0, 200).rgb)
-        RenderUtils.drawGradientSidewaysH(3.0, 36.0, 3.0 + (easingHealth / target.maxHealth) * (width + 8f), 37.0,  Palette.fade(barColor).rgb, barColor.rgb)
+        RenderUtils.drawGradientSidewaysH(3.0, 36.0, 3.0 + (easingHealth / target.maxHealth) * (width + 8f), 37.0,  Palette.fade1(barColor).rgb, barColor.rgb)
         RenderUtils.drawRect(2.5f, 39.5f, width + 11.5f, 41.5f, Color(0, 0, 0, 200).rgb)
         RenderUtils.drawGradientSidewaysH(
             3.0,
             40.0,
             3.0 + (target.totalArmorValue / 20F) * (width + 8f),
             41.0,
-            Palette.fade(Color(77, 128, 255)).rgb,
+            Color(97, 148, 200).rgb,
             Color(77, 128, 255).rgb
         )
         easingHealth += ((target.health - easingHealth) / 2.0F.pow(10.0F - fadeSpeed.get())) * RenderUtils.deltaTime

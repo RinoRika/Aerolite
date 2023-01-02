@@ -35,7 +35,7 @@ class Criticals : Module() {
         "Packet", "LitePacket", "AAC5Packet", "AAC4Packet", "HPacket", "NewPacket",
         "NCP", "NCP2", "Vanilla", "Vulcan", "AntiCheat", "Advanced",
         "Edit", "Hypixel", "Mineland", "Edit2",
-        "AACNoGround", "NoGround", "Redesky",
+        "AACNoGround", "NoGround", "Redesky", "Hypixel", "Hypixel2",
         "VerusSmart", "MatrixSmart", "Blocksmc", "Minemora", "HVH","HVH2",
         "Motion", "Hover", "Custom"),
         "packet")
@@ -141,6 +141,10 @@ class Criticals : Module() {
                     mc.thePlayer.onEnchantmentCritical(entity)
                 }
 
+                "hypixel2" -> {
+                    mc.thePlayer.onCriticalHit(entity)
+                }
+
                 "vanilla" -> {
                     val vanillaOffset = doubleArrayOf(0.11,0.1100013579,0.0000013579)
                     vanillaOffset.forEach { offset ->
@@ -157,6 +161,22 @@ class Criticals : Module() {
                     sendPacket(0.0,false)
                     sendPacket(RandomUtils.nextDouble(0.01,0.06), false)
                     sendPacket(0.0,false)
+                }
+
+                "hypixel" -> {
+                    val ru = RandomUtils.getRandom(4.0E-7, 4.0E-5)
+                    val doubleArray = arrayOf(0.007017625 + ru, 0.007349825 + ru, 0.006102874 + ru, RandomUtils.nextDouble(0.01,0.06) + ru)
+                    var n2 = 0
+                    counter++
+                    if (counter >= 3 && n2 < doubleArray.size) {
+                        val offset = doubleArray[n2]
+                        mc.netHandler.addToSendQueue(C04PacketPlayerPosition(x, y + offset, z, false))
+                        ++n2
+                        counter = 0
+                    }
+                    if (n2 >= doubleArray.size) {
+                        n2 = 0
+                    }
                 }
 
                 "matrixsmart" -> {

@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.utils
 
 import com.google.gson.JsonObject
+import net.ccbluex.liquidbounce.Aerolite
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.Metrics.SimplePie
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
@@ -111,12 +112,12 @@ object ClientUtils : MinecraftInstance() {
     @NativeMethod
     fun setTitle() {
         //Display.setTitle("${LiquidBounce.CLIENT_NAME}正在注入核心,请稍后!")
-        Display.setTitle("Aerolite is waiting for coremod injection.")
+        Display.setTitle("Aerolite is loading! (别加Inputfix 本客户端自带)")
     }
 
     @NativeMethod
     fun finishTitle() {
-        Display.setTitle(LiquidBounce.CLIENT_NAME + " " + LiquidBounce.CLIENT_REAL_VERSION + " | " + LiquidBounce.DEV_SAYING)
+        Display.setTitle(Aerolite.title)
     }
 
     @NativeMethod

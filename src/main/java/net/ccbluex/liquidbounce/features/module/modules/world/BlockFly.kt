@@ -291,6 +291,7 @@ class BlockFly : Module() {
         if (getBlocksAmount2() <= 0) {
             this.state = false
             LiquidBounce.hud.addNotification(Notification("BlockFly", "No item in inventory!", NotifyType.WARNING))
+            return
         }
         if (towerStatus && towerModeValue.get().lowercase() != "aac3.3.9" && towerModeValue.get().lowercase() != "aac4.4constant" && towerModeValue.get().lowercase() != "aac4jump") mc.timer.timerSpeed = towerTimerValue.get()
         if (!towerStatus) {

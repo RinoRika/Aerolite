@@ -3,6 +3,7 @@ package net.ccbluex.liquidbounce.features.module.modules.addit
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.value.TextValue
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.lwjgl.opengl.Display
@@ -19,6 +20,10 @@ object CustomTitle : Module() {
 
     override fun onEnable() {
         Display.setTitle(titleValue.get())
+    }
+
+    override fun onDisable() {
+        ClientUtils.finishTitle()
     }
 
     fun onTick(event: TickEvent) {

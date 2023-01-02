@@ -29,6 +29,7 @@ class HitEffect : Module() {
         "VillagerB", "Note", "Portal", "EnchTable", "FootStep", "Redstone", "Snowball", "Slime", "Barrier", "Heart"), "Lighting")
     private val timesValue = IntegerValue("Times", 1, 1, 10)
     private val lightingSoundValue = BoolValue("LightingSound", true).displayable { modeValue.equals("Lighting") }
+    private val bloodSoundValue = BoolValue("BloodSound", true).displayable { modeValue.equals("Blood") }
 
     private val blockState = Block.getStateId(Blocks.redstone_block.defaultState)
 
@@ -60,6 +61,9 @@ class HitEffect : Module() {
                     repeat(10) {
                         mc.effectRenderer.spawnEffectParticle(EnumParticleTypes.BLOCK_CRACK.particleID, entity.posX, entity.posY + entity.height / 2, entity.posZ,
                             entity.motionX + RandomUtils.nextFloat(-0.5f, 0.5f), entity.motionY + RandomUtils.nextFloat(-0.5f, 0.5f), entity.motionZ + RandomUtils.nextFloat(-0.5f, 0.5f), blockState)
+                    }
+                    if (bloodSoundValue.get()) {
+                        mc.soundHandler.playSound(PositionedSoundRecord.create(ResourceLocation("dig.stone"), 1.2f))
                     }
                 }
                 "fire" ->

@@ -189,7 +189,7 @@ class HypDisabler2 : Module() {
                 c03count++
                 if (c03count > 20) {
                     c03s.add(packet)
-                    if(RandomUtils.nextBoolean()) event.cancelEvent()
+                    if(RandomUtils.nextBoolean() && mc.thePlayer.ticksExisted % 15 != 0) event.cancelEvent()
                 }
             }
         } else {

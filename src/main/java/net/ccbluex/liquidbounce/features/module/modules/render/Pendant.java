@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.value.FloatValue;
 import net.ccbluex.liquidbounce.value.ListValue;
 import net.minecraft.util.ResourceLocation;
 
-@ModuleInfo(name = "Pendant", category = ModuleCategory.ADDIT)
+@ModuleInfo(name = "Pendant", category = ModuleCategory.RENDER)
 public class Pendant extends Module {
 
     public final ListValue Fubukistyle = new ListValue("Fubukistyle", new String[] { "GIF", "Static"}, "GIF");

@@ -10,6 +10,7 @@ import com.google.common.collect.Lists
 import me.stars.utils.BlurUtils
 import me.stars.utils.BlurUtilsOld
 import net.ccbluex.liquidbounce.LiquidBounce
+import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
@@ -81,6 +82,7 @@ class ScoreboardElement(
      * Draw element
      */
     override fun drawElement(partialTicks: Float): Border? {
+        if (!HUD.state) return null
         val fontRenderer = fontValue.get()
         val textColor = textColor().rgb
         val backColor = backgroundColor().rgb
@@ -136,7 +138,7 @@ class ScoreboardElement(
             if (rainbowBarValue.get()) {
                 Gui.drawRect(l1 - 2, -3, 5, -2, ColorUtils.rainbow().rgb)
             }
-            if (shadowShaderValue.get()) {
+            if (true) {
                 GL11.glTranslated(-renderX, -renderY, 0.0)
                 GL11.glScalef(1F, 1F, 1F)
                 GL11.glPushMatrix()

@@ -43,7 +43,7 @@ public abstract class MixinFontRenderer {
         return textEvent.getText();
     }
 
-    @Inject(method = "drawString(Ljava/lang/String;FFIZ)I", at = @At("HEAD"), cancellable = true)
+  /*  @Inject(method = "drawString(Ljava/lang/String;FFIZ)I", at = @At("HEAD"), cancellable = true)
     public void drawString(String p_drawString_1_, float p_drawString_2_, float p_drawString_3_, int p_drawString_4_, boolean p_drawString_5_, CallbackInfoReturnable<Integer> cir) {
         final BetterFont betterFont = LiquidBounce.moduleManager.getModule(BetterFont.class);
         if (betterFont.getState()) {
@@ -59,5 +59,5 @@ public abstract class MixinFontRenderer {
             cir.setReturnValue(Fonts.font35.getStringWidth(p_getStringWidth_1_));
             cir.cancel();
         }
-    }
+    } */
 }
