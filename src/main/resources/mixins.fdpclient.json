@@ -32,8 +32,17 @@
     "bugfixes.GuiScreenResourcePacksMixin_ChangeTextPosition",
     "bugfixes.GuiScreenResourcePacksMixin_ClearHandles",
     "bugfixes.GuiVideoSettingsMixin_MipmapSlider",
+    "bugfixes.MinecraftMixin_DisplayScreen",
+    "bugfixes.MinecraftMixin_FixScreenState",
+    "bugfixes.MinecraftMixin_ForeignKeyboards",
+    "bugfixes.MinecraftMixin_PersistentShaders",
     "bugfixes.PacketBufferMixin_FixLog4jRCE",
     "bugfixes.ScoreboardMixin_FixLogSpam",
+    "bugfixes.SoundManagerMixin_DuplicatedSounds",
+    "bugfixes.SoundManagerMixin_LogSpam",
+    "bugfixes.TileEntityBannerRendererMixin_BannerAnimation",
+    "bugfixes.TileEntityRendererDispatcherMixin_EnableLighting",
+    "bugfixes.TileEntitySkullRendererMixin_EnableBlending",
     "bugfixes.WorldMixin_SkyHeight",
     "bugfixes.crashes.EntityLivingBaseMixin_ResolveCrash",
     "bugfixes.crashes.GameSettingsMixin_ResolveCrash",
@@ -122,17 +131,10 @@
     "render.MixinVisGraph",
     "splash.MixinSplashProgress",
     "splash.MixinSplashProgressRunnable",
-    "world.MixinWorld",
-    "bugfixes.MinecraftMixin_DisplayScreen",
-    "bugfixes.MinecraftMixin_FixScreenState",
-    "bugfixes.MinecraftMixin_ForeignKeyboards",
-    "bugfixes.MinecraftMixin_PersistentShaders",
-    "bugfixes.SoundManagerMixin_DuplicatedSounds",
-    "bugfixes.SoundManagerMixin_LogSpam",
-    "bugfixes.TileEntityBannerRendererMixin_BannerAnimation",
-    "bugfixes.TileEntityRendererDispatcherMixin_EnableLighting",
-    "bugfixes.TileEntitySkullRendererMixin_EnableBlending"
+    "world.MixinWorld"
   ],
   "client": [
+    "entity.MixinEntityOtherPlayerMP",
+    "forge.MixinGuiDupesFound"
   ]
 }

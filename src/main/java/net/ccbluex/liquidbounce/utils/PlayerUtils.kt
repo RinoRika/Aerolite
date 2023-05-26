@@ -26,6 +26,13 @@ object PlayerUtils {
         }
         return stringBuilder.toString()
     }
+
+    fun block(x: Double, y: Double, z: Double): Block? {
+        return mc.theWorld.getBlockState(BlockPos(x, y, z)).block
+    }
+    fun block(blockPos: BlockPos?): Block? {
+        return mc.theWorld.getBlockState(blockPos).block
+    }
     fun getAr(player : EntityLivingBase):Double{
         var arPercentage: Double = (player!!.totalArmorValue / player!!.maxHealth).toDouble()
         arPercentage = MathHelper.clamp_double(arPercentage, 0.0, 1.0)

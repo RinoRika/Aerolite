@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.event.*
@@ -11,7 +16,11 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.settings.GameSettings
-import net.minecraft.network.play.client.*
+import net.minecraft.network.play.client.C03PacketPlayer
+import net.minecraft.network.play.client.C0BPacketEntityAction
+import net.minecraft.network.play.client.C0DPacketCloseWindow
+import net.minecraft.network.play.client.C0EPacketClickWindow
+import net.minecraft.network.play.client.C16PacketClientStatus
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2EPacketCloseWindow
 import org.lwjgl.input.Keyboard
@@ -20,18 +29,19 @@ import org.lwjgl.input.Keyboard
 class InvMove : Module() {
 
     private val noDetectableValue = BoolValue("NoDetectable", false)
-    private val bypassValue = ListValue("Bypass", arrayOf("NoOpenPacket", "Blink", "None", "PlayerInv", "TestInv"), "None")
-    private val rotateValue = BoolValue("Rotate", true)
+    private val bypassValue = ListValue("Bypass", arrayOf("NoOpenPacket", "Blink", "PacketInv", "None"), "None")
+    private val rotateValue = BoolValue("Rotate", false)
     private val noMoveClicksValue = BoolValue("NoMoveClicks", false)
     val noSprintValue = ListValue("NoSprint", arrayOf("Real", "PacketSpoof", "None"), "None")
 
     private val blinkPacketList = mutableListOf<C03PacketPlayer>()
     private val packetListYes = mutableListOf<C0EPacketClickWindow>()
-    private val closelist = mutableListOf<C0DPacketCloseWindow>()
     var lastInvOpen = false
         private set
     var invOpen = false
         private set
+
+    private var isInv = false
 
     private fun updateKeyState() {
         if (mc.currentScreen != null && mc.currentScreen !is GuiChat && (!noDetectableValue.get() || mc.currentScreen !is GuiContainer)) {
@@ -109,14 +119,18 @@ class InvMove : Module() {
         }
 
         when (bypassValue.get().lowercase()) {
-            "playerinv" -> {
+            "packetinv" -> {
                 if (packet is C16PacketClientStatus && packet.status == C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT) {
                     event.cancelEvent()
+                    isInv = true
                 }
                 if (packet is C0DPacketCloseWindow) {
                     event.cancelEvent()
+                    isInv = false
                 }
+
                 if (packet is C0EPacketClickWindow) {
+                    if (isInv) return
                     packetListYes.clear()
                     packetListYes.add(packet)
 
@@ -128,29 +142,7 @@ class InvMove : Module() {
                     }
                     packetListYes.clear()
                     PacketUtils.sendPacketNoEvent(C0DPacketCloseWindow(mc.thePlayer.inventoryContainer.windowId))
-                }
-            }
-            "testinv" -> {
-                if (packet is C16PacketClientStatus && packet.status == C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT) {
-                    event.cancelEvent()
-                }
-                if (packet is C0DPacketCloseWindow) {
-                    closelist.add(packet)
-                    event.cancelEvent()
-                }
-                if (packet is C0EPacketClickWindow) {
-                    packetListYes.clear()
-                    packetListYes.add(packet)
-                    event.cancelEvent()
 
-                    PacketUtils.sendPacketNoEvent(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
-                    packetListYes.forEach {
-                        PacketUtils.sendPacketNoEvent(it)
-                    }
-                    packetListYes.clear()
-                    closelist.forEach {
-                        PacketUtils.sendPacketNoEvent(it)
-                    }
                 }
             }
             "noopenpacket" -> {
@@ -181,7 +173,6 @@ class InvMove : Module() {
         blinkPacketList.clear()
         invOpen = false
         lastInvOpen = false
-        packetListYes.clear()
     }
 
     override fun onDisable() {
@@ -205,11 +196,11 @@ class InvMove : Module() {
         }
 
         blinkPacketList.clear()
-        packetListYes.clear()
         lastInvOpen = false
         invOpen = false
     }
 
-    override val tag: String
+    override val tag: String?
         get() = bypassValue.get()
+
 }

@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.ClickGui;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.*;
-import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.flux.classic.FluxClassic;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.newVer.NewUi;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.nn.nn;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.novoline.ClickyUI;
@@ -34,7 +33,7 @@ import java.awt.*;
 
 @ModuleInfo(name = "ClickGUI", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
 public class ClickGUIModule extends Module {
-    private final ListValue styleValue = new ListValue("Style", new String[] {"Novoline","LiquidBounce", "Null", "Slowly", "Black", "astolfo", "Aerolite", "Neon" ,"Tenacity", "LBP", "NeverLose", "Zeroday", "Flux", "Flux2"}, "Liquidbounce") {
+    private final ListValue styleValue = new ListValue("Style", new String[] {"Novoline","LiquidBounce", "Null", "Slowly", "Black", "astolfo", "Aerolite", "Neon" ,"Tenacity", "LBP", "NeverLose", "Zeroday"}, "Liquidbounce") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -78,12 +77,6 @@ public class ClickGUIModule extends Module {
             this.setState(false);
         } else if (styleValue.get().equals("Zeroday")) {
             mc.displayGuiScreen(new ClickUI());
-            this.setState(false);
-        } else if (styleValue.get().equals("Flux")) {
-            mc.displayGuiScreen(new FluxClassic());
-            this.setState(false);
-        } else if (styleValue.get().equals("Flux2")) {
-            mc.displayGuiScreen(new click());
             this.setState(false);
         } else {
                 updateStyle();

@@ -34,7 +34,7 @@ class Criticals : Module() {
     val modeValue = ListValue("Mode", arrayOf(
         "Packet", "LitePacket", "AAC5Packet", "AAC4Packet", "HPacket", "NewPacket",
         "NCP", "NCP2", "Vanilla", "Vulcan", "AntiCheat", "Advanced",
-        "Edit", "Hypixel", "Mineland", "Edit2",
+        "Edit", "Mineland", "Edit2",
         "AACNoGround", "NoGround", "Redesky", "Hypixel", "Hypixel2",
         "VerusSmart", "MatrixSmart", "Blocksmc", "Minemora", "HVH","HVH2",
         "Motion", "Hover", "Custom"),
@@ -331,7 +331,7 @@ class Criticals : Module() {
         }
     }
 
-    @EventTarget
+  /*  @EventTarget
     fun onMotion(event: MotionEvent) {
         if (LiquidBounce.combatManager.inCombat && target != null && attacked) {
             when (modeValue.get().lowercase()) {
@@ -359,7 +359,7 @@ class Criticals : Module() {
                 }
             }
         }
-    }
+    } */
 
 
     @EventTarget

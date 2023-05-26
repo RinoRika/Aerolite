@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.*;
+import net.ccbluex.liquidbounce.features.module.modules.client.AntiDesync;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
@@ -170,9 +171,11 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
                 double xDiff = event.getX() - this.lastReportedPosX;
                 double yDiff = event.getY() - this.lastReportedPosY;
                 double zDiff = event.getZ() - this.lastReportedPosZ;
-                double yawDiff = (double) (yaw - lastReportedYaw);
-                double pitchDiff = (double) (pitch - lastReportedPitch);
-                boolean moved = xDiff * xDiff + yDiff * yDiff + zDiff * zDiff > 9.0E-4D || this.positionUpdateTicks >= 20;
+                double yawDiff = yaw - lastReportedYaw;
+                double pitchDiff = pitch - lastReportedPitch;
+
+                final AntiDesync antiDesync = LiquidBounce.moduleManager.getModule(AntiDesync.class);
+                boolean moved = xDiff * xDiff + yDiff * yDiff + zDiff * zDiff > 9.0E-4D || this.positionUpdateTicks >= 20 || (antiDesync.getState() && xDiff * xDiff + yDiff * yDiff + zDiff * zDiff > 0.0D);
                 boolean rotated = yawDiff != 0.0D || pitchDiff != 0.0D;
 
                 if (this.ridingEntity == null) {
@@ -203,9 +206,11 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
                     this.lastReportedYaw = yaw;
                     this.lastReportedPitch = pitch;
                 }
-            }
-            if (this.isCurrentViewEntity())
+
                 lastOnGround = event.getOnGround();
+            }
+     /*       if (this.isCurrentViewEntity())
+                lastOnGround = event.getOnGround(); */
 
             LiquidBounce.eventManager.callEvent(new MotionEvent(EventState.POST, mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, mc.thePlayer.onGround));
         } catch (final Exception e) {
@@ -227,6 +232,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
     /**
      * @author CCBlueX
+     * @reason LLL
      */
     @Overwrite
     public void onLivingUpdate() {

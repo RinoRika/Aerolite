@@ -146,6 +146,7 @@ class BlockFly : Module() {
             "PlusMotion",
             "StableMotion",
             "MotionTP",
+            "MotionTP2",
             "Packet",
             "Teleport",
             "AAC3.3.9",
@@ -154,7 +155,8 @@ class BlockFly : Module() {
             "AAC4Jump",
             "Verus",
             "NCP",
-            "Matrix"
+            "Matrix",
+            "Hypixel"
         ), "Jump"
     )
     private val stopWhenBlockAboveValue = BoolValue("StopTowerWhenBlockAbove", true)
@@ -610,6 +612,13 @@ class BlockFly : Module() {
                     )
                     towerTimer.reset()
                 }
+            }
+            "watchdog" -> {
+                fakeJump()
+                if (!mc.gameSettings.keyBindJump.isKeyDown) return
+
+                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
+                mc.thePlayer.motionY = 0.42
             }
             "constantmotion" -> {
                 if (mc.thePlayer.onGround) {

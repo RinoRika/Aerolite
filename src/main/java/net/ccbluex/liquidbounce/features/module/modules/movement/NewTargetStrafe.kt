@@ -97,9 +97,9 @@ class NewTargetStrafe : Module() {
     }
 
     fun strafe(event: MoveEvent, moveSpeed: Double) {
-        if (killAura.target == null) return
+        if (killAura.currentTarget == null) return
 
-        val target = killAura.target!!
+        val target = killAura.currentTarget!!
         val rotYaw = RotationUtils.getRotationsEntity(target).yaw
 
         val forward = if (mc.thePlayer.getDistanceToEntity(target) <= radius.get()) 0.0 else 1.0
@@ -124,7 +124,7 @@ class NewTargetStrafe : Module() {
         }
 
     val canStrafe: Boolean
-        get() = (state && (speed.state || fly.state) && killAura.state && killAura.target != null && !mc.thePlayer.isSneaking && keyMode)
+        get() = (state && (speed.state || fly.state) && killAura.state && killAura.currentTarget != null && !mc.thePlayer.isSneaking && keyMode)
 
     private fun checkVoid(): Boolean {
         for (x in -1..0) {
@@ -156,7 +156,7 @@ class NewTargetStrafe : Module() {
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        val target = killAura.target
+        val target = killAura.currentTarget
         if ((canStrafe || alwaysRender.get()) && render.get()) {
             target?:return
             GL11.glPushMatrix()

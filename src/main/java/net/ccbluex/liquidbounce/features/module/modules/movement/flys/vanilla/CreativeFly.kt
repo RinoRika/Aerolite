@@ -8,7 +8,7 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.network.play.client.C03PacketPlayer
 
-class SmoothVanillaFly : FlyMode("SmoothVanilla") {
+class CreativeFly : FlyMode("Creative") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 2f, 0f, 5f)
     private val kickBypassValue = BoolValue("${valuePrefix}KickBypass", false)
 

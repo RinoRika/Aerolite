@@ -19,6 +19,9 @@ abstract class LongJumpMode(val modeName: String) : MinecraftInstance() {
     open fun onEnable() {}
     open fun onDisable() {}
 
+    open fun onAttemptJump() {}
+    open fun onAttemptDisable() {}
+
     open fun onUpdate(event: UpdateEvent) {}
     open fun onPreMotion(event: MotionEvent) {}
     open fun onMotion(event: MotionEvent) {}

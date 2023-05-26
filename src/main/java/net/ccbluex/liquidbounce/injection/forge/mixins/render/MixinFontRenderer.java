@@ -6,9 +6,9 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
+import net.ccbluex.liquidbounce.cn.Fonts.Module.fonts.impl.Fonts;
 import net.ccbluex.liquidbounce.event.TextEvent;
 import net.ccbluex.liquidbounce.features.module.modules.render.BetterFont;
-import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager;
 import net.minecraft.client.gui.FontRenderer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -43,11 +43,11 @@ public abstract class MixinFontRenderer {
         return textEvent.getText();
     }
 
-  /*  @Inject(method = "drawString(Ljava/lang/String;FFIZ)I", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "drawString(Ljava/lang/String;FFIZ)I", at = @At("HEAD"), cancellable = true)
     public void drawString(String p_drawString_1_, float p_drawString_2_, float p_drawString_3_, int p_drawString_4_, boolean p_drawString_5_, CallbackInfoReturnable<Integer> cir) {
         final BetterFont betterFont = LiquidBounce.moduleManager.getModule(BetterFont.class);
         if (betterFont.getState()) {
-            cir.setReturnValue(Fonts.font35.drawString(p_drawString_1_, p_drawString_2_, p_drawString_3_, p_drawString_4_, p_drawString_5_));
+            cir.setReturnValue((int) Fonts.SF.SF_17.SF_17.drawString(p_drawString_1_, p_drawString_2_, p_drawString_3_, p_drawString_4_, p_drawString_5_));
             cir.cancel();
         }
     }
@@ -56,8 +56,8 @@ public abstract class MixinFontRenderer {
     public void getStringWidth(String p_getStringWidth_1_, CallbackInfoReturnable<Integer> cir) {
         final BetterFont betterFont = LiquidBounce.moduleManager.getModule(BetterFont.class);
         if(betterFont.getState()){
-            cir.setReturnValue(Fonts.font35.getStringWidth(p_getStringWidth_1_));
+            cir.setReturnValue(Fonts.SF.SF_16.SF_16.stringWidth(p_getStringWidth_1_));
             cir.cancel();
         }
-    } */
+    }
 }

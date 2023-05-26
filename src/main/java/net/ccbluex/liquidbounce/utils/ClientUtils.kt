@@ -9,6 +9,7 @@ import com.google.gson.JsonObject
 import net.ccbluex.liquidbounce.Aerolite
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.Metrics.SimplePie
+import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.util.IChatComponent
 import oh.yalan.NativeMethod
@@ -19,6 +20,7 @@ import java.io.File
 import java.util.*
 
 object ClientUtils : MinecraftInstance() {
+    val titles = arrayOf("有的人天天笑别人，却不知道自己就是个笑话", "一边议论别人一边卖惨自己，有比这更可笑的吗？", "玩方块人时,淳哥总是注入Vape")
     private val logger = LogManager.getLogger("Aerolite")
     val osType: EnumOSType
     val FMLtaskTimer = MSTimer()
@@ -112,12 +114,12 @@ object ClientUtils : MinecraftInstance() {
     @NativeMethod
     fun setTitle() {
         //Display.setTitle("${LiquidBounce.CLIENT_NAME}正在注入核心,请稍后!")
-        Display.setTitle("Aerolite is loading! (别加Inputfix 本客户端自带)")
+        Display.setTitle("Aerolite today,Aerolite forever! | Reborn By Kilo")
     }
 
     @NativeMethod
     fun finishTitle() {
-        Display.setTitle(Aerolite.title)
+        Display.setTitle(Aerolite.title + titles[RandomUtils.nextInt(0, titles.size)])
     }
 
     @NativeMethod

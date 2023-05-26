@@ -26,6 +26,16 @@ object MovementUtils : MinecraftInstance() {
         if(y) mc.thePlayer.motionY = 0.0
     }
 
+    val jumpMotion: Float
+        get() {
+            var mot = 0.42f
+            if (mc.thePlayer.isPotionActive(Potion.jump)) {
+                mot += (mc.thePlayer.getActivePotionEffect(Potion.jump).amplifier + 1).toFloat() * 0.1f
+            }
+            return mot
+        }
+
+
     fun getXZDist(speed: Float, cYaw: Float): DoubleArray? {
         val arr = DoubleArray(2)
         val yaw: Double = getDirectionRotation(cYaw, mc.thePlayer.moveStrafing, mc.thePlayer.moveForward)

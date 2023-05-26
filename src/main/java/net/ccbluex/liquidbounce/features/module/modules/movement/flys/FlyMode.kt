@@ -27,4 +27,7 @@ abstract class FlyMode(val modeName: String) : MinecraftInstance() {
     open fun onJump(event: JumpEvent) {}
     open fun onStep(event: StepEvent) {}
     open fun onPreMotion(event: MotionEvent2){}
+    open fun onStrafe(event: StrafeEvent) {}
+    open fun onTeleport(event: TeleportEvent) {}
+
 }

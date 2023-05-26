@@ -12,6 +12,7 @@ import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.util.*;
 import org.jetbrains.annotations.NotNull;
 
+import javax.vecmath.Vector2f;
 import java.util.Random;
 
 public final class RotationUtils extends MinecraftInstance implements Listenable {

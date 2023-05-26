@@ -23,6 +23,10 @@ open class CancellableEvent : Event() {
     fun cancelEvent() {
         isCancelled = true
     }
+
+    fun setCancelled(state: Boolean) {
+        isCancelled = state
+    }
 }
 
 /**

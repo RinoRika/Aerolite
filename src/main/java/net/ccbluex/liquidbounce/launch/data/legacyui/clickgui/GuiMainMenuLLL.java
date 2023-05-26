@@ -98,7 +98,7 @@ public class GuiMainMenuLLL extends GuiScreen {
                 button.draw(startX, (float) this.height / 2.0F + 20.0F, mouseX, mouseY);
             }
 
-            Fonts.font35.drawCenteredString("常看看更新日志", (float) this.width / 2.0f, (float) this.height - 24f, Color.WHITE.getRGB());
+            Fonts.font35.drawCenteredString("Stars 后会有期!", (float) this.width / 2.0f, (float) this.height - 24f, Color.WHITE.getRGB());
             Fonts.font35.drawCenteredString("Made with <3 by " + LiquidBounce.CLIENT_DEV, (float) this.width / 2.0f, (float) this.height - 12f, Color.WHITE.getRGB());
 
             renderSwitchButton();

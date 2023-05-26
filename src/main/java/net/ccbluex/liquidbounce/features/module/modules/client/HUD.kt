@@ -31,6 +31,8 @@ import net.minecraft.util.ResourceLocation
 @ModuleInfo(name = "HUD", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 object HUD : Module() {
     val betterHotbarValue = BoolValue("BetterHotbar", true)
+    val betterHotbarModeValue = ListValue("BetterHotbarMode", arrayOf("Rect", "Rect2", "RoundRect"), "Rect").displayable { betterHotbarValue.get() }
+    val betterHotbarShadowValue = BoolValue("BettetHotbarShadow", false).displayable { betterHotbarValue.get() }
     val notHotBarValue = BoolValue("NoHotbar", false)
     val hotbarEaseValue = BoolValue("HotbarEase", true).displayable { betterHotbarValue.get() }
     private val hotbarAnimSpeedValue = IntegerValue("HotbarAnimSpeed", 10, 5, 20).displayable { hotbarEaseValue.get() }
@@ -50,7 +52,6 @@ object HUD : Module() {
     val rainbowSaturationValue = FloatValue("RainbowSaturation", 0.7f, 0f, 1f)
     val rainbowBrightnessValue = FloatValue("RainbowBrightness", 1f, 0f, 1f)
     val rainbowSpeedValue = IntegerValue("RainbowSpeed", 1500, 500, 7000)
-    val interpolateHue = BoolValue("InterpolateHue", true)
     val arraylistXAxisAnimSpeedValue = IntegerValue("ArraylistXAxisAnimSpeed", 10, 5, 20)
     val arraylistXAxisAnimTypeValue = EaseUtils.getEnumEasingList("ArraylistXAxisAnimType")
     val arraylistXAxisAnimOrderValue = EaseUtils.getEnumEasingOrderList("ArraylistXAxisHotbarAnimOrder")

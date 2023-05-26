@@ -30,6 +30,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.awt.*;
+import java.nio.charset.StandardCharsets;
 
 @Mixin(GuiIngame.class)
 public abstract class MixinGuiInGame extends MixinGui {
@@ -163,9 +164,21 @@ public abstract class MixinGuiInGame extends MixinGui {
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             if(canBetterHotbar) {
+                String mode = hud.getBetterHotbarModeValue().get();
                 GlStateManager.disableTexture2D();
-                RenderUtils.drawRect(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(),new Color(0,0,0, 200).getRGB());
-                RenderUtils.drawRect(itemX, sr.getScaledHeight() - 21, itemX + 22, sr.getScaledHeight(),new Color(150, 150, 150, 155).getRGB());
+                if (mode.equals("Rect")) {
+                    RenderUtils.drawRect(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(), new Color(20,20,20, 100).getRGB());
+                    RenderUtils.drawRect(itemX, sr.getScaledHeight() - 22, itemX + 22, sr.getScaledHeight(), new Color(150, 150, 150, 155).getRGB());
+                } else if (mode.equals("RoundRect")) {
+                    RenderUtils.drawRoundedCornerRect(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(), 1f, new Color(20,20,20, 100).getRGB());
+                    RenderUtils.drawRoundedCornerRect(itemX, sr.getScaledHeight() - 22, itemX + 22, sr.getScaledHeight(), 3f, new Color(150, 150, 150, 155).getRGB());
+                } else if (mode.equals("Rect2")) {
+                    RenderUtils.drawBorderedRect(i - 91f, sr.getScaledHeight() - 22f, i + 91f, (float) sr.getScaledHeight(), 0.2f, new Color(100,100,100, 100).getRGB(), new Color(50,50,50,200).getRGB());
+                    RenderUtils.drawBorderedRect((float) itemX, sr.getScaledHeight() - 22f, itemX + 22f, (float) sr.getScaledHeight(), 0.4f, new Color(150, 150, 150, 155).getRGB(), new Color(0,200,255,220).getRGB());
+                }
+                if (hud.getBetterHotbarShadowValue().get()) {
+                    RenderUtils.drawShadow(i - 91f, sr.getScaledHeight() - 22f, i, (float) sr.getScaledHeight());
+                }
                 GlStateManager.enableTexture2D();
             } else if (hud.getNotHotBarValue().get()) {
 
@@ -179,9 +192,13 @@ public abstract class MixinGuiInGame extends MixinGui {
 
             for (int j = 0; j < 9; ++j)
             {
-                int k = sr.getScaledWidth() / 2 - 90 + j * 20 + 2;
-                int l = sr.getScaledHeight() - 16 - 3;
-                this.renderHotbarItem(j, k, l, partialTicks, entityplayer);
+                if (hud.getNotHotBarValue().get()) {
+
+                } else {
+                    int k = sr.getScaledWidth() / 2 - 90 + j * 20 + 2;
+                    int l = sr.getScaledHeight() - 16 - 3;
+                    this.renderHotbarItem(j, k, l, partialTicks, entityplayer);
+                }
             }
             //
 

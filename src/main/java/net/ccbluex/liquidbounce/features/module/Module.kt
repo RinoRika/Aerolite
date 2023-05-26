@@ -9,7 +9,6 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.ccbluex.liquidbounce.features.module.modules.client.Modules
-import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.flux.classic.AnimationHelper
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
@@ -21,7 +20,6 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.Translate
 import net.ccbluex.liquidbounce.value.*
-import net.minecraft.client.Minecraft
 import org.lwjgl.input.Keyboard
 
 open class Module() :MinecraftInstance(), Listenable {
@@ -43,8 +41,6 @@ open class Module() :MinecraftInstance(), Listenable {
     var Loading = false;
     var Save = false;
     var Start=false;
-    val animations = AnimationHelper(this)
-    val animationHelper: AnimationHelper
     var keyBind = Keyboard.CHAR_NONE
         set(keyBind) {
             field = keyBind
@@ -97,7 +93,6 @@ open class Module() :MinecraftInstance(), Listenable {
         autoDisable = moduleInfo.autoDisable
         moduleCommand = moduleInfo.moduleCommand
         triggerType = moduleInfo.triggerType
-        animationHelper = AnimationHelper(this)
     }
 
     val numberValues: List<Value<*>>
@@ -125,10 +120,12 @@ open class Module() :MinecraftInstance(), Listenable {
             if (!LiquidBounce.isStarting && Modules.showNotification.get()) {
                 if (value) {
                     Modules.playSound(true)
-                    LiquidBounce.hud.addNotification(Notification("%notify.module.title%", LanguageManager.getAndFormat("notify.module.enable", localizedName), NotifyType.SUCCESS))
+                    LiquidBounce.hud.addNotification(Notification(if (Modules.notificationLongMessage.get())"%notify.module.longTitle%" else "%notify.module.title%",
+                        if (Modules.notificationLongMessage.get()) LanguageManager.getAndFormat("notify.module.longEnable", localizedName) else LanguageManager.getAndFormat("notify.module.enable", localizedName), NotifyType.SUCCESS))
                 } else {
                     Modules.playSound(false)
-                    LiquidBounce.hud.addNotification(Notification("%notify.module.title%", LanguageManager.getAndFormat("notify.module.disable", localizedName), NotifyType.ERROR))
+                    LiquidBounce.hud.addNotification(Notification(if (Modules.notificationLongMessage.get())"%notify.module.longTitle%" else "%notify.module.title%",
+                        if (Modules.notificationLongMessage.get()) LanguageManager.getAndFormat("notify.module.longDisable", localizedName) else LanguageManager.getAndFormat("notify.module.disable", localizedName), NotifyType.ERROR))
                 }
             }
 

@@ -303,6 +303,10 @@ object ColorUtils {
         return Color((color.red * percentage).toInt(), (color.green * percentage).toInt(), (color.blue * percentage).toInt(), (color.alpha * percentage).toInt())
     }
 
+    fun darkerFixed(color: Color, percentage: Float): Color {
+        return Color(((color.red * percentage).toInt()).coerceAtMost(255), ((color.green * percentage).toInt()).coerceAtMost(255), ((color.blue * percentage).toInt()).coerceAtMost(255), ((color.alpha * percentage).toInt()).coerceAtMost(255))
+    }
+
     fun mixColors(color1: Color, color2: Color, percent: Float): Color {
         return Color(color1.red + ((color2.red - color1.red) * percent).toInt(), color1.green + ((color2.green - color1.green) * percent).toInt(), color1.blue + ((color2.blue - color1.blue) * percent).toInt(), color1.alpha + ((color2.alpha - color1.alpha) * percent).toInt())
     }

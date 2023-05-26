@@ -66,7 +66,17 @@ object EntityUtils : MinecraftInstance() {
         }
         return false
     }
-
+    fun canRayCast(entity: Entity): Boolean {
+        if (entity is EntityLivingBase) {
+            if (entity is EntityPlayer) {
+                val teams = LiquidBounce.moduleManager.getModule(Teams::class.java)
+                return !teams!!.state || !teams.isInYourTeam(entity)
+            } else {
+                return mobValue.get() && isMob(entity) || animalValue.get() && isAnimal(entity)
+            }
+        }
+        return false
+    }
     fun isRendered(entityToCheck: Entity?): Boolean {
         return mc.theWorld != null && mc.theWorld.getLoadedEntityList().contains(entityToCheck)
     }

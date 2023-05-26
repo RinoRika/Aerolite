@@ -105,6 +105,16 @@ class Fly : Module() {
     }
 
     @EventTarget
+    fun onStrafe(event: StrafeEvent) {
+        mode.onStrafe(event)
+    }
+
+    @EventTarget
+    fun onTeleport(event: TeleportEvent) {
+        mode.onTeleport(event)
+    }
+
+    @EventTarget
     fun onMotion(event: MotionEvent) {
         mode.onMotion(event)
     }

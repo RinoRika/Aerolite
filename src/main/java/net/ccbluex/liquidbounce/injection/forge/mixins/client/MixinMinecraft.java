@@ -249,22 +249,22 @@ public abstract class MixinMinecraft {
         LiquidBounce.eventManager.callEvent(new WorldEvent(p_loadWorld_1_));
     }
 
+    // 2k20 code lmao
     @Inject(method = "getRenderViewEntity", at = @At("HEAD"))
-    public void getRenderViewEntity(CallbackInfoReturnable<Entity> cir){
-        if(renderViewEntity instanceof EntityLivingBase && RotationUtils.serverRotation!=null){
-            final Rotations rotations=LiquidBounce.moduleManager.getModule(Rotations.class);
-            final EntityLivingBase entityLivingBase=(EntityLivingBase) renderViewEntity;
-            final float yaw=RotationUtils.serverRotation.getYaw();
-            if(rotations.getHeadValue().get()){
-                entityLivingBase.rotationYawHead=yaw;
-                entityLivingBase.prevRotationYawHead=yaw;
+    public void getRenderViewEntity(CallbackInfoReturnable<Entity> cir) {
+        if (RotationUtils.targetRotation != null && thePlayer != null) {
+            final Rotations rotations = LiquidBounce.moduleManager.getModule(Rotations.class);
+            final float yaw = RotationUtils.targetRotation.getYaw();
+            if (rotations.getHeadValue().get()) {
+                thePlayer.rotationYawHead = yaw;
             }
-            if(rotations.getBodyValue().get()){
-                entityLivingBase.renderYawOffset=yaw;
-                entityLivingBase.prevRenderYawOffset=yaw;
+            if (rotations.getBodyValue().get()) {
+                thePlayer.renderYawOffset = yaw;
             }
         }
     }
+
+
 
     /**
      * @author CCBlueX
@@ -365,11 +365,17 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "setWindowIcon", at = @At("HEAD"), cancellable = true)
     private void setWindowIcon(CallbackInfo callbackInfo) throws IOException {
-        if (Util.getOSType() != Util.EnumOS.OSX) {
-            BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("/assets/minecraft/aerolite/misc/icon.png"));
-            Display.setIcon(new ByteBuffer[]{ImageUtils.readImageToBuffer(ImageUtils.resizeImage(image, 16, 16)),
-                    ImageUtils.readImageToBuffer(image)});
-            callbackInfo.cancel();
+        try {
+            if (Util.getOSType() != Util.EnumOS.OSX) {
+                BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("/assets/minecraft/aerolite/misc/icon.png"));
+                Display.setIcon(new ByteBuffer[]{ImageUtils.readImageToBuffer(ImageUtils.resizeImage(image, 16, 16)),
+                        ImageUtils.readImageToBuffer(image)});
+                callbackInfo.cancel();
+            }
+        } catch (NoSuchMethodError e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
         }
     }
 

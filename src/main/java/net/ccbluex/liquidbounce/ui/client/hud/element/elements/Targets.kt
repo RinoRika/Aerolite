@@ -46,7 +46,7 @@ import kotlin.math.roundToInt
 @ElementInfo(name = "Targets")
 open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
-    val modeValue = ListValue("Mode", arrayOf("Aerolite", "Aerolite2", "AeroliteOld", "FDP", "Bar", "OverFlow", "Chill", "Rice", "Slowly", "Remix", "Romantic", "Novoline", "Novoline2", "Novoline3", "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "ExhibitionOld", "Zamorozka", "Arris", "Tenacity", "TenacityNew", "WaterMelon", "SparklingWater", "Hanabi"), "FDP")
+    val modeValue = ListValue("Mode", arrayOf("Aerolite", "Aerolite2", "AeroliteOld", "Stitch", "FDP", "Bar", "OverFlow", "Chill", "Rice", "Slowly", "Remix", "Romantic", "Novoline", "Novoline2", "Novoline3", "Astolfo", "Liquid", "Flux", "Rise", "Exhibition", "ExhibitionOld", "Zamorozka", "Arris", "Tenacity", "TenacityNew", "WaterMelon", "SparklingWater", "Hanabi"), "FDP")
     private val modeRise = ListValue("RiseMode", arrayOf("Original", "New1", "New2", "Rise6"), "Rise6")
 
     private val chillFontSpeed = FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { modeValue.get().equals("chill", true) }
@@ -154,6 +154,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
     private val decimalFormat = DecimalFormat("##0.00", DecimalFormatSymbols(Locale.ENGLISH))
     private val decimalFormat2 = DecimalFormat("##0.0", DecimalFormatSymbols(Locale.ENGLISH))
+    private val ndecimalFormat = DecimalFormat("#", DecimalFormatSymbols(Locale.ENGLISH))
 
     val shadowOpaque: Color
         get() = ColorUtils.reAlpha(when (shadowColorMode.get().lowercase(Locale.getDefault())) {
@@ -319,7 +320,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
                     "rise6" -> drawRiseLatest(prevTarget!!)
                 }
             }
-
+            "stitch" -> drawStitch(prevTarget!!)
             "zamorozka" -> drawZamorozka(prevTarget!!)
             "arris" -> drawArris(prevTarget!!)
             "tenacity" -> drawTenacity(prevTarget!!)
@@ -1207,6 +1208,31 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
 
     }
 
+    private fun drawStitch(target: EntityLivingBase) {
+        val tWidth = (110F + Fonts.tc40.getStringWidth(target.name)).coerceAtLeast(120F)
+        // background
+        RenderUtils.drawRoundedCornerRect(0F, 0F, tWidth, 65F, 7F, Color(255, 255, 255, 40).rgb)
+        // circle player avatar
+        GL11.glColor4f(1f, 1f, 1f, 1f)
+        GL11.glPushMatrix()
+        mc.textureManager.bindTexture(target.skin)
+        RenderUtils.drawScaledCustomSizeModalCircle((tWidth.toInt()/2) - 15, 5, 8f, 8f, 8, 8, 30, 30, 64f, 64f)
+        RenderUtils.drawScaledCustomSizeModalCircle((tWidth.toInt()/2) - 15, 5, 40f, 8f, 8, 8, 30, 30, 64f, 64f)
+        GL11.glPopMatrix()
+        // name
+        Fonts.tc40.drawCenteredString(target.name, tWidth/2F, 39F, getColor(-1).rgb, false)
+
+        "${ndecimalFormat.format((easingHP / target.maxHealth) * 100)}%".also {
+            Fonts.font32.drawString(it, ((easingHP / target.maxHealth) * (tWidth - 5) - Fonts.font32.getStringWidth(it)).coerceAtLeast(40f), 60f - Fonts.font32.FONT_HEIGHT, Color.WHITE.rgb, false)
+        }
+
+        // hp bar
+        RenderUtils.drawRoundedCornerRect(5f, 58f, (tWidth - 5), 62f, 2.5f, Color(0, 0, 0, 150).rgb)
+        RenderUtils.drawRoundedCornerRect(5f, 58f, (easingHP / target.maxHealth) * (tWidth - 5), 62f, 2.5f, ColorUtils.rainbow().rgb)
+
+    }
+
+
     private fun drawFlux(target: EntityLivingBase) {
         val width = (38 + target.name.let(Fonts.font40::getStringWidth))
             .coerceAtLeast(70)
@@ -1247,7 +1273,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             Color.WHITE.rgb
         )
         RenderUtils.drawRect(2.5f, 35.5f, width + 11.5f, 37.5f, Color(0, 0, 0, 200).rgb)
-        RenderUtils.drawGradientSidewaysH(3.0, 36.0, 3.0 + (easingHealth / target.maxHealth) * (width + 8f), 37.0,  Palette.fade1(barColor).rgb, barColor.rgb)
+        RenderUtils.drawGradientSidewaysH(3.0, 36.0, 3.0 + (easingHealth / target.maxHealth) * (width + 8f), 37.0,  ColorUtils.darkerFixed(barColor, 1.5f).rgb, barColor.rgb)
         RenderUtils.drawRect(2.5f, 39.5f, width + 11.5f, 41.5f, Color(0, 0, 0, 200).rgb)
         RenderUtils.drawGradientSidewaysH(
             3.0,
@@ -2250,6 +2276,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
             "chill" -> Border(0F, 0F, 120F, 48F)
             "remix" -> Border(0F, 0F, 146F, 49F)
             "rice" -> Border(0F, 0F, 135F, 55F)
+            "stitch" -> Border(0F, 0F, 150F, 65F)
             "slowly" -> Border(0F, 0F, 102F, 36F)
             "exhibition" -> Border(0F, 0F, 126F, 45F)
             "exhibitionold" -> Border(2F, 1F, 122F, 40F)

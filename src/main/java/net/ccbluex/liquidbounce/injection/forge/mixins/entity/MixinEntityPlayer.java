@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.PlayerCapabilities;
+import net.minecraft.entity.projectile.EntityFishHook;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.FoodStats;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,6 +16,8 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(EntityPlayer.class)
 public abstract class MixinEntityPlayer extends MixinEntityLivingBase {
+
+    @Shadow public EntityFishHook fishEntity;
 
     @Shadow public abstract String getName();
 

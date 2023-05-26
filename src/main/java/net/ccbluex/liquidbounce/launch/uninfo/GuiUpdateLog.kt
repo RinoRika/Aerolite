@@ -28,18 +28,11 @@ class GuiUpdateLog : GuiScreen(), GuiYesNoCallback {
 
     override fun initGui() {
         this.buttonList.add(GuiButton(0, this.width / 2 - 50, 460, 100, 20, "Back"))
-        text.add("★ Modules")
-        text.add("[*] Improve hypixel Disabler")
-        text.add("[*] Fix Aura mark (Maybe)")
-        text.add("[+] BanChecker for hypixel")
-        text.add("[+] Hypixel InvMove bypass")
-        text.add("[+] Hypixel Criticals bypass")
-        text.add("★ Hud")
-        text.add("[*] Fix sh1t novoline3 color")
-        text.add("★ Client")
-        text.add("[-] Delete shit")
-        text.add("[*] Fix BetterFont crash")
-        text.add("[*] InputFix")
+        text.add("[+] Vulcan Bypasses")
+        text.add("[+] Rewrite KillAura")
+        text.add("[+] StrafeFix,NoClickDelay")
+        text.add("[+] Stitch TargetHUD")
+        text.add("[+] More Notifications")
     }
 
     override fun drawScreen(p_drawScreen_1_: Int, p_drawScreen_2_: Int, p_drawScreen_3_: Float) {

@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.minecraft.network.play.server.S14PacketEntity
 import net.minecraft.network.play.server.S1DPacketEntityEffect
-import sun.audio.AudioPlayer.player
 
 @ModuleInfo(name = "AntiVanish", category = ModuleCategory.MISC)
 class AntiVanish : Module() {
@@ -32,7 +31,7 @@ class AntiVanish : Module() {
 
     private fun vanish(){
         if((System.currentTimeMillis()-lastNotify)>5000){
-            LiquidBounce.hud.addNotification(Notification("Found a vanished entity!", player.name + " is vanished", NotifyType.WARNING, 4000, 500))
+            LiquidBounce.hud.addNotification(Notification("AntiVanish", "Someone is vanished", NotifyType.WARNING, 4000, 500))
 
         }
         lastNotify=System.currentTimeMillis()

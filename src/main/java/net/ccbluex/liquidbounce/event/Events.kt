@@ -14,6 +14,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.Packet
+import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
@@ -143,6 +144,8 @@ class MotionEvent(var eventstate: EventState, var x: Double, var y: Double, var 
  */
 class SlowDownEvent(var strafe: Float, var forward: Float) : Event()
 
+class TeleportEvent(val c06: C06PacketPlayerPosLook, var x: Double, var y: Double, var z: Double, var yaw: Float, var pitch: Float) : CancellableEvent()
+
 /**
  * Called in "moveFlying"
  */
@@ -182,10 +185,6 @@ class PacketEvent(val packet: Packet<*>, val type: Type) : CancellableEvent() {
     @JvmName("getPacket1")
     fun getPacket(): Packet<*> {
         return packet
-    }
-
-    fun setCancelled(aaa: Boolean) {
-        cancelEvent()
     }
 
     fun isServerSide() = type == Type.RECEIVE

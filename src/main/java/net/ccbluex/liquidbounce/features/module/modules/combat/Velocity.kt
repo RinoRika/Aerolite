@@ -22,12 +22,14 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.block.BlockAir
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.network.play.client.C0FPacketConfirmTransaction
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
+import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.MathHelper
 import kotlin.math.cos
@@ -40,14 +42,18 @@ class Velocity : Module() {
     /**
      * OPTIONS
      */
-    private val horizontalValue = FloatValue("Horizontal", 0F, -2F, 2F)
-    private val verticalValue = FloatValue("Vertical", 0F, -2F, 2F)
+    private val horizontalValue = FloatValue("Horizontal", 0F, -2F, 2F).displayable {
+        !modeValue.equals("AGC") || !modeValue.equals("Matrix") || !modeValue.equals("Intave") || !modeValue.equals("Karhu")
+    }
+    private val verticalValue = FloatValue("Vertical", 0F, -2F, 2F).displayable {
+        !modeValue.equals("AGC") || !modeValue.equals("Matrix") || !modeValue.equals("Intave") || !modeValue.equals("Karhu")
+    }
     private val velocityTickValue = IntegerValue("VelocityTick", 1, 0, 10).displayable { modeValue.equals("Tick") || modeValue.equals("OldSpartan")}
     private val modeValue = ListValue("Mode", arrayOf(
         "Simple", "Tick", "Cancel", "Hypixel",
         "Redesky1", "Redesky2", "Redesky3", "Redesky4",
         "Matrix", "MatrixTest", "MatrixTest2",
-        "AGC", "Intave",
+        "AGC", "Intave", "Karhu",
         "Reverse", "SmoothReverse",
         "Jump", "Legit",
         "Phase", "PacketPhase", "Glitch", "Spoof",
@@ -115,6 +121,20 @@ class Velocity : Module() {
     }
     override fun onDisable() {
         mc.thePlayer?.speedInAir = 0.02F
+    }
+
+    @EventTarget
+    fun onBlockBB(event: BlockBBEvent) {
+        if (modeValue.equals("Karhu")) {
+            if (event.block is BlockAir && mc.thePlayer.hurtTime > 0 && velocityTick <= 9) {
+                val x: Double = event.x.toDouble()
+                val y: Double = event.y.toDouble()
+                val z: Double = event.z.toDouble()
+                if (y == Math.floor(mc.thePlayer.posY) + 1) {
+                    event.boundingBox = AxisAlignedBB.fromBounds(0.0, 0.0, 0.0, 1.0, 0.0, 1.0).offset(x, y, z)
+                }
+            }
+        }
     }
 
     @EventTarget

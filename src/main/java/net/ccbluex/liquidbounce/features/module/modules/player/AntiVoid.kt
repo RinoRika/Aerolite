@@ -8,7 +8,8 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.world.BlockFly
-import net.ccbluex.liquidbounce.utils.MathUtils
+import net.ccbluex.liquidbounce.utils.PacketUtils
+import net.ccbluex.liquidbounce.utils.PlayerUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -19,6 +20,8 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.BlockPos
+import net.minecraft.util.Vec3
+import java.util.concurrent.ConcurrentLinkedQueue
 
 
 @ModuleInfo(name = "AntiVoid", category = ModuleCategory.PLAYER)
@@ -36,6 +39,9 @@ class AntiVoid : Module() {
     private var canSpoof = false
     private var tried = false
     private var flagged = false
+
+    private val packets = ConcurrentLinkedQueue<C03PacketPlayer>()
+    private var position: Vec3? = null
 
     private var posX = 0.0
     private var posY = 0.0
@@ -136,19 +142,6 @@ class AntiVoid : Module() {
                 lastRecY = mc.thePlayer.posY
             }
 
-            "watchdog" -> {
-                if (!voidOnlyValue.get() || checkVoid()) {
-                    mc.netHandler.addToSendQueue(
-                        C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY + MathUtils.getRandomInRange(10, 12),
-                            mc.thePlayer.posZ,
-                            false
-                        )
-                    )
-                }
-            }
-
             "blink" -> {
                 if (!blink) {
                     val collide = FallingPlayer(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, 0.0, 0.0, 0.0, 0F, 0F, 0F, 0F).findCollision(60)
@@ -245,6 +238,33 @@ class AntiVoid : Module() {
                 }
                 if (canSpoof && (packet is S08PacketPlayerPosLook)) {
                     flagged = true
+                }
+            }
+
+            "watchdog" -> {
+                if (packet is C03PacketPlayer) {
+                    if (!PlayerUtils.isBlockUnder()) {
+                        packets.add(packet)
+                        event.setCancelled(true)
+                        if (position != null && mc.thePlayer.fallDistance > maxFallDistValue.get()) {
+                            PacketUtils.sendPacketNoEvent(
+                                C04PacketPlayerPosition(
+                                    position!!.xCoord,
+                                    position!!.yCoord - 1,
+                                    position!!.zCoord,
+                                    false
+                                )
+                            )
+                        }
+                    } else {
+                        if (mc.thePlayer.onGround) {
+                            position = Vec3(packet.x, packet.y, packet.z)
+                        }
+                        if (!packets.isEmpty()) {
+                            packets.forEach(PacketUtils::sendPacketNoEvent)
+                            packets.clear()
+                        }
+                    }
                 }
             }
 

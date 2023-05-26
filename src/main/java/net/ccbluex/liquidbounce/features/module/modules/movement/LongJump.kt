@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.LongJ
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 
 @ModuleInfo(name = "LongJump", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG)
@@ -37,14 +38,20 @@ class LongJump : Module() {
 
     val autoJumpValue = BoolValue("AutoJump", true)
     val autoDisableValue = BoolValue("AutoDisable", true)
+    val timerValue = FloatValue("GlobalTimer", 1.0f, 0.1f, 2.0f)
+    val onlyAirValue = BoolValue("TimerOnlyAir", true)
     var jumped = false
     var hasJumped = false
     var no = false
+    var airTick = 0
+    var noTimerModify = false
 
     override fun onEnable() {
         jumped = false
         hasJumped = false
         no = false
+        airTick = 0
+        noTimerModify = false
         mode.onEnable()
     }
 
@@ -60,15 +67,21 @@ class LongJump : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if(!state) return
-        mode.onUpdate(event)
-        if (!no && autoJumpValue.get() && mc.thePlayer.onGround && MovementUtils.isMoving()) {
-            jumped = true
-            if (hasJumped && autoDisableValue.get()) {
-                state = false
-                return
+        if ((!onlyAirValue.get() || !mc.thePlayer.onGround) && !noTimerModify) {
+            mc.timer.timerSpeed = timerValue.get()
+        }
+        if (!mc.thePlayer.onGround) {
+            airTick++
+        }else {
+            if (airTick > 1 && autoDisableValue.get()) {
+                mode.onAttemptDisable()
+            } else if (!autoDisableValue.get()) {
+                airTick = 0
             }
-            mc.thePlayer.jump()
-            hasJumped = true
+        }
+        mode.onUpdate(event)
+        if (autoJumpValue.get() && mc.thePlayer.onGround && MovementUtils.isMoving() && airTick < 2) {
+            mode.onAttemptJump()
         }
     }
 

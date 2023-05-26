@@ -17,6 +17,7 @@ object Modules : Module() {
     private val toggleSoundValue = ListValue("ToggleSound", arrayOf("None", "Click", "Custom"), "Click")
     val showNotification = BoolValue("ShowNotification", true)
     val showFullTag = BoolValue("ShowFullTag", false)
+    val notificationLongMessage = BoolValue("NotiLongMessage", false)
 
     override fun onEnable() {
         LiquidBounce.hud.addNotification(Notification("ModuleConfig", "Reset Module Config!", NotifyType.SUCCESS))

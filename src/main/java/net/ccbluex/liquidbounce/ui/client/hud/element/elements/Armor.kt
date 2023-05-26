@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.block.material.Material
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraftforge.fml.client.GuiModsMissing
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
