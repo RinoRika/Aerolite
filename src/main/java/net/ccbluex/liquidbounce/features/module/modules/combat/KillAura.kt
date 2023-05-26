@@ -1,8 +1,3 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
- */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.LiquidBounce
@@ -26,6 +21,7 @@ import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.enchantment.EnchantmentHelper
@@ -74,6 +70,7 @@ class KillAura : Module() {
     private val cooldownNoDupAtk = BoolValue("NoDuplicateAttack", false).displayable { simulateCooldown.get() && attackDisplay.get() }
 
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10).displayable { attackDisplay.get() }
+    private val clickOnly = BoolValue("ClickOnly", false).displayable { attackDisplay.get() }
 
     // Range
     val rangeValue = object : FloatValue("Range", 3.7f, 0f, 8f) {
@@ -144,7 +141,7 @@ class KillAura : Module() {
         "RotationMode",
         arrayOf("None", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView", "OldMatrix", "Test"),
         "LiquidBounce"
-    ).displayable { rotationDisplay.get() }
+    ).displayable { rotationDisplay.get()}
 
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationModeValue.equals("None") && rotationDisplay.get()}
 
@@ -157,16 +154,16 @@ class KillAura : Module() {
             val v = minTurnSpeedValue.get()
             if (v > newValue) set(v)
         }
-    }.displayable { rotationDisplay.get() } as FloatValue
+    }.displayable { rotationDisplay.get() && !rotationModeValue.equals("LockView")} as FloatValue
 
     private val minTurnSpeedValue: FloatValue = object : FloatValue("MinTurnSpeed", 360f, 1f, 360f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
             val v = maxTurnSpeedValue.get()
             if (v < newValue) set(v)
         }
-    }.displayable { rotationDisplay.get() } as FloatValue
+    }.displayable { rotationDisplay.get() && !rotationModeValue.equals("LockView")} as FloatValue
 
-    private val rotationSmoothModeValue = ListValue("SmoothMode", arrayOf("Custom", "Line", "Quad", "Sine", "QuadSine"), "Custom").displayable { rotationDisplay.get() }
+    private val rotationSmoothModeValue = ListValue("SmoothMode", arrayOf("Custom", "Line", "Quad", "Sine", "QuadSine"), "Custom").displayable { rotationDisplay.get() && !rotationModeValue.equals("LiquidBounce") && !rotationModeValue.equals("ForceCenter") && !rotationModeValue.equals("LockView")}
     private val rotationSmoothValue = FloatValue("CustomSmooth", 2f, 1f, 10f).displayable { rotationSmoothModeValue.equals("Custom") && rotationDisplay.get()}
 
     // Random Value
@@ -398,6 +395,8 @@ class KillAura : Module() {
      */
     @EventTarget
     fun onUpdate(ignoredEvent: UpdateEvent) {
+        if (clickOnly.get() && !mc.gameSettings.keyBindAttack.isKeyDown) return
+
         if (cancelRun) {
             currentTarget = null
             hitable = false
@@ -422,7 +421,6 @@ class KillAura : Module() {
             stopBlocking()
             return
         }
-
 
         LiquidBounce.moduleManager[StrafeFix::class.java]!!.applyForceStrafe(rotationStrafeValue.equals("Silent"), !rotationStrafeValue.equals("Off") && !rotationModeValue.equals("None"))
 
@@ -1186,29 +1184,6 @@ class KillAura : Module() {
                 }
             }
         }
-    }
-
-
-    private fun esp(entity : EntityLivingBase, partialTicks : Float, radius : Float) {
-        GL11.glPushMatrix()
-        GL11.glDisable(3553)
-        GL11.glDisable(2929)
-        GL11.glDepthMask(false)
-        GL11.glLineWidth(1.0F)
-        GL11.glBegin(3)
-        val x: Double = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks - mc.renderManager.viewerPosX
-        val y: Double = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks - mc.renderManager.viewerPosY
-        val z: Double = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks - mc.renderManager.viewerPosZ
-        for (i in 0..360) {
-            val rainbow = Color(Color.HSBtoRGB((mc.thePlayer.ticksExisted / 70.0 + sin(i / 50.0 * 1.75)).toFloat() % 1.0f, 0.7f, 1.0f))
-            GL11.glColor3f(rainbow.red / 255.0f, rainbow.green / 255.0f, rainbow.blue / 255.0f)
-            GL11.glVertex3d(x + radius * cos(i * 6.283185307179586 / 45.0), y + espAnimation, z + radius * sin(i * 6.283185307179586 / 45.0))
-        }
-        GL11.glEnd()
-        GL11.glDepthMask(true)
-        GL11.glEnable(2929)
-        GL11.glEnable(3553)
-        GL11.glPopMatrix()
     }
 
     /**
