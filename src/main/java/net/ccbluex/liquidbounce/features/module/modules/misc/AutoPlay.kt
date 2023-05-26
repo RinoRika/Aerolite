@@ -10,8 +10,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.special.AutoDisable
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.event.ClickEvent
 import net.minecraft.network.play.client.*
 import net.minecraft.network.play.server.S02PacketChat
@@ -24,17 +23,24 @@ import kotlin.concurrent.schedule
 @ModuleInfo(name = "AutoPlay", category = ModuleCategory.MISC)
 class AutoPlay : Module() {
 
-    private val modeValue = ListValue("Server", arrayOf("Redesky", "BlocksMC", "Minemora", "Hypixel","Jartex", "Pika", "SuperCraft", "Hycraft"), "Redesky")
+    private val modeValue = ListValue("Server", arrayOf("RedeSky", "BlocksMC", "Minemora", "Hypixel", "Jartex", "Pika", "Hydracraft", "HyCraft", "HeroMC", "SuperCraft"), "RedeSky")
+
+    private val bwModeValue = ListValue("Mode", arrayOf("SOLO", "4v4v4v4"), "4v4v4v4").displayable { modeValue.equals("MineFC/HeroMC_Bedwars") }
+    private val autoStartValue = BoolValue("AutoStartAtLobby", true).displayable { modeValue.equals("MineFC/HeroMC_Bedwars") }
+    private val replayWhenKickedValue = BoolValue("ReplayWhenKicked", true).displayable { modeValue.equals("MineFC/HeroMC_Bedwars") }
+    private val showGuiWhenFailedValue = BoolValue("ShowGuiWhenFailed", true).displayable { modeValue.equals("MineFC/HeroMC_Bedwars") }
     private val delayValue = IntegerValue("JoinDelay", 3, 0, 7)
 
     private var clicking = false
     private var queued = false
     private var clickState = 0
+    private var waitForLobby = false
 
     override fun onEnable() {
         clickState = 0
         clicking = false
         queued = false
+        waitForLobby = false
     }
 
     @EventTarget
@@ -126,10 +132,17 @@ class AutoPlay : Module() {
                         }
                     }
                 }
+                "hydracraft" -> {
+                    if (text.contains("Has ganado ¿Qué quieres hacer?", true)) {
+                        queueAutoPlay {
+                            mc.thePlayer.sendChatMessage("/playagain")
+                        }
+                    }
+                }
                 "hycraft" -> {
                     component.siblings.forEach { sib ->
                         val clickEvent = sib.chatStyle.chatClickEvent
-                        if(clickEvent != null && clickEvent.action == ClickEvent.Action.RUN_COMMAND && clickEvent.value.contains("playagain")) {
+                        if(clickEvent != null && clickEvent.action == ClickEvent.Action.RUN_COMMAND && clickEvent.value.contains("play")) {
                             queueAutoPlay {
                                 mc.thePlayer.sendChatMessage(clickEvent.value)
                             }
@@ -138,7 +151,7 @@ class AutoPlay : Module() {
                 }
                 "blocksmc" -> {
                     if (clickState == 1 && text.contains("Only VIP players can join full servers!", true)) {
-                        LiquidBounce.hud.addNotification(Notification("AutoPlay-Full Player", "Join failed! trying again...", NotifyType.WARNING, 3000))
+                        LiquidBounce.hud.addNotification(Notification(this.name, "Join failed! trying again...", NotifyType.WARNING, 3000))
                         // connect failed so try to join again
                         Timer().schedule(1500L) {
                             mc.netHandler.addToSendQueue(C09PacketHeldItemChange(7))
@@ -171,16 +184,16 @@ class AutoPlay : Module() {
                             }
                         }
                     }
-                    if (text.contains(mc.getSession().username + " has been")) {
+                    if (text.contains(mc.getSession().username + " has been") || text.contains(mc.getSession().username + " died.")) {
                         queueAutoPlay {
-                            mc.thePlayer.sendChatMessage("/play skywars-normal-solo")
+                            mc.thePlayer.sendChatMessage("/skywars-normal-solo")
                         }
                     }
                 }
                 "hypixel" -> {
                     fun process(component: IChatComponent) {
                         val value = component.chatStyle.chatClickEvent?.value
-                        if (value != null && value.startsWith("/play", true)) {
+                        if (value != null && value.startsWith("/play again", true)) {
                             queueAutoPlay {
                                 mc.thePlayer.sendChatMessage(value)
                             }
@@ -191,6 +204,30 @@ class AutoPlay : Module() {
                     }
                     process(packet.chatComponent)
                 }
+
+                "heromc" -> {
+                    if (text.contains("Bạn đã bị loại!", false) || text.contains("đã thắng trò chơi", false)) {
+                        mc.thePlayer.sendChatMessage("/bw leave")
+                        waitForLobby = true
+                    }
+
+                    if (
+                        ( (    waitForLobby || autoStartValue.get()) && text.contains("¡Hiển thị", false) ) ||
+                        ( replayWhenKickedValue.get()                && text.contains("[Anticheat] You have been kicked from the server!", false))
+                    ) {
+
+                        queueAutoPlay {
+                            mc.thePlayer.sendChatMessage("/bw join ${bwModeValue.get()}")
+                        }
+                        waitForLobby = false
+                    }
+
+                    if (showGuiWhenFailedValue.get() && text.contains("giây", false) && text.contains("thất bại", false)) {
+                        LiquidBounce.hud.addNotification(Notification(this.name, "Failed to join, showing GUI...", NotifyType.ERROR, 1000))
+                        mc.thePlayer.sendChatMessage("/bw gui ${bwModeValue.get()}")
+                    }
+                }
+
             }
         }
     }
@@ -208,7 +245,7 @@ class AutoPlay : Module() {
                     runnable()
                 }
             }
-            LiquidBounce.hud.addNotification(Notification("AutoPlay-Game ended", "Sending you to next game in ${delayValue.get()}s...", NotifyType.INFO, delayValue.get() * 1000))
+            LiquidBounce.hud.addNotification(Notification(this.name, "Sending you to next game in ${delayValue.get()}s...", NotifyType.INFO, delayValue.get() * 1000))
         }
     }
 
