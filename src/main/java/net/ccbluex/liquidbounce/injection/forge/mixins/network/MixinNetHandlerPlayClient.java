@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.network;
 
 import io.netty.buffer.Unpooled;
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.event.EventManager;
+import net.ccbluex.liquidbounce.event.EntityDamageEvent;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.event.TeleportEvent;
 import net.ccbluex.liquidbounce.features.module.modules.misc.SilentDisconnect;
@@ -20,6 +20,7 @@ import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.network.INetHandler;
@@ -68,6 +69,17 @@ public abstract class MixinNetHandlerPlayClient implements INetHandlerPlayClient
 
     @Shadow
     public abstract void handleEntityVelocity(S12PacketEntityVelocity packetIn);
+
+
+    @Inject(method = "handleEntityStatus", at = @At("HEAD"))
+    public void handleDamagePacket(S19PacketEntityStatus packetIn, CallbackInfo callbackInfo) {
+        if (packetIn.getOpCode() == 2) {
+            Entity entity = packetIn.getEntity(this.clientWorldController);
+            if (entity != null) {
+                LiquidBounce.eventManager.callEvent(new EntityDamageEvent(entity));
+            }
+        }
+    }
 
     /**
      * @author stars

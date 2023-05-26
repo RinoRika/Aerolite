@@ -94,6 +94,7 @@
     "gui.MixinGuiSpectator",
     "gui.MixinGuiTextField",
     "gui.MixinServerListEntryNormal",
+    "network.MixinBlockedServers",
     "network.MixinC00Handshake",
     "network.MixinC17PacketCustomPayload",
     "network.MixinNetHandlerPlayClient",

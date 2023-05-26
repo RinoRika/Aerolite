@@ -29,6 +29,7 @@ import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.network.play.client.C0FPacketConfirmTransaction
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
+import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.MathHelper
@@ -53,7 +54,7 @@ class Velocity : Module() {
         "Simple", "Tick", "Cancel", "Hypixel",
         "Redesky1", "Redesky2", "Redesky3", "Redesky4",
         "Matrix", "MatrixTest", "MatrixTest2",
-        "AGC", "Intave", "Karhu",
+        "AGC", "Intave", "Karhu", "Grim",
         "Reverse", "SmoothReverse",
         "Jump", "Legit",
         "Phase", "PacketPhase", "Glitch", "Spoof",
@@ -102,6 +103,11 @@ class Velocity : Module() {
 
     private var redeCount = 24
 
+    var cancelPacket = 6
+    var resetPersec = 8
+    var grimTCancel = 0
+    var updates = 0
+
     private var countingTicks = false
     private var cancelTicks = 0
     private var row = 0
@@ -111,6 +117,7 @@ class Velocity : Module() {
 
     override fun onEnable() {
         countingTicks = false
+        grimTCancel = 0
         cancelTicks = 0
         if (modeValue.equals("AGC")) {
             ClientUtils.displayChatMessage("[Velocity] DON'T enable fly/speed/longjump when velocity enabled!!!!")
@@ -192,6 +199,19 @@ class Velocity : Module() {
                 mc.thePlayer.motionY = 0.42
             }
 
+            "grim" -> {
+                updates++
+
+                if (resetPersec > 0) {
+                    if (updates >= 0 || updates >= resetPersec) {
+                        updates = 0
+                        if (grimTCancel > 0){
+                            grimTCancel--
+                        }
+                    }
+                }
+            }
+
             "reverse" -> {
                 if (!velocityInput) {
                     return
@@ -262,22 +282,10 @@ class Velocity : Module() {
         if (modeValue.equals("Vulcan") && mc.thePlayer.hurtTime > 0 && packet is C0FPacketConfirmTransaction) {
             event.cancelEvent()
         }
-        if (modeValue.equals("Hypixel")) {
-            if (packet is S12PacketEntityVelocity) {
-                if (packet.entityID != mc.thePlayer.entityId || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer) {
-                    return
-                }
-                if (horizontalValue.get() == 0f && verticalValue.get() == 0f) {
-                    event.cancelEvent()
-                } else {
-                    handleDirection(packet)
-                    packet.motionX = (packet.getMotionX() * horizontalValue.get()).toInt()
-                    packet.motionY = (packet.getMotionY() * verticalValue.get()).toInt()
-                    packet.motionZ = (packet.getMotionZ() * horizontalValue.get()).toInt()
-                }
-            }
-            if (packet is S27PacketExplosion) {
+        if (modeValue.equals("Grim")) {
+            if (packet is S32PacketConfirmTransaction && grimTCancel > 0) {
                 event.cancelEvent()
+                grimTCancel--
             }
         }
         if (packet is S12PacketEntityVelocity) {
@@ -292,6 +300,11 @@ class Velocity : Module() {
             handleDirection(packet)
 
             when (modeValue.get().lowercase()) {
+                "hypixel" -> {
+                    event.cancelEvent()
+                    if (mc.thePlayer.onGround)
+                        mc.thePlayer.motionY = packet.getMotionY().toDouble() / 8000.0
+                }
                 "tick" -> {
                     velocityInput = true
                     val horizontal = horizontalValue.get()
@@ -304,6 +317,12 @@ class Velocity : Module() {
                     packet.motionX = (packet.getMotionX() * horizontal).toInt()
                     packet.motionY = (packet.getMotionY() * vertical).toInt()
                     packet.motionZ = (packet.getMotionZ() * horizontal).toInt()
+                }
+                "grim" -> {
+                    if (packet.entityID == mc.thePlayer.entityId) {
+                        event.cancelEvent()
+                        grimTCancel = cancelPacket
+                    }
                 }
                 "agc" -> {
                     row++

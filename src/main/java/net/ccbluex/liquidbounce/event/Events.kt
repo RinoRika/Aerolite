@@ -26,6 +26,7 @@ import net.minecraft.util.EnumFacing
  */
 class AttackEvent(val targetEntity: Entity) : CancellableEvent()
 
+class EntityDamageEvent(val entity: Entity) : Event()
 /**
  * Called when player killed other entity
  *

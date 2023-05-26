@@ -1,35 +1,37 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.hypixel
 
+import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
+import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.MathUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.misc.RandomUtils
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.ListValue
-import net.minecraft.network.play.server.S08PacketPlayerPosLook
+import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.minecraft.potion.Potion
+import net.minecraft.network.play.client.C07PacketPlayerDigging
 import kotlin.math.roundToInt
+import net.minecraft.network.play.server.S12PacketEntityVelocity
+import kotlin.math.sqrt
+import net.minecraft.util.BlockPos
+import net.minecraft.util.EnumFacing
 
 
 class HypixelHop : SpeedMode("HypixelHop") {
 
-    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Latest", "OldSmooth", "Stable", "Stable2", "Test2", "TestLowHop", "DortwareHop", "OldSafe", "OldTest", "Legit", "Custom"), "Latest")
-    private val timerSpeed = FloatValue("Timer", 1f, 1f, 2f)
-    private val cooldowntimer = BoolValue("CoolDownTimer", true)
+    private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Latest", "OldSmooth", "Stable", "Stable2", "Test2", "TestLowHop", "DortwareHop", "OldSafe", "OldTest", "Legit", "Custom", "Test"), "Latest")
     private val slowdownValue = FloatValue("${valuePrefix}SlowdownValue", 0f, -0.15f, 0.5f)
     private val customStartSpeed = FloatValue("${valuePrefix}CustomStartSpeed", 1.3f, 1f, 1.6f).displayable {bypassMode.equals("Custom")}
     private val customSlowValue = FloatValue("${valuePrefix}CustomSlowAmount", 0.05f, 0.3f, 0.01f).displayable {bypassMode.equals("Custom")}
-    private val customSpeedBoost = FloatValue("${valuePrefix}SpeedPotModifier", 0.2f, 0f, 0.4f)
+    private val customSpeedBoost = FloatValue("${valuePrefix}SpeedPotJumpModifier", 0.1f, 0f, 0.4f)
     private val yMotion = FloatValue("${valuePrefix}JumpYMotion", 0.4f, 0.395f, 0.42f)
-    private val yPort = BoolValue("${valuePrefix}SlightYPort", false)
-    private val yPort2 = BoolValue("${valuePrefix}SlightYPort2", false)
-    private val yPort3 = BoolValue("${valuePrefix}SlightYPort3", true)
-    private val yPort4 = BoolValue("${valuePrefix}SlightYPort4", false)
-    private val damageBoost = BoolValue("${valuePrefix}DamageBoost", true)
+    private val yPort = BoolValue("${valuePrefix}OldHypixelYPort", false)
+    private val yPort2 = BoolValue("${valuePrefix}BadNCPYPort", false)
+    private val yPort3 = BoolValue("${valuePrefix}SemiHypixelYPort", true)
+    private val yPort4 = BoolValue("${valuePrefix}MicroYPort", true)
+    private val damageBoost = BoolValue("${valuePrefix}DamageBoost", false)
+    private val damageStrafe = BoolValue("${valuePrefix}StrafeOnDamage", true)
+    private val sussyPacket = BoolValue("${valuePrefix}Rise6sussyPacket", true)
 
     private var watchdogMultiplier = 1.0
     private var minSpeed = 0.0
@@ -39,16 +41,10 @@ class HypixelHop : SpeedMode("HypixelHop") {
     private var pastZ = 0.0
     private var moveDist = 0.0
     private var wasOnGround = false
-    private var stage = 0;
-    private var offGroundTicks = 0;
-    private val timer = MSTimer()
-
-    override fun onPacket(event: PacketEvent) {
-        if (event.packet is S08PacketPlayerPosLook) {
-            if (cooldowntimer.get()) mc.timer.timerSpeed = 0.3f
-            timer.reset()
-        }
-    }
+    private var stage = 0
+    private var offGroundTicks = 0
+    private var groundTick = 0
+    private var damagedTicks = 0
 
     override fun onUpdate() {
         if (!MovementUtils.isMoving()) {
@@ -75,25 +71,31 @@ class HypixelHop : SpeedMode("HypixelHop") {
         }
 
         if (yPort3.get()) {
-            if (offGroundTicks == 5) {
-                mc.thePlayer.motionY = (mc.thePlayer.motionY - 0.08) * 0.98
+            if (mc.thePlayer.motionY <= 0.003 && mc.thePlayer.motionY >= -0.003) {
+                mc.thePlayer.motionY = -0.0784
             }
         }
-
         if (yPort4.get()) {
-            if (offGroundTicks == 1) {
-                mc.thePlayer.motionY = mc.thePlayer.motionY - 0.02
-                mc.thePlayer.motionX *= 0.98
-                mc.thePlayer.motionZ *= 0.98
+
+            if (damagedTicks < 0) {
+                if (offGroundTicks == 1)
+                    mc.thePlayer.motionY -= 0.005
+                else if (offGroundTicks == 3)
+                    mc.thePlayer.motionY -= 0.001
+                else
+                    mc.thePlayer.motionY -= 0.0009
             }
         }
 
-        if (damageBoost.get()) {
-            if (mc.thePlayer.hurtTime > 0) {
-                mc.thePlayer.motionX *= 1.028 - Math.random() / 100
-                mc.thePlayer.motionZ *= 1.028 - Math.random() / 100
+
+        if (damageStrafe.get()) {
+            if (damagedTicks > 2) {
+                MovementUtils.strafe(MovementUtils.getSpeed() * 0.99f)
             }
         }
+
+        damagedTicks -= 1
+
 
 
         moveDist = MathUtils.getDistance(pastX, pastZ, mc.thePlayer.posX, mc.thePlayer.posZ)
@@ -101,34 +103,39 @@ class HypixelHop : SpeedMode("HypixelHop") {
         when (bypassMode.get().lowercase()) {
 
             "latest" -> {
+                if (sussyPacket.get())
+                    PacketUtils.sendPacketNoEvent(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, BlockPos(-1,-1,-1), EnumFacing.UP))
+
                 if (mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
-                    MovementUtils.strafe(MovementUtils.getSpeed())
-                    if (MovementUtils.getSpeed() < 0.46f) {
-                        MovementUtils.strafe(0.45f + RandomUtils.nextFloat(0.001f, 0.025f))
+
+                    val minSpeed = 0.43f + 0.04f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1).toFloat()
+                    MovementUtils.strafe(MovementUtils.getSpeed() * (1.005 + 0.008 * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1)).toFloat())
+                    if (MovementUtils.getSpeed() < minSpeed) {
+                        MovementUtils.strafe(minSpeed)
                     }
+                    MovementUtils.strafe(MovementUtils.getSpeed() * 0.99f)
+
+
+                } else {
 
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                        MovementUtils.strafe(MovementUtils.getSpeed() * (1.0 + customSpeedBoost.get().toDouble() * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1)).toFloat() )
+                        mc.thePlayer.motionX *= (1.0003 + 0.0008 * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
+                        mc.thePlayer.motionZ *= (1.0003 + 0.0008 * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
                     }
-                }
-                if (cooldowntimer.get()) {
-                    if (timer.hasTimePassed(500L)) {
-                        mc.timer.timerSpeed = timerSpeed.get()
-                    }
-                    if (timer.hasTimePassed(5000L)) {
-                        mc.timer.timerSpeed = 0.9f
-                    }
-                    if (timer.hasTimePassed(5500L)) {
-                        mc.timer.timerSpeed = timerSpeed.get()
-                        timer.reset()
-                    }
-                } else {
-                    mc.timer.timerSpeed = timerSpeed.get()
+
+                    mc.thePlayer.speedInAir = 0.02f + 0.001f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1).toFloat()
+
                 }
             }
 
-            "smooth" -> {
+            "legit" -> {
+                if (mc.thePlayer.onGround) {
+                    mc.thePlayer.jump()
+                }
+            }
+
+            "oldsmooth" -> {
 
                 mc.thePlayer.isSprinting = true
 
@@ -253,10 +260,34 @@ class HypixelHop : SpeedMode("HypixelHop") {
                     mc.thePlayer.motionY = yMotion.get().toDouble()
                 }
                 watchdogMultiplier = (moveDist - 0.819999f * (moveDist - 0.28f)).toDouble()
-                watchdogMultiplier = watchdogMultiplier / MovementUtils.getSpeed().toDouble()
+                watchdogMultiplier = watchdogMultiplier / (MovementUtils.getSpeed().toDouble() + 0.001)
                 mc.thePlayer.motionX *= watchdogMultiplier
                 mc.thePlayer.motionZ *= watchdogMultiplier
 
+            }
+            "test" ->{
+                if (MovementUtils.isMoving()) {
+                    mc.timer.timerSpeed = 1.2f
+                    if (mc.thePlayer.onGround) {
+                        if (groundTick >= 1) {
+                            mc.timer.timerSpeed = 1.5f
+                            MovementUtils.strafe(0.43f)
+                            if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
+                                MovementUtils.strafe(0.63f)
+                            }
+                            mc.thePlayer.jump()
+                        }
+                        groundTick++
+                    } else {
+                        groundTick = 0
+                    }
+                    if (mc.thePlayer.hurtTime > 0 && mc.thePlayer.fallDistance > 0.0) {
+                        MovementUtils.strafe()
+                    }
+                    if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
+                        mc.thePlayer.jumpMovementFactor = 0.024F//if flag pls edit this
+                    }
+                }
             }
         }
         if (watchdogMultiplier > 1) {
@@ -282,6 +313,32 @@ class HypixelHop : SpeedMode("HypixelHop") {
             "oldtest" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier * ( 1.0f - slowdownValue.get()).toDouble()).toFloat())
             "custom" -> MovementUtils.strafe(( 0.2873 * watchdogMultiplier * ( 1.0f - slowdownValue.get()).toDouble()).toFloat())
 
+        }
+    }
+
+    override fun onPacket(event: PacketEvent) {
+        val packet = event.packet
+
+        if (packet is S12PacketEntityVelocity) {
+            if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer) {
+                return
+            }
+            if (!LiquidBounce.combatManager.inCombat) {
+                return
+            }
+
+            if (packet.motionY / 8000.0 > 0.1) {
+                if (damageBoost.get()) {
+                    event.cancelEvent()
+                    val recX = packet.motionX / 8000.0
+                    val recZ = packet.motionZ / 8000.0
+                    if (sqrt(recX * recX + recZ * recZ) > MovementUtils.getSpeed()) {
+                        MovementUtils.strafe(sqrt(recX * recX + recZ * recZ).toFloat() * 1.05f)
+                        mc.thePlayer.motionY = packet.motionY / 8000.0
+                    }
+                }
+                damagedTicks = 15
+            }
         }
     }
 }

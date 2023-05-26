@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.combat
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.event.RenderEntityEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -56,7 +57,21 @@ object Backtrack : Module() {
         }
     }
 
+    /**
+     * This event is being called when an entity moves (e.g. a player), which is being sent from the server.
+     *
+     * We use this to track the player movement.
+     */
+    @EventTarget
+    fun onEntityMove(event: RenderEntityEvent) {
+        val entity = event.entity
 
+        // Check if entity is a player
+        if (entity is EntityPlayer) {
+            // Add new data
+            addBacktrackData(entity.uniqueID, entity.posX, entity.posY, entity.posZ, System.currentTimeMillis())
+        }
+    }
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
@@ -151,7 +166,7 @@ object Backtrack : Module() {
 
         val backtrackDataArray = getBacktrackData(entity.uniqueID) ?: return
         val entityPosition = entity.positionVector
-        val prevPositon = Triple(entity.prevPosX, entity.prevPosY, entity.prevPosZ)
+        val prevPosition = Triple(entity.prevPosX, entity.prevPosY, entity.prevPosZ)
 
         // This will loop through the backtrack data. We are using reversed() to loop through the data from the newest to the oldest.
         for (backtrackData in backtrackDataArray.reversed()) {
@@ -165,7 +180,7 @@ object Backtrack : Module() {
         }
 
         // Reset position
-        val (prevX, prevY, prevZ) = prevPositon
+        val (prevX, prevY, prevZ) = prevPosition
         entity.prevPosX = prevX
         entity.prevPosY = prevY
         entity.prevPosZ = prevZ
