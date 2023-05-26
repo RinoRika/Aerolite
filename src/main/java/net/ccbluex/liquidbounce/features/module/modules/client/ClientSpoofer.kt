@@ -12,7 +12,7 @@ import net.minecraft.network.play.client.C17PacketCustomPayload
 
 @ModuleInfo("ClientSpoofer", ModuleCategory.CLIENT)
 class ClientSpoofer : Module() {
-    private val clientMode = ListValue("Client", arrayOf("Forge", "Lunar", "Labymod", "PVPLounge", "CB", "Geyser"), "Forge")
+    private val clientMode = ListValue("Client", arrayOf("Forge", "Lunar", "LabyMod", "PVPLounge", "CB", "Geyser"), "Forge")
 
     override fun onEnable() {
         ClientUtils.displayChatMessage("[ClientSpoofer] Rejoin the server to active!")
@@ -26,8 +26,7 @@ class ClientSpoofer : Module() {
                     p.data = createPacketBuffer("FML", true)
                 }
                 "lunar" -> {
-                    event.cancelEvent()
-                    mc.netHandler.addToSendQueue(C17PacketCustomPayload("REGISTER", createPacketBuffer("Lunar-Client", false)))
+                    p.data = PacketBuffer(Unpooled.buffer()).writeString("LunarClient;1.8.9;VAUYSDF7AS63DSJK1");
                 }
                 "labymod" -> {
                     p.data = createPacketBuffer("LMC", true)

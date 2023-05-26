@@ -298,26 +298,30 @@ class InvManager : Module() {
                     itemStack != stack && stack.item is ItemFlintAndSteel && currDamage >= stack.item.getDamage(stack)
                 }
             } else if (item is ItemTool) {
+                val harvestLevel = item.toolMaterial.harvestLevel
                 val currEff = ItemUtils.getEnchantment(itemStack, Enchantment.efficiency)
                 val totalCount = ItemUtils.getEnchantmentCount(itemStack)
                 val totalLevel = ItemUtils.getEnchantment(itemStack, Enchantment.efficiency) + ItemUtils.getEnchantment(itemStack, Enchantment.fortune)
                 items().none { (_, stack) ->
                     if (itemStack != stack && stack.item is ItemTool) {
+                        val currItem = stack.item as ItemTool
                         if (calculateEnchantsValue.get() == "Auto") {
                             val eff = ItemUtils.getEnchantment(stack, Enchantment.efficiency)
-
+                            if (harvestLevel != currItem.toolMaterial.harvestLevel) harvestLevel < currItem.toolMaterial.harvestLevel
                             if (currEff == eff) {
                                 val currDamage = item.getDamage(itemStack)
                                 currDamage >= stack.item.getDamage(stack)
                             } else currEff < eff
                         } else if (calculateEnchantsValue.get() == "AutoLevel") {
                             val level = ItemUtils.getEnchantment(itemStack, Enchantment.efficiency) + ItemUtils.getEnchantment(itemStack, Enchantment.fortune)
+                            if (harvestLevel != currItem.toolMaterial.harvestLevel) harvestLevel < currItem.toolMaterial.harvestLevel
                             if (level == totalLevel) {
                                 val currDamage = item.getDamage(itemStack)
                                 currDamage >= stack.item.getDamage(stack)
                             } else totalLevel < level
                         } else {
                             val count = ItemUtils.getEnchantmentCount(itemStack)
+                            if (harvestLevel != currItem.toolMaterial.harvestLevel) harvestLevel < currItem.toolMaterial.harvestLevel
                             if (count == totalCount) {
                                 val currDamage = item.getDamage(itemStack)
                                 currDamage >= stack.item.getDamage(stack)
