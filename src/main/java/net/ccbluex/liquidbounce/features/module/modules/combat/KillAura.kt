@@ -352,7 +352,7 @@ class KillAura : Module() {
         }
 
         updateHitable()
-        val target = this.currentTarget ?: discoveredTargets.first()
+        val target = this.currentTarget ?: discoveredTargets.getOrNull(0) ?: return
 
         if (autoBlockValue.equals("Range") && event.eventState == EventState.POST && autoBlockPacketValue.equals("OldHypixel")) {
             if (mc.thePlayer.swingProgressInt == 1) {
@@ -456,7 +456,7 @@ class KillAura : Module() {
             } else if (legitBlocking > 0) {
                 legitBlocking--
                 if (!discoveredTargets.isEmpty() && !blockingStatus) {
-                    val target = this.currentTarget ?: discoveredTargets.first()
+                    val target = this.currentTarget ?: discoveredTargets.getOrNull(0) ?: return
                     startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
                     blockingStatus = true
                 }
