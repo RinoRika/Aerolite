@@ -5,7 +5,7 @@
  * 
  * This code belongs to WYSI-Foundation. Please give credits when using this in your repository.
  */
-package net.ccbluex.liquidbounce.features.module.modules.render.LiquidBouncePlus;
+package net.ccbluex.liquidbounce.features.module.modules.render.util;
 
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.features.module.Module;

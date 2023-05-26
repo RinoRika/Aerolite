@@ -1,7 +1,7 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/UnlegitMC/FDPClient/
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.render
 
@@ -17,26 +17,50 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.*
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
+import java.text.DecimalFormat
+import kotlin.math.roundToInt
 
 @ModuleInfo(name = "FollowTargetHud", category = ModuleCategory.RENDER)
 class FollowTargetHud : Module() {
-    private val modeValue = ListValue("Mode", arrayOf("Juul", "Jello", "Material", "Arris", "FDP"), "Juul")
-    private val fontValue = FontValue("Font", Fonts.tc40)
+    private val zoomIn = BoolValue("ZoomIn", true)
+    private val zoomTicks = IntegerValue("ZoomInTicks", 4, 2, 15).displayable {zoomIn.get()}
+    private val modeValue = ListValue("Mode", arrayOf("Juul", "Jello", "Material", "Material2", "Arris", "FDP"), "Juul")
+    private val fontValue = FontValue("Font", Fonts.font40)
+    private val materialShadow = BoolValue("MaterialShadow", false).displayable {modeValue.equals("Material") || modeValue.equals("Material2")}
+    private val fdpVertical = BoolValue("FDPVertical", false).displayable {modeValue.equals("FDP")}
+    private val fdpText = BoolValue("FDPDrawText", true).displayable {modeValue.equals("FDP") && !fdpVertical.get()}
+    private val fdpRed = BoolValue("FDPRed", false).displayable {modeValue.equals("FDP")}
+    private val smoothMove = BoolValue("SmoothHudMove", true)
+    private val smoothValue = FloatValue("SmoothHudMoveValue", 5.2f, 1f, 8f).displayable { smoothMove.get() }
+    private val smoothRot = BoolValue("SmoothHudRotations", true)
+    private val rotSmoothValue = FloatValue("SmothHudRotationValue", 2.1f, 1f, 6f). displayable {smoothRot.get() }
     private val jelloColorValue = BoolValue("JelloHPColor", true).displayable { modeValue.equals("Jello") }
     private val jelloAlphaValue = IntegerValue("JelloAlpha", 170, 0, 255).displayable { modeValue.equals("Jello") }
     private val scaleValue = FloatValue("Scale", 1F, 1F, 4F)
+    private val staticScale = BoolValue("StaticScale", false)
     private val translateY = FloatValue("TanslateY", 0.55F,-2F,2F)
     private val translateX = FloatValue("TranslateX", 0F, -2F, 2F)
     private var xChange = translateX.get() * 20
 
     private var targetTicks = 0
     private var entityKeep = "yes"
-    //
+
+    private var lastX = 0.0
+    private var lastY = 0.0
+    private var lastZ = 0.0
+
+    private var lastYaw = 0.0f
+    private var lastPitch = 0.0f
+
+    companion object {
+        val HEALTH_FORMAT = DecimalFormat("#.#")
+    }
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
@@ -80,8 +104,8 @@ class FollowTargetHud : Module() {
         } else if ( entity == LiquidBounce.combatManager.target) {
             entityKeep = entity.getName()
             targetTicks++
-            if (targetTicks >= 5) {
-                targetTicks = 4
+            if (targetTicks >= zoomTicks.get() + 2) {
+                targetTicks = zoomTicks.get() + 1
             }
         } else if (LiquidBounce.combatManager.target == null) {
             targetTicks--
@@ -106,24 +130,45 @@ class FollowTargetHud : Module() {
         val renderManager = mc.renderManager
         val timer = mc.timer
 
-        glTranslated( // Translate to player position with render pos and interpolate it
-            entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks - renderManager.renderPosX,
-            entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks - renderManager.renderPosY + entity.eyeHeight.toDouble() + translateY.get().toDouble(),
-            entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks - renderManager.renderPosZ
-        )
+        if (smoothMove.get()) {
+            lastX += ((entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks - renderManager.renderPosX).toDouble() - lastX) / smoothValue.get().toDouble()
+            lastY += ((entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks - renderManager.renderPosY + entity.eyeHeight.toDouble() + translateY.get().toDouble()).toDouble() - lastY) / smoothValue.get().toDouble()
+            lastZ += ((entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks - renderManager.renderPosZ).toDouble() - lastZ) / smoothValue.get().toDouble()
+
+            glTranslated( lastX, lastY, lastZ )
+        } else {
+            glTranslated( // Translate to player position with render pos and interpolate it
+                entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks - renderManager.renderPosX,
+                entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks - renderManager.renderPosY + entity.eyeHeight.toDouble() + translateY.get().toDouble(),
+                entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks - renderManager.renderPosZ
+            )
+        }
 
         // Rotate view to player
-        glRotatef(-mc.renderManager.playerViewY, 0F, 1F, 0F)
-        glRotatef(mc.renderManager.playerViewX, 1F, 0F, 0F)
+        if (smoothRot.get()) {
+            lastYaw += (-mc.renderManager.playerViewY - lastYaw) / rotSmoothValue.get()
+            lastPitch += (mc.renderManager.playerViewX - lastPitch) / rotSmoothValue.get()
+
+            glRotatef(lastYaw, 0F, 1F, 0F)
+            glRotatef(lastPitch, 1F, 0F, 0F)
+        } else {
+            glRotatef(-mc.renderManager.playerViewY, 0F, 1F, 0F)
+            glRotatef(mc.renderManager.playerViewX, 1F, 0F, 0F)
+        }
 
         // Scale
         var distance = mc.thePlayer.getDistanceToEntity(entity) / 4F
 
-        if (distance < 1F) {
+        if (distance < 1F)
             distance = 1F
-        }
 
-        val scale = (distance / 150F) * scaleValue.get()
+        if (staticScale.get())
+            distance = 1F
+
+        var scale = (distance / 150F) * scaleValue.get()
+        if (zoomIn.get()) {
+            scale *= (targetTicks.coerceAtMost(zoomTicks.get()) / zoomTicks.get()).toFloat()
+        }
 
         // Disable lightning and depth test
         disableGlCap(GL_LIGHTING, GL_DEPTH_TEST)
@@ -154,8 +199,6 @@ class FollowTargetHud : Module() {
                 fontRenderer.drawString("Attacking", -105 + xChange.toInt(), -13, Color.WHITE.rgb)
                 fontRenderer.drawString(tag, -106 + xChange.toInt() , 10, Color.WHITE.rgb)
 
-                val healthString = ( ( ( entity.health * 10f ).toInt() ).toFloat() * 0.1f ).toString() + " / 20"
-                fontRenderer.drawString(healthString, -25 - fontRenderer.getStringWidth(healthString).toInt() + xChange.toInt(), 22, Color.WHITE.rgb)
 
                 val distanceString = "⤢" + ( ( ( mc.thePlayer.getDistanceToEntity(entity) * 10f ).toInt() ).toFloat() * 0.1f ).toString()
                 fontRenderer.drawString(distanceString, -25 - fontRenderer.getStringWidth(distanceString).toInt() + xChange.toInt(), 10, Color.WHITE.rgb)
@@ -170,12 +213,37 @@ class FollowTargetHud : Module() {
                 glScalef(-scale * 2, -scale * 2, scale * 2)
 
                 // render bg
-                drawRoundedCornerRect(-40f + xChange, 0f, 40f + xChange, 30f, 5f, Color(72, 72, 72, 220).rgb)
+                if (materialShadow.get()) {
+                    drawShadow(-40f + xChange, 0f, 40f + xChange, 29f)
+                    drawRect(-40f + xChange, 0f, 40f + xChange, 29f, Color(72, 72, 72, 250).rgb)
+                } else {
+                    drawRoundedCornerRect(-40f + xChange, 0f, 40f + xChange, 29f, 5f, Color(72, 72, 72, 250).rgb)
+                }
 
                 // draw health bars
                 drawRoundedCornerRect(-35f + xChange, 7f, -35f + (healthPercent * 70) + xChange, 12f, 2f, Color(10, 250, 10, 255).rgb)
                 drawRoundedCornerRect(-35f + xChange, 17f, -35f + ((entity.totalArmorValue / 20F) * 70) + xChange, 22f, 2f, Color(10, 10, 250, 255).rgb)
 
+            }
+
+            "material2" -> {
+                glScalef(-scale * 2, -scale * 2, scale * 2)
+
+                // render bg
+                if (materialShadow.get()) {
+                    drawShadow(-40f + xChange, 0f, 40f + xChange, 15f)
+                    drawShadow(-40f + xChange, 0f, 20f + xChange, 35f)
+
+                    drawRect(-40f + xChange, 0f, 40f + xChange, 15f, Color(72, 72, 72, 250).rgb)
+                    drawRect(-40f + xChange, 20f, 40f + xChange, 35f, Color(72, 72, 72, 250).rgb)
+                } else {
+                    drawRoundedCornerRect(-40f + xChange, 0f, 40f + xChange, 15f, 5f, Color(72, 72, 72, 250).rgb)
+                    drawRoundedCornerRect(-40f + xChange, 20f, 40f + xChange, 35f, 5f, Color(72, 72, 72, 250).rgb)
+                }
+
+                // draw health bars
+                drawRoundedCornerRect(-35f + xChange, 5f, -35f + (healthPercent * 70) + xChange, 10f, 2f, Color(10, 250, 10, 255).rgb)
+                drawRoundedCornerRect(-35f + xChange, 25f, -35f + ((entity.totalArmorValue / 20F) * 70) + xChange, 30f, 2f, Color(10, 10, 250, 255).rgb)
 
             }
 
@@ -188,7 +256,7 @@ class FollowTargetHud : Module() {
 
                 // info text
                 font.drawString(entity.name, 40 + xChange.toInt(), 5, Color.WHITE.rgb)
-                "$hp hp".also {
+                "${HEALTH_FORMAT.format(entity.health)} hp".also {
                     font.drawString(it, 40 + additionalWidth - font.getStringWidth(it) + xChange.toInt(), 5, Color.LIGHT_GRAY.rgb)
                 }
 
@@ -198,20 +266,39 @@ class FollowTargetHud : Module() {
                 drawRect(40f + xChange, yPos + 9, 40 + xChange + (entity.totalArmorValue / 20F) * additionalWidth, yPos + 13, Color(77, 128, 255).rgb)
             }
 
-            "FDP" -> {
+            "fdp" -> {
 
-                // render bg
+                val font = fontValue.get()
                 glScalef(-scale * 2, -scale * 2, scale * 2)
-                drawRoundedCornerRect(-70f, 0f, 70f, 40f, 5f, Color(0, 0, 0, 95).rgb)
 
-                // draw head
+                if (!fdpVertical.get()) {
+                    var addedLen = (60 + font.getStringWidth(entity.name) * 1.60f).toFloat()
+                    if (!fdpText.get()) addedLen = 110f
 
-                // text
-                fontRenderer.drawString(name, -30 + xChange.toInt(), 5, Color.WHITE.rgb)
-                fontRenderer.drawString("Health ${entity.health.toInt()}", -30 + xChange.toInt(), 5 + font.FONT_HEIGHT, Color.WHITE.rgb)
+                    if (fdpRed.get()) {
+                        RenderUtils.drawRect(0f + xChange, 0f, addedLen + xChange, 47f, Color(212, 63, 63, 90).rgb)
+                        RenderUtils.drawRoundedCornerRect(0f + xChange, 0f, healthPercent * addedLen + xChange, 47f, 3f, Color(245, 52, 27, 90).rgb)
+                    } else {
+                        RenderUtils.drawRect(0f + xChange, 0f, addedLen + xChange, 47f, Color(0, 0, 0, 120).rgb)
+                        RenderUtils.drawRoundedCornerRect(0f + xChange, 0f, healthPercent * addedLen + xChange, 47f, 3f, Color(0, 0, 0, 90).rgb)
+                    }
 
-                // hp bar
-                drawRoundedCornerRect(-30f + xChange, (5 + font.FONT_HEIGHT * 2).toFloat(), -30f + xChange + healthPercent * 95f, 37f, 3f, ColorUtils.rainbow().rgb)
+                    drawShadow(0f, 0f, addedLen + xChange, 47f)
+
+                    if (fdpText.get()) {
+
+                        fontRenderer.drawString(entity.name, 45 + xChange.toInt(), 8, Color.WHITE.rgb)
+                        fontRenderer.drawString("Health ${entity.health.roundToInt()}", 45 + xChange.toInt(), 11 + (font.FONT_HEIGHT).toInt(), Color.WHITE.rgb)
+                    }
+                } else {
+                    if (fdpRed.get()) {
+                        RenderUtils.drawRect(0f + xChange, 0f, 47f + xChange, 120f + xChange, Color(212, 63, 63, 90).rgb)
+                        RenderUtils.drawRoundedCornerRect(healthPercent*120f + xChange, 0f, 47f + xChange, 0f, 3f, Color(245, 52, 27, 90).rgb)
+                    } else {
+                        RenderUtils.drawRect(0f + xChange, 0f, 47f + xChange, 120f, Color(0, 0, 0, 120).rgb)
+                        RenderUtils.drawRoundedCornerRect(0f + xChange, 0f, 47f + xChange, healthPercent * 120f, 3f, Color(0, 0, 0, 90).rgb)
+                    }
+                }
 
             }
 

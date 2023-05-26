@@ -1,4 +1,8 @@
-
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.features.module.modules.render
 
 import net.ccbluex.liquidbounce.event.EventTarget
@@ -13,10 +17,10 @@ import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.WorldToScreen
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.utils.render.shader.FramebufferShader
+import net.ccbluex.liquidbounce.utils.render.shader.shaders.GlowShader
+import net.ccbluex.liquidbounce.utils.render.shader.shaders.OutlineShader
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -31,20 +35,28 @@ import java.text.DecimalFormat
 class ESP : Module() {
     val modeValue = ListValue(
         "Mode",
-        arrayOf("Box", "OtherBox", "2D", "Real2D", "CSGO-Old","CSGO"),
+        arrayOf("Box", "OtherBox", "WireFrame", "2D", "Real2D", "CSGO", "CSGO-Old", "Outline", "ShaderOutline", "ShaderGlow", "Jello"),
         "CSGO"
     )
     private val outlineWidthValue = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.equals("Outline") }
+    val wireframeWidthValue = FloatValue("WireFrame-Width", 2f, 0.5f, 5f).displayable { modeValue.equals("WireFrame") }
+    private val shaderOutlineRadiusValue = FloatValue("ShaderOutline-Radius", 1.35f, 1f, 2f).displayable { modeValue.equals("ShaderOutline") }
+    private val shaderGlowRadiusValue = FloatValue("ShaderGlow-Radius", 2.3f, 2f, 3f).displayable { modeValue.equals("ShaderGlow") }
     private val csgoDirectLineValue = BoolValue("CSGO-DirectLine", false).displayable { modeValue.equals("CSGO") }
     private val csgoShowHealthValue = BoolValue("CSGO-ShowHealth", true).displayable { modeValue.equals("CSGO") }
     private val csgoShowHeldItemValue = BoolValue("CSGO-ShowHeldItem", true).displayable { modeValue.equals("CSGO") }
     private val csgoShowNameValue = BoolValue("CSGO-ShowName", true).displayable { modeValue.equals("CSGO") }
     private val csgoWidthValue = FloatValue("CSGOOld-Width", 2f, 0.5f, 5f).displayable { modeValue.equals("CSGO-Old") }
-    private val colorModeValue = ListValue("Mode", arrayOf("Name", "Armor", "OFF"), "Name")
+    private val colorModeValue = ListValue("ColorMode", arrayOf("Name", "Armor", "OFF"), "Name")
     private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { colorModeValue.get() == "OFF" && !colorRainbowValue.get() }
     private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { colorModeValue.get() == "OFF" && !colorRainbowValue.get() }
     private val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { colorModeValue.get() == "OFF" && !colorRainbowValue.get() }
     private val colorRainbowValue = BoolValue("Rainbow", false).displayable { colorModeValue.get() == "OFF" }
+    private val damageColorValue = BoolValue("ColorOnDamage", true)
+    private val damageRedValue = IntegerValue("DamageR", 255, 0, 255).displayable { damageColorValue.get() }
+    private val damageGreenValue = IntegerValue("DamageG", 0, 0, 255).displayable { damageColorValue.get() }
+    private val damageBlueValue = IntegerValue("DamageB", 0, 0, 255).displayable { damageColorValue.get() }
+
 
     private val decimalFormat = DecimalFormat("0.0")
 
@@ -55,7 +67,6 @@ class ESP : Module() {
         val projectionMatrix = WorldToScreen.getMatrix(GL11.GL_PROJECTION_MATRIX)
 
         val need2dTranslate = mode == "csgo" || mode == "real2d" || mode == "csgo-old"
-
         if (need2dTranslate) {
             GL11.glPushAttrib(GL11.GL_ENABLE_BIT)
             GL11.glEnable(GL11.GL_BLEND)
@@ -81,6 +92,8 @@ class ESP : Module() {
                 val color = getColor(entityLiving)
                 when (mode) {
                     "box", "otherbox" -> RenderUtils.drawEntityBox(entity, color, mode != "otherbox", true, outlineWidthValue.get())
+
+                    "outline" -> RenderUtils.drawEntityBox(entity, color, true, false, outlineWidthValue.get())
 
                     "2d" -> {
                         val renderManager = mc.renderManager
@@ -228,13 +241,62 @@ class ESP : Module() {
             GL11.glPopAttrib()
         }
     }
-    //
 
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
         val mode = modeValue.get().lowercase()
         val partialTicks = event.partialTicks
 
+        if (mode.equals("jello", ignoreCase = true)) {
+            val hurtingEntities = ArrayList<EntityLivingBase>()
+            var shader: FramebufferShader = GlowShader.GLOW_SHADER
+            var radius = 3f
+            var color = Color(120, 120, 120)
+            var hurtColor = Color(120, 0, 0)
+            var firstRun = true
+
+            for (i in 0..1) {
+                shader.startDraw(partialTicks)
+                for (entity in mc.theWorld.loadedEntityList) {
+                    if (EntityUtils.isSelected(entity, false)) {
+                        val entityLivingBase = entity as EntityLivingBase
+                        if (firstRun && entityLivingBase.hurtTime > 0) {
+                            hurtingEntities.add(entityLivingBase)
+                            continue
+                        }
+                        mc.renderManager.renderEntityStatic(entity, partialTicks, true)
+                    }
+                }
+                shader.stopDraw(color, radius, 1f)
+
+                // hurt
+                if (hurtingEntities.size > 0) {
+                    shader.startDraw(partialTicks)
+                    for (entity in hurtingEntities) {
+                        mc.renderManager.renderEntityStatic(entity, partialTicks, true)
+                    }
+                    shader.stopDraw(hurtColor, radius, 1f)
+                }
+                shader = OutlineShader.OUTLINE_SHADER
+                radius = 1.2f
+                color = Color(255, 255, 255, 170)
+                hurtColor = Color(255, 0, 0, 170)
+                firstRun = false
+            }
+            return
+        }
+
+        // normal shader esp
+        val shader = when (mode) {
+            "shaderoutline" -> OutlineShader.OUTLINE_SHADER
+            "shaderglow" -> GlowShader.GLOW_SHADER
+            else -> return
+        }
+        val radius = when (mode) {
+            "shaderoutline" -> shaderOutlineRadiusValue.get()
+            "shaderglow" -> shaderGlowRadiusValue.get()
+            else -> 1f
+        }
 
         // search
         val entityMap: MutableMap<Color, ArrayList<EntityLivingBase>> = HashMap()
@@ -248,6 +310,15 @@ class ESP : Module() {
                 entityMap[color]!!.add(entityLiving)
             }
         }
+
+        // draw
+        for ((key, value) in entityMap) {
+            shader.startDraw(partialTicks)
+            for (entity in value) {
+                mc.renderManager.renderEntityStatic(entity, partialTicks, true)
+            }
+            shader.stopDraw(key, radius, 1f)
+        }
     }
 
     override val tag: String
@@ -255,7 +326,7 @@ class ESP : Module() {
 
     fun getColor(entity: Entity): Color {
         if (entity is EntityLivingBase) {
-            if (entity.hurtTime > 0) return Color.RED
+            if (entity.hurtTime > 0 && damageColorValue.get()) return Color(damageRedValue.get(), damageGreenValue.get(), damageBlueValue.get())
             if (EntityUtils.isFriend(entity)) return Color.BLUE
             if (colorModeValue.get() == "Name") {
                 val chars = entity.displayName.formattedText.toCharArray()

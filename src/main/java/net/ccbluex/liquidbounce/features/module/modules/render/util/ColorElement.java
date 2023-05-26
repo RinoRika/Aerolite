@@ -5,11 +5,11 @@
  * 
  * This code belongs to WYSI-Foundation. Please give credits when using this in your repository.
  */
-package net.ccbluex.liquidbounce.features.module.modules.render.LiquidBouncePlus;
+package net.ccbluex.liquidbounce.features.module.modules.render.util;
 
 import net.ccbluex.liquidbounce.value.IntegerValue;
 
-import static net.ccbluex.liquidbounce.features.module.modules.render.LiquidBouncePlus.ColorMixer.regenerateColors;
+import static net.ccbluex.liquidbounce.features.module.modules.render.util.ColorMixer.regenerateColors;
 
 public class ColorElement extends IntegerValue {
 

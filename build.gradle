@@ -16,7 +16,7 @@ repositories {
     maven { url = "https://lss233.littleservice.cn/repositories/minecraft/" }
 }
 
-version = "v2"
+version = "v5"
 group = "cn.stars.aerolite"
 archivesBaseName = "Aerolite"
 
@@ -71,7 +71,7 @@ dependencies {
     }
 
     include("com.jagrosh:DiscordIPC:0.4")
-    include("com.github.CCBlueX:Elixir:1.2.4") {
+    include("com.github.CCBlueX:Elixir:1.2.6") {
         exclude module: "kotlin-stdlib"
         exclude module: "authlib"
     }

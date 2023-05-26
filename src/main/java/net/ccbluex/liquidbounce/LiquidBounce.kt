@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.features.module.modules.addit.CustomTitle
 import net.ccbluex.liquidbounce.features.module.modules.client.ClientSettings
-import net.ccbluex.liquidbounce.features.module.modules.render.LiquidBouncePlus.ColorMixer
+import net.ccbluex.liquidbounce.features.module.modules.render.util.ColorMixer
 import net.ccbluex.liquidbounce.features.special.AntiForge
 import net.ccbluex.liquidbounce.features.special.CombatManager
 import net.ccbluex.liquidbounce.features.special.CoreManager
@@ -42,7 +42,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import oh.yalan.NativeClass
 import org.lwjgl.opengl.Display
-import javax.swing.JOptionPane
 
 @NativeClass
 object LiquidBounce {
@@ -50,13 +49,13 @@ object LiquidBounce {
     // Client information
     const val CLIENT_NAME = "Aerolite"
     const val COLORED_NAME = "§b§lAerolite"
-    const val BUILD_CODE = "5.0.1"                       //更完改
-    const val CLIENT_REAL_VERSION = "5.0.1"                            //更完改
+    const val BUILD_CODE = "5.1.0"                       //更完改
+    const val CLIENT_REAL_VERSION = "5.1.0"                            //更完改
     const val CLIENT_CREATOR = "Stars,Packet"
     const val CLIENT_WEBSITE = "Aerolite.tk"
     const val MINECRAFT_VERSION = "1.8.9"
     const val CLIENT_DEV = "Stars,Kilo"
-    const val DEV_SAYING = "春节快乐"
+    const val DEV_SAYING = "Actually new"
 
     // Tasks
     var FinishChoosingScreen = false

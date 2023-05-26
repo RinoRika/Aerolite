@@ -1,8 +1,7 @@
 package net.ccbluex.liquidbounce.launch.uninfo
 
-import me.stars.utils.Renderer
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.features.module.modules.render.LiquidBouncePlus.ColorMixer
+import net.ccbluex.liquidbounce.features.module.modules.render.util.ColorMixer
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.GuiMainMenuLLL
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -12,7 +11,6 @@ import net.minecraft.client.gui.GuiYesNoCallback
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ResourceLocation
-import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 /*

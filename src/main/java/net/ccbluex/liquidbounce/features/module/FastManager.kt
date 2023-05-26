@@ -4,15 +4,13 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.features.module.modules.client.ClientSettings
 import net.ccbluex.liquidbounce.features.module.modules.misc.KillInsults
-import net.ccbluex.liquidbounce.features.module.modules.render.LiquidBouncePlus.ColorMixer
+import net.ccbluex.liquidbounce.features.module.modules.render.util.ColorMixer
 import net.ccbluex.liquidbounce.script.ScriptManager
 import net.ccbluex.liquidbounce.script.remapper.Remapper
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.client.Minecraft
-import org.lwjgl.opengl.Display
 
 object FastManager {
     var mc: Minecraft = Minecraft.getMinecraft()

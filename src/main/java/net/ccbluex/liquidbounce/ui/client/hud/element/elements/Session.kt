@@ -2,9 +2,8 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.LiquidBounce
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.ccbluex.liquidbounce.features.module.modules.client.Interpolate
-import net.ccbluex.liquidbounce.features.module.modules.render.LiquidBouncePlus.ColorMixer
+import net.ccbluex.liquidbounce.features.module.modules.render.util.ColorMixer
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
