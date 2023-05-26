@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
 import net.ccbluex.liquidbounce.LiquidBounce
@@ -15,21 +20,17 @@ import net.ccbluex.liquidbounce.utils.item.ItemUtils
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.init.Blocks
 import net.minecraft.item.*
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
-import org.lwjgl.input.Keyboard
 import java.util.stream.Collectors
 import java.util.stream.IntStream
 
-@ModuleInfo(name = "InvManager", category = ModuleCategory.PLAYER, keyBind = Keyboard.KEY_B)
+@ModuleInfo(name = "InvManager", category = ModuleCategory.PLAYER)
 class InvManager : Module() {
 
     /**
@@ -69,6 +70,7 @@ class InvManager : Module() {
     private val nbtWeaponPriority = FloatValue("NBTWeaponPriority", 0f, 0f, 5f).displayable { !nbtGoalValue.equals("NONE") }
     private val ignoreVehiclesValue = BoolValue("IgnoreVehicles", false)
     private val onlyPositivePotionValue = BoolValue("OnlyPositivePotion", false)
+    private val calculateEnchantsValue = ListValue("CalculateEnchants", arrayOf("Auto", "AutoLevel", "AutoCount"), "Auto")
 //    private val ignoreDurabilityUnder = FloatValue("IgnoreDurabilityUnder", 0.3f, 0f, 1f)
 
     private val items = arrayOf("None", "Ignore", "Sword", "Bow", "Pickaxe", "Axe", "Food", "Block", "Water", "Gapple", "Pearl", "Potion")
@@ -194,8 +196,7 @@ class InvManager : Module() {
 
                 if(swingValue.get()) mc.thePlayer.swingItem()
 
-                mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, garbageItem, 0, 0, mc.thePlayer)
-                mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, -999, 0, 0, mc.thePlayer)
+                mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, garbageItem, 1, 4, mc.thePlayer)
 
                 delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
 
@@ -218,7 +219,7 @@ class InvManager : Module() {
         return try {
             val item = itemStack.item
 
-            if (item is ItemSword || (item is ItemTool && !onlySwordDamage.get())) {
+            if (item is ItemSword/* || (item is ItemTool && !onlySwordDamage.get())*/) {
 
                 val damage = (itemStack.attributeModifiers["generic.attackDamage"].firstOrNull()?.amount ?: 0.0) + ItemUtils.getWeaponEnchantFactor(itemStack, nbtWeaponPriority.get(), goal)
 
@@ -233,19 +234,32 @@ class InvManager : Module() {
                 }
             } else if (item is ItemBow) {
                 val currPower = ItemUtils.getEnchantment(itemStack, Enchantment.power)
-
-                /*items().none { (_, stack) ->
-                    itemStack != stack && stack.item is ItemBow &&
-                            currPower <= ItemUtils.getEnchantment(stack, Enchantment.power)
-                }*/
+                val totalCount = ItemUtils.getEnchantmentCount(itemStack)
+                val totalLevel = ItemUtils.getEnchantment(itemStack, Enchantment.power) + ItemUtils.getEnchantment(itemStack, Enchantment.flame)+
+                        ItemUtils.getEnchantment(itemStack, Enchantment.punch)
                 items().none { (_, stack) ->
                     if (itemStack != stack && stack.item is ItemBow) {
-                        val power = ItemUtils.getEnchantment(stack, Enchantment.power)
+                        if (calculateEnchantsValue.get() == "Auto" || calculateEnchantsValue.get() == "Mending") {
+                            val power = ItemUtils.getEnchantment(stack, Enchantment.power)
 
-                        if (currPower == power) {
-                            val currDamage = item.getDamage(itemStack)
-                            currDamage >= stack.item.getDamage(stack)
-                        } else currPower < power
+                            if (currPower == power) {
+                                val currDamage = item.getDamage(itemStack)
+                                currDamage >= stack.item.getDamage(stack)
+                            } else currPower < power
+                        } else if (calculateEnchantsValue.get() == "AutoLevel") {
+                            val level = ItemUtils.getEnchantment(itemStack, Enchantment.power) + ItemUtils.getEnchantment(itemStack, Enchantment.flame)+
+                                    ItemUtils.getEnchantment(itemStack, Enchantment.punch)
+                            if (level == totalLevel) {
+                                val currDamage = item.getDamage(itemStack)
+                                currDamage >= stack.item.getDamage(stack)
+                            } else totalLevel < level
+                        } else {
+                            val count = ItemUtils.getEnchantmentCount(itemStack)
+                            if (count == totalCount) {
+                                val currDamage = item.getDamage(itemStack)
+                                currDamage >= stack.item.getDamage(stack)
+                            } else totalCount < count
+                        }
                     } else {false}
                 }
             } else if (item is ItemArmor) {
@@ -254,6 +268,7 @@ class InvManager : Module() {
                 /*items().none { (slot, stack) ->
                     if (stack != itemStack && stack.item is ItemArmor) {
                         val armor = ArmorPiece(stack, slot)
+
                         if (armor.armorType != currArmor.armorType) {
                             false
                         } else {
@@ -281,6 +296,34 @@ class InvManager : Module() {
                 val currDamage = item.getDamage(itemStack);
                 items().none { (_, stack) ->
                     itemStack != stack && stack.item is ItemFlintAndSteel && currDamage >= stack.item.getDamage(stack)
+                }
+            } else if (item is ItemTool) {
+                val currEff = ItemUtils.getEnchantment(itemStack, Enchantment.efficiency)
+                val totalCount = ItemUtils.getEnchantmentCount(itemStack)
+                val totalLevel = ItemUtils.getEnchantment(itemStack, Enchantment.efficiency) + ItemUtils.getEnchantment(itemStack, Enchantment.fortune)
+                items().none { (_, stack) ->
+                    if (itemStack != stack && stack.item is ItemTool) {
+                        if (calculateEnchantsValue.get() == "Auto") {
+                            val eff = ItemUtils.getEnchantment(stack, Enchantment.efficiency)
+
+                            if (currEff == eff) {
+                                val currDamage = item.getDamage(itemStack)
+                                currDamage >= stack.item.getDamage(stack)
+                            } else currEff < eff
+                        } else if (calculateEnchantsValue.get() == "AutoLevel") {
+                            val level = ItemUtils.getEnchantment(itemStack, Enchantment.efficiency) + ItemUtils.getEnchantment(itemStack, Enchantment.fortune)
+                            if (level == totalLevel) {
+                                val currDamage = item.getDamage(itemStack)
+                                currDamage >= stack.item.getDamage(stack)
+                            } else totalLevel < level
+                        } else {
+                            val count = ItemUtils.getEnchantmentCount(itemStack)
+                            if (count == totalCount) {
+                                val currDamage = item.getDamage(itemStack)
+                                currDamage >= stack.item.getDamage(stack)
+                            } else totalCount < count
+                        }
+                    } else {false}
                 }
             } else if (itemStack.unlocalizedName == "item.compass") {
                 items(0, 45).none { (_, stack) -> itemStack != stack && stack.unlocalizedName == "item.compass" }
@@ -322,8 +365,8 @@ class InvManager : Module() {
             "sword", "pickaxe", "axe" -> {
                 val currentType: Class<out Item> = when {
                     type.equals("Sword", ignoreCase = true) -> ItemSword::class.java
-                    type.equals("Pickaxe", ignoreCase = true) -> ItemPickaxe::class.java
-                    type.equals("Axe", ignoreCase = true) -> ItemAxe::class.java
+             /*       type.equals("Pickaxe", ignoreCase = true) -> ItemPickaxe::class.java
+                    type.equals("Axe", ignoreCase = true) -> ItemAxe::class.java */
                     else -> return null
                 }
 
