@@ -165,7 +165,6 @@ public abstract class MixinGuiInGame extends MixinGui {
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             if(canBetterHotbar) {
                 String mode = hud.getBetterHotbarModeValue().get();
-                GlStateManager.disableTexture2D();
                 if (mode.equals("Rect")) {
                     RenderUtils.drawRect(i - 91, sr.getScaledHeight() - 22, i + 91, sr.getScaledHeight(), new Color(20,20,20, 100).getRGB());
                     RenderUtils.drawRect(itemX, sr.getScaledHeight() - 22, itemX + 22, sr.getScaledHeight(), new Color(150, 150, 150, 155).getRGB());
@@ -179,7 +178,6 @@ public abstract class MixinGuiInGame extends MixinGui {
                 if (hud.getBetterHotbarShadowValue().get()) {
                     RenderUtils.drawShadow(i - 91f, sr.getScaledHeight() - 22f, i, (float) sr.getScaledHeight());
                 }
-                GlStateManager.enableTexture2D();
             } else if (hud.getNotHotBarValue().get()) {
 
             } else
