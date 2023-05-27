@@ -4,7 +4,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.hotbarutil
+import net.ccbluex.liquidbounce.utils.HotbarUtil
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
@@ -15,13 +15,13 @@ import java.awt.Color
 class Hotbar(x: Double = 40.0, y: Double = 100.0) : Element(x, y) {
 
 
-    val slotlist = mutableListOf<hotbarutil>()
+    val slotlist = mutableListOf<HotbarUtil>()
 
     private var lastSlot = -1
 
     init {
         for (i in 0..8) {
-            val slot = hotbarutil()
+            val slot = HotbarUtil()
             slotlist.add(slot)
         }
     }

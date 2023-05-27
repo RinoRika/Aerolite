@@ -1,18 +1,15 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements;
 
-import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border;
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element;
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
-import net.ccbluex.liquidbounce.utils.Memory;
+import net.ccbluex.liquidbounce.utils.DpdUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.VisualBase;
 import net.ccbluex.liquidbounce.value.FloatValue;
-import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.ccbluex.liquidbounce.value.ListValue;
 import net.minecraft.util.MathHelper;
-import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 
@@ -33,7 +30,7 @@ public class MemoryHud extends Element {
 
     @Override
     public Border drawElement(float partialTicks) {
-        double ramPercentage = Memory.usedMemorySize / Memory.maxMemorySize;
+        double ramPercentage = DpdUtils.usedMemorySize / DpdUtils.maxMemorySize;
         ramPercentage = MathHelper.clamp_double(ramPercentage, 0.0, 1.0);
 
         final double newWidth = 51 * ramPercentage;
@@ -54,7 +51,7 @@ public class MemoryHud extends Element {
         Fonts.font35.drawCenteredString("RAM", x + 20, y + 14 - 10, -1);
         VisualBase.drawCircle(x + 15 + 5, (double)y + 23.5, 11.5, -5.0f, 360.0f, Color.DARK_GRAY.darker().getRGB(), 5.5f);
         float coef = animWidth / 100.0f;
-        double scoef = Memory.usedMemorySize / Memory.maxMemorySize * 100.0f;
+        double scoef = DpdUtils.usedMemorySize / DpdUtils.maxMemorySize * 100.0f;
         this.animatedCircleEnd = coef * 360.0f;
         VisualBase.drawCircle(x + 15 + 5, (double)y + 23.5, 11.5, -5.0f, this.animatedCircleEnd * 2 + x2, new Color(255,255,255).getRGB(), 5.5f);
         Fonts.font30.drawCenteredString(Math.round(scoef) + "%", x + 20, y + 22, -1);

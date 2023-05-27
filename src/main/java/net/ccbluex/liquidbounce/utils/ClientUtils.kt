@@ -113,7 +113,8 @@ object ClientUtils : MinecraftInstance() {
 
     @NativeMethod
     fun setTitle() {
-        Display.setTitle("${LiquidBounce.CLIENT_NAME}正在注入核心,请稍后!")
+        //Display.setTitle("${LiquidBounce.CLIENT_NAME}正在注入核心,请稍后!")
+        Display.setTitle("原神，启动！")
     }
 
     @NativeMethod

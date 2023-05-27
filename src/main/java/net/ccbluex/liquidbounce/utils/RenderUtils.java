@@ -220,8 +220,8 @@ public final class RenderUtils extends MinecraftInstance {
         drawGoodCircle(x + radius, y + height - radius, radius, color);
         drawGoodCircle(x + width - radius, y + height - radius, radius, color);
 
-        TENACITYGUI.drawRect2(x + radius, y, width - radius * 2, height, color);
-        TENACITYGUI.drawRect2(x, y + radius, width, height - radius * 2, color);
+        TenacityUtils.drawRect2(x + radius, y, width - radius * 2, height, color);
+        TenacityUtils.drawRect2(x, y + radius, width, height - radius * 2, color);
     }
 
     public static void tenacityrenderRoundedRect2(float x, float y, float width, float height, float radius, final Color color) {
@@ -230,8 +230,8 @@ public final class RenderUtils extends MinecraftInstance {
         drawGoodCircle(x + radius, y + height - radius, radius, color.getRGB());
         drawGoodCircle(x + width - radius, y + height - radius, radius, color.getRGB());
 
-        TENACITYGUI.drawRect2(x + radius, y, width - radius * 2, height, color.getRGB());
-        TENACITYGUI.drawRect2(x, y + radius, width, height - radius * 2, color.getRGB());
+        TenacityUtils.drawRect2(x + radius, y, width - radius * 2, height, color.getRGB());
+        TenacityUtils.drawRect2(x, y + radius, width, height - radius * 2, color.getRGB());
     }
 
     public static void drawRoundedRect(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, float radius, int color) {

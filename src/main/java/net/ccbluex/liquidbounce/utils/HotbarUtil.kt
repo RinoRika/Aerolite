@@ -6,7 +6,7 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance.mc
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 
-class hotbarutil {
+class HotbarUtil {
     val translate = TransUtils(0f , 0f)
     var size = 1.0f
 
