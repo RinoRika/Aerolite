@@ -20,11 +20,11 @@ import java.io.File
 import java.util.*
 
 object ClientUtils : MinecraftInstance() {
-    val titles = arrayOf("有的人天天笑别人，却不知道自己就是个笑话", "一边议论别人一边卖惨自己，有比这更可笑的吗？", "玩方块人时,淳哥总是注入Vape", "你说得对，但是（）（）是由？", "你好 我是Stars 我正在进行跑路")
+    val titles = arrayOf("有的人天天笑别人，却不知道自己就是个笑话", "一边议论别人一边卖惨自己，有比这更可笑的吗？", "玩方块人时,淳哥总是注入Vape", "你说得对，但是（）（）是由?","原来你也玩原神!", "你好 我是Stars 我正在进行跑路")
     private val logger = LogManager.getLogger("Aerolite")
     val osType: EnumOSType
     val FMLtaskTimer = MSTimer()
-    var inDevMode = System.getProperty("dev-mode") != null
+    var inDevMode = System.getProperty("aerolite-dev-token-was-1Sf34aKle2") != null
 
     /**
      * the hardware id used to identify in bstats
@@ -119,7 +119,7 @@ object ClientUtils : MinecraftInstance() {
 
     @NativeMethod
     fun finishTitle() {
-        Display.setTitle(Aerolite.title + titles[RandomUtils.nextInt(0, titles.size)])
+        Display.setTitle(Aerolite.title + titles[RandomUtils.nextInt(0, titles.size)] + if (inDevMode) " | TOKEN已检测 - DEV模式开启" else " | TOKEN未检测 - 普通模式")
     }
 
     @NativeMethod

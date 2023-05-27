@@ -2,7 +2,7 @@ package net.ccbluex.liquidbounce.launch.uninfo
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.modules.render.util.ColorMixer
-import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.GuiMainMenuLLL
+import net.ccbluex.liquidbounce.launch.data.legacyui.GuiMainMenuNew
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.GuiButton
@@ -57,7 +57,7 @@ class GuiUpdateLog : GuiScreen(), GuiYesNoCallback {
     override fun actionPerformed(button: GuiButton) {
         when (button.id) {
             0 ->  {
-                mc.displayGuiScreen(GuiMainMenuLLL())
+                mc.displayGuiScreen(GuiMainMenuNew())
             }
         }
     }

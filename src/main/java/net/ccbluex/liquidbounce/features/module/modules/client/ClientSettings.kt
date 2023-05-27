@@ -7,7 +7,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.launch.data.legacyui.GuiMainMenu
-import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.GuiMainMenuLLL
+import net.ccbluex.liquidbounce.launch.data.legacyui.GuiMainMenuNew
 import net.ccbluex.liquidbounce.ui.fix.JelloMainMenu
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -24,11 +24,11 @@ object ClientSettings : Module() {
 
     fun getMainMenuType(): GuiScreen {
         return when (mainMenuValue.get()) {
-            "Aerolite" -> GuiMainMenuLLL()
+            "Aerolite" -> GuiMainMenuNew()
             "AeroliteOld" -> GuiMainMenu()
             "Jello" -> JelloMainMenu()
             "Minecraft" -> net.minecraft.client.gui.GuiMainMenu()
-            else -> GuiMainMenuLLL()
+            else -> GuiMainMenuNew()
         }
     }
 

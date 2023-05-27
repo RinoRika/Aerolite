@@ -7,7 +7,7 @@ import net.ccbluex.liquidbounce.launch.LaunchOption
 import net.ccbluex.liquidbounce.launch.data.legacyui.ClickGUIModule
 import net.ccbluex.liquidbounce.launch.data.legacyui.ClickGuiConfig
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.ClickGui
-import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.GuiMainMenuLLL
+import net.ccbluex.liquidbounce.launch.data.legacyui.GuiMainMenuNew
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.WhiteStyle
 import java.io.File
 
@@ -24,7 +24,7 @@ object LegacyUiLaunchOption : LaunchOption() {
 
     override fun start() {
 
-        LiquidBounce.mainMenu = GuiMainMenuLLL()
+        LiquidBounce.mainMenu = GuiMainMenuNew()
         LiquidBounce.moduleManager.registerModule(ClickGUIModule())
 
         clickGui2 = WhiteStyle()

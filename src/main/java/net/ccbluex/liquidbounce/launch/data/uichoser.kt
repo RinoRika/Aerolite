@@ -3,7 +3,6 @@ package net.ccbluex.liquidbounce.launch.data
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.modules.client.ClientSettings
 import net.ccbluex.liquidbounce.launch.EnumLaunchFilter
-import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.GuiMainMenuLLL
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ResourceLocation

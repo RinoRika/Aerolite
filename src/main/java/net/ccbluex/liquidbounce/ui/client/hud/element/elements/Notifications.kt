@@ -58,7 +58,8 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,
             exampleNotification.displayTime = System.currentTimeMillis()
 //            exampleNotification.x = exampleNotification.textLength + 8F
 
-            return Border(-exampleNotification.width.toFloat() + 80, -exampleNotification.height.toFloat()-24.5f, 80F, -24.5F)
+            if (notificationStyle.get().equals("Novoline")) return Border(-exampleNotification.width.toFloat() + 85, -exampleNotification.height.toFloat()-24.5f, 85F, -24.5F)
+            else return Border(-exampleNotification.width.toFloat() + 120, -exampleNotification.height.toFloat()-24.5f, 40F, -24.5F)
         }
 
         return null

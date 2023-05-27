@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.launch.data.legacyui;
 
+import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.aerolite.AeroGui;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.flux.otc.click;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.newdropdown.DropdownClickGui;
 import net.ccbluex.liquidbounce.event.EventTarget;
@@ -33,7 +34,7 @@ import java.awt.*;
 
 @ModuleInfo(name = "ClickGUI", category = ModuleCategory.CLIENT, keyBind = Keyboard.KEY_RSHIFT, canEnable = false)
 public class ClickGUIModule extends Module {
-    private final ListValue styleValue = new ListValue("Style", new String[] {"Novoline","LiquidBounce", "Null", "Slowly", "Black", "astolfo", "Aerolite", "Neon" ,"Tenacity", "LBP", "NeverLose", "Zeroday"}, "Liquidbounce") {
+    private final ListValue styleValue = new ListValue("Style", new String[] {"Novoline","LiquidBounce", "Null", "Slowly", "Black", "astolfo", "Aerolite", "AeroliteOld", "Neon" ,"Tenacity", "LBP", "NeverLose", "Zeroday"}, "Liquidbounce") {
         @Override
         protected void onChanged(final String oldValue, final String newValue) {
             updateStyle();
@@ -78,6 +79,8 @@ public class ClickGUIModule extends Module {
         } else if (styleValue.get().equals("Zeroday")) {
             mc.displayGuiScreen(new ClickUI());
             this.setState(false);
+        } else if (styleValue.get().equals("Aerolite")) {
+            mc.displayGuiScreen(new AeroGui());
         } else {
                 updateStyle();
                 mc.displayGuiScreen(LegacyUiLaunchOption.clickGui);
@@ -89,7 +92,7 @@ public class ClickGUIModule extends Module {
             case "neon":
                 LegacyUiLaunchOption.clickGui.style = new NeonStyle();
                 break;
-            case "aerolite":
+            case "aeroliteold":
                 LegacyUiLaunchOption.clickGui.style = new AeroliteStyle();
                 break;
             case "liquidbounce":

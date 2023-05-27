@@ -1,17 +1,13 @@
-package net.ccbluex.liquidbounce.launch.data.legacyui.clickgui;
+package net.ccbluex.liquidbounce.launch.data.legacyui;
 
-import me.stars.utils.Renderer;
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.launch.data.legacyui.Button;
 import net.ccbluex.liquidbounce.launch.uninfo.GuiUpdateLog;
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
-import net.ccbluex.liquidbounce.utils.render.ParticleUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.*;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.GuiModList;
 import oh.yalan.NativeClass;
@@ -24,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 @NativeClass
-public class GuiMainMenuLLL extends GuiScreen {
+public class GuiMainMenuNew extends GuiScreen {
     public ArrayList<Button> butt = new ArrayList<Button>();
     ScaledResolution sr;
     public static float scale = 1f;
