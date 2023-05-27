@@ -169,14 +169,26 @@ class NoSlow : Module() {
                 "liquidbounce" -> {
                     sendPacket(event, sendC07 = true, sendC08 = true, delay = false, delayValue = 0, onGround = false)
                 }
-                "watchdog" -> {
-                    if (!mc.thePlayer.isUsingItem || mc.thePlayer.heldItem.item !is ItemSword) return
+                "watchdog2" -> {
                     if (event.eventState == EventState.PRE) {
-                        PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1))
-                        PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                        mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
+                    } else {
+                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, null, 0.0f, 0.0f, 0.0f))
                     }
-                    if (event.eventState == EventState.POST) {
-                        PacketUtils.sendPacketNoEvent(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
+                }
+
+                "watchdog" -> {
+                    if (mc.thePlayer.ticksExisted % 2 == 0) {
+                        sendPacket(event, true, sendC08 = false, delay = true, delayValue = 50, onGround = true)
+                    } else {
+                        sendPacket(event,
+                            sendC07 = false,
+                            sendC08 = true,
+                            delay = false,
+                            delayValue = 0,
+                            onGround = true,
+                            watchDog = true
+                        )
                     }
                 }
                 "aac" -> {
@@ -223,13 +235,6 @@ class NoSlow : Module() {
                     sendPacket(event, sendC07 = true, sendC08 = true, delay = false, delayValue = 0, onGround = false)
                 }
 
-                "watchdog2" -> {
-                    if (event.eventState == EventState.PRE) {
-                        mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
-                    } else {
-                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, null, 0.0f, 0.0f, 0.0f))
-                    }
-                }
                 "switchitem" -> {
                     PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem  % 8 + 1))
                     PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
