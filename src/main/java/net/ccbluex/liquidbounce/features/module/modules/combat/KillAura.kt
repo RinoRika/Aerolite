@@ -43,7 +43,7 @@ import java.awt.Color
 import java.util.*
 import kotlin.math.*
 
-@ModuleInfo(name = "KillAura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_G)
+@ModuleInfo(name = "Aura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_G)
 object KillAura : Module() {
     /**
      * OPTIONS
@@ -155,13 +155,13 @@ object KillAura : Module() {
     // Rotations
     private val rotationModeValue = ListValue(
         "RotationMode",
-        arrayOf("None", "liquidbounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView", "OldMatrix", "Test", "SmoothCustom"),
-        "liquidbounce"
+        arrayOf("None", "Liquidbounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView", "OldMatrix", "Test", "SmoothCustom"),
+        "Liquidbounce"
     ).displayable { rotationDisplay.get()}
 
     private val customRotationValue = ListValue(
         "CustomRotationMode",
-        arrayOf ("liquidbounce", "Full", "HalfUp", "HalfDown", "CenterSimple", "CenterLine"),
+        arrayOf ("Liquidbounce", "Full", "HalfUp", "HalfDown", "CenterSimple", "CenterLine"),
         "HalfUp") .displayable { rotationDisplay.get() && rotationModeValue.equals("SmoothCustom") }
 
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationModeValue.equals("None") && rotationDisplay.get()}
@@ -804,7 +804,7 @@ object KillAura : Module() {
         val boundingBox = if (rotationModeValue.get() == "Test") entity.hitBox else getAABB(entity)
 
         val rModes = when (rotationModeValue.get()) {
-            "liquidbounce", "SmoothLiquid" -> "liquidbounce"
+            "Liquidbounce", "SmoothLiquid" -> "Liquidbounce"
             "ForceCenter", "SmoothCenter", "OldMatrix", -> "CenterLine"
             "LockView" -> "CenterSimple"
             "SmoothCustom" -> customRotationValue.get()
@@ -839,7 +839,7 @@ object KillAura : Module() {
         if (!lastCanBeSeen && rotationDelayValue.get() && !rotationTimer.hasTimePassed(rotationDelayMSValue.get().toLong())) return true
 
         val rotation = when (rotationModeValue.get()) {
-            "liquidbounce", "ForceCenter" -> RotationUtils.limitAngleChange(
+            "Liquidbounce", "ForceCenter" -> RotationUtils.limitAngleChange(
                 RotationUtils.serverRotation, directRotation,
                 (Math.random() * (maxTurnSpeedValue.get() - minTurnSpeedValue.get()) + minTurnSpeedValue.get()).toFloat()
             )

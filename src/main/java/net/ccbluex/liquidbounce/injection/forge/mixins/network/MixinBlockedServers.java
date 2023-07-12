@@ -10,7 +10,7 @@ public abstract class MixinBlockedServers {
      * @author koitoyuu
      * @reason fucked server limit.
      */
-    @Overwrite
+    @Overwrite(remap = false)
     public static boolean isBlockedServer(String server) {
         return false;
     }
