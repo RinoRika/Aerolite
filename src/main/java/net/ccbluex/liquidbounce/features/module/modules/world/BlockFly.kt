@@ -592,6 +592,16 @@ class BlockFly : Module() {
                     mc.thePlayer.setPosition(mc.thePlayer.posX, truncate(mc.thePlayer.posY), mc.thePlayer.posZ)
                 }
             }
+            "motiontp2" -> {
+                if (mc.thePlayer.onGround) {
+                    fakeJump()
+                    mc.thePlayer.motionY = 0.41999998688698
+                } else if (mc.thePlayer.motionY < 0.23) {
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, truncate(mc.thePlayer.posY), mc.thePlayer.posZ)
+                    mc.thePlayer.onGround = true
+                    mc.thePlayer.motionY = 0.41999998688698
+                }
+            }
             "packet" -> {
                 if (mc.thePlayer.onGround && towerTimer.hasTimePassed(2)) {
                     fakeJump()

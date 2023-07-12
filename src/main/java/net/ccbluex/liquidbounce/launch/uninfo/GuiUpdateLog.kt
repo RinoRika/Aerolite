@@ -26,11 +26,12 @@ class GuiUpdateLog : GuiScreen(), GuiYesNoCallback {
 
     override fun initGui() {
         this.buttonList.add(GuiButton(0, this.width / 2 - 50, 460, 100, 20, "Back"))
-        text.add("[+] Vulcan Bypasses")
-        text.add("[+] Rewrite KillAura")
-        text.add("[+] StrafeFix,NoClickDelay")
-        text.add("[+] Stitch TargetHUD")
-        text.add("[+] More Notifications")
+        text.add("[+] New Aura")
+        text.add("[+] New titles")
+        text.add("[+] New Scaffold tower")
+        text.add("[*] Fix TickBase")
+        text.add("[+] Univero Disabler")
+        text.add("[+] Fix bugs")
     }
 
     override fun drawScreen(p_drawScreen_1_: Int, p_drawScreen_2_: Int, p_drawScreen_3_: Float) {
