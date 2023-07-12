@@ -25,5 +25,8 @@ object RenderUtilsKt: MinecraftInstance() {
         glPopMatrix()
         glColor4f(1f, 1f, 1f, 1f)
     }
+    fun interpolate(old: Double, current: Double): Double {
+        return old + (current - old) * mc.timer.renderPartialTicks.toDouble()
+    }
 
 }

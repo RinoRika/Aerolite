@@ -1,18 +1,13 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/laoshuikaixue/FDPClient
- */
 package net.ccbluex.liquidbounce.features.module.modules.world
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.player.InvManager
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -22,6 +17,7 @@ import net.minecraft.inventory.Slot
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
+import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S30PacketWindowItems
 import net.minecraft.util.ResourceLocation
@@ -30,7 +26,6 @@ import kotlin.random.Random
 
 @ModuleInfo(name = "ChestStealer", category = ModuleCategory.WORLD, keyBind = Keyboard.KEY_B)
 class ChestStealer : Module() {
-
     /**
      * OPTIONS
      */
@@ -60,10 +55,12 @@ class ChestStealer : Module() {
     private val chestValue = IntegerValue("ChestOpenDelay", 300, 0, 1000)
     private val takeRandomizedValue = BoolValue("TakeRandomized", false)
     private val onlyItemsValue = BoolValue("OnlyItems", false)
+    private val instantValue = BoolValue("Instant", false)
+    private val noDuplicateValue = BoolValue("NoDuplicateNonStackable", false)
     private val noCompassValue = BoolValue("NoCompass", false)
     private val autoCloseValue = BoolValue("AutoClose", true)
     val silentValue = BoolValue("Silent", true)
-    val silentTitleValue = BoolValue("SilentTitle", true).displayable { silentValue.get() }
+    val silentTitleValue = BoolValue("SilentTitle", true)
 
     private val autoCloseMaxDelayValue: IntegerValue = object : IntegerValue("AutoCloseMaxDelay", 0, 0, 400) {
         override fun onChanged(oldValue: Int, newValue: Int) {
@@ -96,8 +93,6 @@ class ChestStealer : Module() {
 
     private var contentReceived = 0
 
-    var isMoving = false
-
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
         if (!chestTimer.hasTimePassed(chestValue.get().toLong())) {
@@ -122,9 +117,9 @@ class ChestStealer : Module() {
         }
 
         // inventory cleaner
-        val inventoryCleaner = LiquidBounce.moduleManager[InvManager::class.java]!!
+        val invManager = LiquidBounce.moduleManager[InvManager::class.java]!!
 
-        // Is empty?
+        // check if it's empty?
         if (!isEmpty(screen) && !(closeOnFullValue.get() && fullInventory)) {
             autoCloseTimer.reset()
 
@@ -136,9 +131,14 @@ class ChestStealer : Module() {
                     for (slotIndex in 0 until screen.inventoryRows * 9) {
                         val slot = screen.inventorySlots.inventorySlots[slotIndex]
 
-                        if (slot.stack != null && (!onlyItemsValue.get() || slot.stack.item !is ItemBlock) && (!inventoryCleaner.state || inventoryCleaner.isUseful(slot.stack, -1))) {
+                        if (slot.stack != null && (!onlyItemsValue.get() || slot.stack.item !is ItemBlock) && (!noDuplicateValue.get() || slot.stack.maxStackSize > 1 || !mc.thePlayer.inventory.mainInventory.filter { it != null && it.item != null }
+                                .map { it.item!! }
+                                .contains(slot.stack.item)) && (!invManager.state || invManager.isUseful(
+                                slot.stack,
+                                -1
+                            ))
+                        )
                             items.add(slot)
-                        }
                     }
 
                     val randomSlot = Random.nextInt(items.size)
@@ -146,7 +146,6 @@ class ChestStealer : Module() {
 
                     move(screen, slot)
                 } while (delayTimer.hasTimePassed(nextDelay) && items.isNotEmpty())
-                isMoving = false
                 return
             }
 
@@ -155,14 +154,39 @@ class ChestStealer : Module() {
                 val slot = screen.inventorySlots.inventorySlots[slotIndex]
 
                 if (delayTimer.hasTimePassed(nextDelay) && slot.stack != null &&
-                    (!onlyItemsValue.get() || slot.stack.item !is ItemBlock) && (!inventoryCleaner.state || inventoryCleaner.isUseful(slot.stack, -1))) {
+                    (!onlyItemsValue.get() || slot.stack.item !is ItemBlock) && (!invManager.state || invManager.isUseful(slot.stack, -1))) {
                     move(screen, slot)
                 }
-                isMoving = false
             }
         } else if (autoCloseValue.get() && screen.inventorySlots.windowId == contentReceived && autoCloseTimer.hasTimePassed(nextCloseDelay)) {
             mc.thePlayer.closeScreen()
             nextCloseDelay = TimeUtils.randomDelay(autoCloseMinDelayValue.get(), autoCloseMaxDelayValue.get())
+        }
+    }
+
+    @EventTarget
+    fun onUpdate(event: UpdateEvent) {
+        if (instantValue.get()) {
+            if (mc.currentScreen is GuiChest) {
+                val chest = mc.currentScreen as GuiChest
+                val rows = chest.inventoryRows * 9
+                for (i in 0 until rows) {
+                    val slot = chest.inventorySlots.getSlot(i)
+                    if (slot.hasStack) {
+                        mc.thePlayer.sendQueue.addToSendQueue(
+                            C0EPacketClickWindow(
+                                chest.inventorySlots.windowId,
+                                i,
+                                0,
+                                1,
+                                slot.stack,
+                                1.toShort()
+                            )
+                        )
+                    }
+                }
+                mc.thePlayer.closeScreen()
+            }
         }
     }
 
@@ -180,19 +204,18 @@ class ChestStealer : Module() {
     }
 
     private fun move(screen: GuiChest, slot: Slot) {
-        isMoving = true
         screen.handleMouseClick(slot, slot.slotNumber, 0, 1)
         delayTimer.reset()
         nextDelay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
     }
 
     private fun isEmpty(chest: GuiChest): Boolean {
-        val inventoryCleaner = LiquidBounce.moduleManager[InvManager::class.java]!!
+        val invManager = LiquidBounce.moduleManager[InvManager::class.java]!!
 
         for (i in 0 until chest.inventoryRows * 9) {
             val slot = chest.inventorySlots.inventorySlots[i]
 
-            if (slot.stack != null && (!onlyItemsValue.get() || slot.stack.item !is ItemBlock) && (!inventoryCleaner.state || inventoryCleaner.isUseful(slot.stack, -1))) {
+            if (slot.stack != null && (!onlyItemsValue.get() || slot.stack.item !is ItemBlock) && (!invManager.state || invManager.isUseful(slot.stack, -1))) {
                 return false
             }
         }

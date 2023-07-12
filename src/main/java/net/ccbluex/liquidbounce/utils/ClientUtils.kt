@@ -20,11 +20,10 @@ import java.io.File
 import java.util.*
 
 object ClientUtils : MinecraftInstance() {
-    val titles = arrayOf("有的人天天笑别人，却不知道自己就是个笑话", "一边议论别人一边卖惨自己，有比这更可笑的吗？", "玩方块人时,淳哥总是注入Vape", "你说得对，但是（）（）是由?","原来你也玩原神!", "你好 我是Stars 我正在进行跑路")
+    val titles = arrayOf("有的人天天笑别人，却不知道自己就是个笑话", "一边议论别人一边卖惨自己，有比这更可笑的吗？", "玩方块人时,淳哥总是注入Vape", "你说得对，但是现在我要提一个二字游戏","原来你也玩原神!", "你好 我是Stars 我正在进行跑路"
+    ,"偷偷表白Crazy应该没人发现吧awa", "你需要一个复活！", "回来吧()()()()，我最骄傲的信仰")
     private val logger = LogManager.getLogger("Aerolite")
     val osType: EnumOSType
-    val FMLtaskTimer = MSTimer()
-    var inDevMode = System.getProperty("aerolite-dev-token-was-1Sf34aKle2") != null
 
     /**
      * the hardware id used to identify in bstats
@@ -113,13 +112,12 @@ object ClientUtils : MinecraftInstance() {
 
     @NativeMethod
     fun setTitle() {
-        //Display.setTitle("${LiquidBounce.CLIENT_NAME}正在注入核心,请稍后!")
-        Display.setTitle("原神，启动！")
+        Display.setTitle("${LiquidBounce.CLIENT_NAME}正在注入核心,请稍后!")
     }
 
     @NativeMethod
     fun finishTitle() {
-        Display.setTitle(Aerolite.title + titles[RandomUtils.nextInt(0, titles.size)] + if (inDevMode) " | TOKEN已检测 - DEV模式开启" else " | TOKEN未检测 - 普通模式")
+        Display.setTitle(Aerolite.title + titles[RandomUtils.nextInt(0, titles.size)])
     }
 
     @NativeMethod

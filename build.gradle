@@ -17,7 +17,7 @@ repositories {
     mavenCentral()
 }
 
-version = "5.1.0"
+version = "5.2.0"
 group = "cn.stars.aerolite"
 archivesBaseName = "Aerolite"
 

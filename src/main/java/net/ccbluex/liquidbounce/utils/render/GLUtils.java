@@ -27,6 +27,7 @@ public class GLUtils
         GlStateManager.disableColorMaterial();
     }
 
+
     public static void startSmooth() {
         GL11.glEnable(2848);
         GL11.glEnable(2881);

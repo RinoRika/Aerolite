@@ -1,9 +1,4 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
- */
-package net.ccbluex.liquidbounce.features.module.modules.player
+package net.ccbluex.liquidbounce.features.module.modules.world
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.EventTarget
@@ -27,24 +22,25 @@ import net.minecraft.init.Blocks
 import net.minecraft.item.*
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
+import org.lwjgl.input.Keyboard
 import java.util.stream.Collectors
 import java.util.stream.IntStream
 
-@ModuleInfo(name = "InvManager", category = ModuleCategory.PLAYER)
+@ModuleInfo(name = "InvManager", category = ModuleCategory.WORLD, keyBind = Keyboard.KEY_B)
 class InvManager : Module() {
 
     /**
      * OPTIONS
      */
 
-    private val maxDelayValue: IntegerValue = object : IntegerValue("MaxDelay", 600, 0, 1000) {
+    private val maxDelayValue: IntegerValue = object : IntegerValue("MaxDelay", 200, 0, 1000) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val minCPS = minDelayValue.get()
             if (minCPS > newValue) set(minCPS)
         }
     }
 
-    private val minDelayValue: IntegerValue = object : IntegerValue("MinDelay", 400, 0, 1000) {
+    private val minDelayValue: IntegerValue = object : IntegerValue("MinDelay", 100, 0, 1000) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             val maxDelay = maxDelayValue.get()
             if (maxDelay < newValue) set(maxDelay)
@@ -297,12 +293,14 @@ class InvManager : Module() {
                 items().none { (_, stack) ->
                     itemStack != stack && stack.item is ItemFlintAndSteel && currDamage >= stack.item.getDamage(stack)
                 }
+            } else if (item is ItemEgg) {
+                // Maybe some spawn eggs are useful lol
+                mc.thePlayer.inventory.mainInventory.size < 21
             } else if (item is ItemTool) {
                 val harvestLevel = item.toolMaterial.harvestLevel
                 val currEff = ItemUtils.getEnchantment(itemStack, Enchantment.efficiency)
                 val totalCount = ItemUtils.getEnchantmentCount(itemStack)
                 val totalLevel = ItemUtils.getEnchantment(itemStack, Enchantment.efficiency) + ItemUtils.getEnchantment(itemStack, Enchantment.fortune)
-
                 items().none { (_, stack) ->
                     val currItem = stack.item as ItemTool
 
@@ -312,21 +310,21 @@ class InvManager : Module() {
                             if (harvestLevel != currItem.toolMaterial.harvestLevel) harvestLevel < currItem.toolMaterial.harvestLevel
                             else if (currEff == eff) {
                                 val currDamage = item.getDamage(itemStack)
-                                currDamage >= stack.item.getDamage(stack)
+                                currDamage > stack.item.getDamage(stack)
                             } else currEff < eff
                         } else if (calculateEnchantsValue.get() == "AutoLevel") {
                             val level = ItemUtils.getEnchantment(itemStack, Enchantment.efficiency) + ItemUtils.getEnchantment(itemStack, Enchantment.fortune)
                             if (harvestLevel != currItem.toolMaterial.harvestLevel) harvestLevel < currItem.toolMaterial.harvestLevel
                             else if (level == totalLevel) {
                                 val currDamage = item.getDamage(itemStack)
-                                currDamage >= stack.item.getDamage(stack)
+                                currDamage > stack.item.getDamage(stack)
                             } else totalLevel < level
                         } else {
                             val count = ItemUtils.getEnchantmentCount(itemStack)
                             if (harvestLevel != currItem.toolMaterial.harvestLevel) harvestLevel < currItem.toolMaterial.harvestLevel
                             else if (count == totalCount) {
                                 val currDamage = item.getDamage(itemStack)
-                                currDamage >= stack.item.getDamage(stack)
+                                currDamage > stack.item.getDamage(stack)
                             } else totalCount < count
                         }
                     } else {false}
@@ -368,7 +366,7 @@ class InvManager : Module() {
         val type = type(targetSlot)
 
         when (type.lowercase()) {
-            "sword", "pickaxe", "axe" -> {
+            "sword" -> {
                 val currentType: Class<out Item> = when {
                     type.equals("Sword", ignoreCase = true) -> ItemSword::class.java
              /*       type.equals("Pickaxe", ignoreCase = true) -> ItemPickaxe::class.java
@@ -427,7 +425,6 @@ class InvManager : Module() {
 
                 return if (bestBow != -1) bestBow else null
             }
-
             "food" -> {
                 mc.thePlayer.inventory.mainInventory.forEachIndexed { index, stack ->
                     val item = stack?.item
@@ -438,6 +435,56 @@ class InvManager : Module() {
                         return if (replaceCurr) index else null
                     }
                 }
+            }
+            "pickaxe" -> {
+                var bestPickaxe = if (slotStack?.item is ItemPickaxe) targetSlot else -1
+                var bestEff = if (bestPickaxe != -1) {
+                    ItemUtils.getEnchantment(slotStack!!, Enchantment.efficiency)
+                } else {
+                    0
+                }
+
+                mc.thePlayer.inventory.mainInventory.forEachIndexed { index, itemStack ->
+                    if (itemStack?.item is ItemPickaxe && !type(index).equals(type, ignoreCase = true)) {
+                        if (bestPickaxe == -1) {
+                            bestPickaxe = index
+                        } else {
+                            val eff = ItemUtils.getEnchantment(itemStack, Enchantment.efficiency)
+
+                            if (ItemUtils.getEnchantment(itemStack, Enchantment.efficiency) > bestEff) {
+                                bestPickaxe = index
+                                bestEff = eff
+                            }
+                        }
+                    }
+                }
+
+                return if (bestPickaxe != -1) bestPickaxe else null
+            }
+            "axe" -> {
+                var bestAxe = if (slotStack?.item is ItemAxe) targetSlot else -1
+                var bestEff = if (bestAxe != -1) {
+                    ItemUtils.getEnchantment(slotStack!!, Enchantment.efficiency)
+                } else {
+                    0
+                }
+
+                mc.thePlayer.inventory.mainInventory.forEachIndexed { index, itemStack ->
+                    if (itemStack?.item is ItemAxe && !type(index).equals(type, ignoreCase = true)) {
+                        if (bestAxe == -1) {
+                            bestAxe = index
+                        } else {
+                            val eff = ItemUtils.getEnchantment(itemStack, Enchantment.efficiency)
+
+                            if (ItemUtils.getEnchantment(itemStack, Enchantment.efficiency) > bestEff) {
+                                bestAxe = index
+                                bestEff = eff
+                            }
+                        }
+                    }
+                }
+
+                return if (bestAxe != -1) bestAxe else null
             }
 
             "block" -> {

@@ -364,11 +364,11 @@ class BlockFly : Module() {
                     }
                     "raytrace" -> {
                         val rayTraceInfo = mc.thePlayer.rayTraceWithServerSideRotation(5.0)
-                        if (BlockUtils.getBlock(rayTraceInfo.blockPos) != Blocks.air) {
-                            val blockPos = rayTraceInfo.blockPos
-                            val hitVec = rayTraceInfo.hitVec
-                            val directionVec = rayTraceInfo.sideHit.directionVec
-                            val targetPos = rayTraceInfo.blockPos.add(directionVec.x, directionVec.y, directionVec.z)
+                        if (BlockUtils.getBlock(rayTraceInfo!!.blockPos) != Blocks.air) {
+                            val blockPos = rayTraceInfo!!.blockPos
+                            val hitVec = rayTraceInfo!!.hitVec
+                            val directionVec = rayTraceInfo!!.sideHit.directionVec
+                            val targetPos = rayTraceInfo!!.blockPos.add(directionVec.x, directionVec.y, directionVec.z)
                             if (mc.thePlayer.entityBoundingBox.intersectsWith(
                                     Blocks.stone.getSelectedBoundingBox(
                                         mc.theWorld,
@@ -379,7 +379,7 @@ class BlockFly : Module() {
                                 sendPacket(
                                     C08PacketPlayerBlockPlacement(
                                         blockPos,
-                                        rayTraceInfo.sideHit.index,
+                                        rayTraceInfo!!.sideHit.index,
                                         mc.thePlayer.inventory.getStackInSlot(slot),
                                         (hitVec.xCoord - blockPos.x.toDouble()).toFloat(),
                                         (hitVec.yCoord - blockPos.y.toDouble()).toFloat(),
@@ -781,12 +781,12 @@ class BlockFly : Module() {
             val rayTraceInfo = mc.thePlayer.rayTraceWithServerSideRotation(5.0)
             when (hitableCheckValue.get().lowercase()) {
                 "simple" -> {
-                    if (!rayTraceInfo.blockPos.equals(targetPlace!!.blockPos)) {
+                    if (!rayTraceInfo!!.blockPos.equals(targetPlace!!.blockPos)) {
                         return
                     }
                 }
                 "strict" -> {
-                    if (!rayTraceInfo.blockPos.equals(targetPlace!!.blockPos) || rayTraceInfo.sideHit != targetPlace!!.enumFacing) {
+                    if (!rayTraceInfo!!.blockPos.equals(targetPlace!!.blockPos) || rayTraceInfo!!.sideHit != targetPlace!!.enumFacing) {
                         return
                     }
                 }
@@ -1423,7 +1423,8 @@ class BlockFly : Module() {
 
     val canSprint: Boolean
         get() = MovementUtils.isMoving() && when (sprintValue.get().lowercase()) {
-            "always", "dynamic", "hypixel" -> true
+            "always", "hypixel" -> true
+            "dynamic" -> mc.gameSettings.keyBindSprint.isPressed
             "onground" -> mc.thePlayer.onGround
             "offground" -> !mc.thePlayer.onGround
             else -> false

@@ -120,17 +120,7 @@ public abstract class MixinMinecraft {
 
     @Overwrite
     public int getLimitFramerate() {
-        if (HUD.INSTANCE.getThirtyfpsnoworld().get() && Minecraft.getMinecraft().theWorld == null) return 30;
-        else return this.gameSettings.limitFramerate;
-    }
-
-    @Inject(method = "<init>", at = @At("RETURN"))
-    public void injectConstructor(GameConfiguration p_i45547_1_, CallbackInfo ci) {
-   /*     try {
-            ViaForge.getInstance().start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } */
+        return this.gameSettings.limitFramerate;
     }
 
     @Inject(method = "run", at = @At("HEAD"))
