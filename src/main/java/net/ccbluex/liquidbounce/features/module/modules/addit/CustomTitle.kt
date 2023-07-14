@@ -23,7 +23,7 @@ object CustomTitle : Module() {
     }
 
     override fun onDisable() {
-        ClientUtils.finishTitle()
+        ClientUtils.setClientTitle()
     }
 
     fun onTick(event: TickEvent) {

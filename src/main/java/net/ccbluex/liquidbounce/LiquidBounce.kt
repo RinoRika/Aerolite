@@ -53,8 +53,8 @@ object LiquidBounce {
     // Client information
     const val CLIENT_NAME = "Aerolite"
     const val COLORED_NAME = "§b§lAerolite"
-    const val BUILD_CODE = "5.3.1"                       //更完改
-    const val CLIENT_REAL_VERSION = "5.3.1"                            //更完改
+    const val BUILD_CODE = "5.3.2"                       //更完改
+    const val CLIENT_REAL_VERSION = "5.3.2"                            //更完改
     const val CLIENT_CREATOR = "Stars,Packet"
     const val CLIENT_WEBSITE = "aerolite.tk"
     const val MINECRAFT_VERSION = "1.8.9"
@@ -213,7 +213,7 @@ object LiquidBounce {
         ClientUtils.logInfo("$CLIENT_NAME $CLIENT_REAL_VERSION started!")
         FinishChoosingScreen = true
         if (CustomTitle.state) Display.setTitle(CustomTitle.titleValue.get())
-        else ClientUtils.finishTitle()
+        else ClientUtils.setClientTitle()
     }
 
     /**

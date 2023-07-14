@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.Aerolite
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.Metrics.SimplePie
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.util.IChatComponent
 import oh.yalan.NativeMethod
 import org.apache.logging.log4j.LogManager
@@ -20,19 +19,13 @@ import java.io.File
 import java.util.*
 
 object ClientUtils : MinecraftInstance() {
-    // Crazy 需要我删除这个
-    // 哼 我就不
-    val titles = arrayOf("有的人天天笑别人，却不知道自己就是个笑话", "一边议论别人一边卖惨自己，有比这更可笑的吗？", "玩方块人时,淳哥总是注入Vape",
-        "你说得对，但是现在我要提一个二字游戏","原来你也玩原神!", "你好 我是Stars 我正在进行跑路","偷偷表白Crazy应该没人发现吧awa", "你需要一个复活！",
-        "回来吧刺激战场，我最骄傲的信仰", "TECH OTAKUS SAVE THE WORLD", "NULL REFERENCE", "有人需要我删除这些中的一个:(", "titles[0] == I love you!",
-        "豪弟弟:帮我拉aerolitebmc参", "BUILD FAILED in 10min")
     private val logger = LogManager.getLogger("Aerolite")
     val osType: EnumOSType
 
     /**
-     * the hardware id used to identify in bstats
+     * the hardware id used to identify in bStats
      */
-    val hardwareUuid: UUID
+    private val hardwareUuid: UUID
 
     init {
         val os = System.getProperty("os.name").lowercase()
@@ -108,20 +101,14 @@ object ClientUtils : MinecraftInstance() {
         logger.debug(msg)
     }
 
-    fun tipException(msg: String) {
-       // displayChatMessage("§8*-----------------------*")
-       // displayChatMessage("§c$msg")
-       // displayChatMessage("§8*-----------------------*")
-    }
-
     @NativeMethod
-    fun setTitle() {
+    fun setLoadingTitle() {
         Display.setTitle("${LiquidBounce.CLIENT_NAME}正在注入核心,请稍后!")
     }
 
     @NativeMethod
-    fun finishTitle() {
-        Display.setTitle(Aerolite.title + titles[RandomUtils.nextInt(0, titles.size)])
+    fun setClientTitle() {
+        Display.setTitle(Aerolite.title + Aerolite.titles[RandomUtils.nextInt(0, Aerolite.titles.size)])
     }
 
     @NativeMethod

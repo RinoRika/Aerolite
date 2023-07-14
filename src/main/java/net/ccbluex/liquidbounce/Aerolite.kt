@@ -1,0 +1,17 @@
+package net.ccbluex.liquidbounce
+
+class Aerolite {
+
+    companion object {
+        // 标题
+        var title = LiquidBounce.CLIENT_NAME + " " + LiquidBounce.CLIENT_REAL_VERSION + " | "
+
+        // Crazy 需要我删除这个
+        // 哼 我就不
+        val titles = arrayOf("有的人天天笑别人，却不知道自己就是个笑话", "一边议论别人一边卖惨自己，有比这更可笑的吗？", "玩方块人时,淳哥总是注入Vape",
+            "你说得对，但是现在我要提一个二字游戏","原来你也玩原神!", "你好 我是Stars 我正在进行跑路","偷偷表白Crazy应该没人发现吧awa", "你需要一个复活！",
+            "回来吧刺激战场，我最骄傲的信仰", "TECH OTAKUS SAVE THE WORLD", "NULL REFERENCE", "有人需要我删除这些中的一个:(", "titles[0] == I love you!",
+            "豪弟弟:帮我拉aerolite bmc参")
+    }
+
+}
