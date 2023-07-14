@@ -40,10 +40,8 @@ import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
-import oh.yalan.NativeClass
 import org.lwjgl.opengl.Display
 
-@NativeClass
 object LiquidBounce {
     /*
      * There is fucking English in the source code,so use the right coding!
@@ -53,17 +51,14 @@ object LiquidBounce {
     // Client information
     const val CLIENT_NAME = "Aerolite"
     const val COLORED_NAME = "§b§lAerolite"
-    const val BUILD_CODE = "5.3.2"                       //更完改
-    const val CLIENT_REAL_VERSION = "5.3.2"                            //更完改
+    const val BUILD_CODE = "5.3.3"                       //更完改
+    const val CLIENT_REAL_VERSION = "5.3.3"                            //更完改
     const val CLIENT_CREATOR = "Stars,Packet"
     const val CLIENT_WEBSITE = "aerolite.tk"
     const val MINECRAFT_VERSION = "1.8.9"
     const val CLIENT_DEV = "Stars,Kilo,Packet,Crazy"
-    const val DEV_SAYING = "Actually new"
 
     // Tasks
-    var FinishChoosingScreen = false
-
     var isStarting = true
     var isLoadingConfig = true
 
@@ -168,7 +163,7 @@ object LiquidBounce {
         // KeyBindManager
         keyBindManager = KeyBindManager()
 
-        // bstats.org user count display
+        // bStats.org user count display
         ClientUtils.buildMetrics()
 
         combatManager = CombatManager()
@@ -211,7 +206,6 @@ object LiquidBounce {
         ColorMixer.regenerateColors(true)
 
         ClientUtils.logInfo("$CLIENT_NAME $CLIENT_REAL_VERSION started!")
-        FinishChoosingScreen = true
         if (CustomTitle.state) Display.setTitle(CustomTitle.titleValue.get())
         else ClientUtils.setClientTitle()
     }

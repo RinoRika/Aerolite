@@ -3,7 +3,7 @@ package net.ccbluex.liquidbounce.launch.data.legacyui;
 import kotlin.jvm.internal.DefaultConstructorMarker;
 import kotlin.jvm.internal.Intrinsics;
 import net.ccbluex.liquidbounce.LiquidBounce;
-import net.ccbluex.liquidbounce.launch.uninfo.GuiUpdateLog;
+import net.ccbluex.liquidbounce.launch.ui.GuiUpdateLog;
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;

@@ -27,7 +27,8 @@ public abstract class MixinGuiMultiplayer extends MixinGuiScreen {
     private void initGui(CallbackInfo callbackInfo) {
         buttonList.add(new GuiButton(997, 5, 8, 98, 20, "%ui.antiForge%"));
         buttonList.add(new GuiButton(998, width - 104, 8, 98, 20, "%ui.serverSpoof%"));
-        buttonList.add(new GuiButton(999, width - 208, 8, 98, 20, "Proxy"));
+        // 8 -> 20 (Compatible with viaversion button)
+        buttonList.add(new GuiButton(999, width - 208, 20, 98, 20, "Proxy"));
      /*   buttonList.add(viaSlider = new GuiSlider(1337, width - 312, 8, 98, 20, "Version: ", "", 0, ProtocolCollection.values().length - 1, ProtocolCollection.values().length - 1 - getProtocolIndex(ViaForge.getInstance().getVersion()), false, true,
                 guiSlider -> {
                     ViaForge.getInstance().setVersion(ProtocolCollection.values()[ProtocolCollection.values().length - 1 - guiSlider.getValueInt()].getVersion().getVersion());

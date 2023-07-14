@@ -21,7 +21,7 @@ import java.awt.Color
 
 
 // Session Info Reloaded by Stars
-@NativeClass
+// TODO:停止使用空格草泥马
 @ElementInfo(name = "Session")
 class Session : Element() {
     private val modeValue = ListValue("Mode", arrayOf("Normal", "Hreith", "NightSense","Tenacity", "Novoline"), "Normal")

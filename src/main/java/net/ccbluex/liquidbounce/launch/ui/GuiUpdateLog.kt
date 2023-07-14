@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.launch.uninfo
+package net.ccbluex.liquidbounce.launch.ui
 
 import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.features.module.modules.render.util.ColorMixer
@@ -26,12 +26,8 @@ class GuiUpdateLog : GuiScreen(), GuiYesNoCallback {
 
     override fun initGui() {
         this.buttonList.add(GuiButton(0, this.width / 2 - 50, 460, 100, 20, "Back"))
-        text.add("[+] New Aura")
-        text.add("[+] New titles")
-        text.add("[+] New Scaffold tower")
-        text.add("[*] Fix TickBase")
-        text.add("[+] Univero Disabler")
-        text.add("[+] Fix bugs")
+        text.add("[+] NCPLatest2 Fly")
+        text.add("[*] Performance improvement")
     }
 
     override fun drawScreen(p_drawScreen_1_: Int, p_drawScreen_2_: Int, p_drawScreen_3_: Float) {
