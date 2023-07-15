@@ -44,15 +44,15 @@ import org.lwjgl.opengl.Display
 
 object LiquidBounce {
     /*
-     * There is fucking English in the source code,so use the right coding!
+     * There is fucking English in the source code,so use the right encoding!
      * 这个源代码有中文，所以请使用正确的编码!
      */
 
     // Client information
     const val CLIENT_NAME = "Aerolite"
     const val COLORED_NAME = "§b§lAerolite"
-    const val BUILD_CODE = "5.3.3"                       //更完改
-    const val CLIENT_REAL_VERSION = "5.3.3"                            //更完改
+    const val BUILD_CODE = "5.3.4"                       //更完改
+    const val CLIENT_REAL_VERSION = "5.3.4"                            //更完改
     const val CLIENT_CREATOR = "Stars,Packet"
     const val CLIENT_WEBSITE = "aerolite.tk"
     const val MINECRAFT_VERSION = "1.8.9"

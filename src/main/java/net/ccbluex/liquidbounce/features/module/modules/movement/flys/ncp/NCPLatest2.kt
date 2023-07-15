@@ -16,6 +16,7 @@ import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 class NCPLatest2 : FlyMode("NCPLatest2") {
     private val modeValue = ListValue("Mode", arrayOf("Normal", "Clip"), "Normal")
 
+    private var offGrounded = false;
     private var moveSpeed = 0.0
     private var started = false
     private var notUnder = false
@@ -43,13 +44,16 @@ class NCPLatest2 : FlyMode("NCPLatest2") {
                         notUnder = false
                     }
                 }
-                false -> if (started) MovementUtils.strafe(9.6f)
+                false -> if (started && !offGrounded) {
+                    MovementUtils.strafe(9.6f)
+                    offGrounded = true
+                }
             }
         } else {
             notUnder = true
             if (clipped) return
             clipped = true
-            PacketUtils.sendPacketNoEvent(
+            mc.netHandler.addToSendQueue(
                 C06PacketPlayerPosLook(
                     mc.thePlayer.posX,
                     mc.thePlayer.posY,
@@ -59,7 +63,7 @@ class NCPLatest2 : FlyMode("NCPLatest2") {
                     false
                 )
             )
-            PacketUtils.sendPacketNoEvent(
+            mc.netHandler.addToSendQueue(
                 C06PacketPlayerPosLook(
                     mc.thePlayer.posX,
                     mc.thePlayer.posY - 0.1,
@@ -69,7 +73,7 @@ class NCPLatest2 : FlyMode("NCPLatest2") {
                     false
                 )
             )
-            PacketUtils.sendPacketNoEvent(
+            mc.netHandler.addToSendQueue(
                 C06PacketPlayerPosLook(
                     mc.thePlayer.posX,
                     mc.thePlayer.posY,
@@ -115,6 +119,7 @@ class NCPLatest2 : FlyMode("NCPLatest2") {
     override fun onEnable() {
         ClientUtils.displayAlert("Start the fly under the block and walk forward")
         moveSpeed = 0.0
+        offGrounded = false
         notUnder = false
         started = false
         clipped = false
