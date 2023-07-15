@@ -89,8 +89,8 @@ class BlockFly : Module() {
     private val expandLengthValue = IntegerValue("ExpandLength", 1, 1, 6)
 
     // Rotations
-    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC", "Test1", "Test2", "Custom", "Advanced", "NCP", "AAC4"), "AAC")
-    private val towerrotationsValue = ListValue("TowerRotations", arrayOf("None", "Vanilla", "AAC", "Test1", "Test2", "Custom", "Advanced", "NCP", "AAC4"), "AAC")
+    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Vanilla", "AAC", "Test1", "Test2", "Custom", "Advanced", "NCP", "AAC4", "Backwards", "Snap", "BackSnap"), "AAC")
+    private val towerrotationsValue = ListValue("TowerRotations", arrayOf("None", "Vanilla", "AAC", "Test1", "Test2", "Custom", "Advanced", "NCP", "AAC4", "Backwards"), "AAC")
     private val aacYawValue = IntegerValue("AACYawOffset", 0, 0, 90).displayable { rotationsValue.equals("AAC") }
     private val advancedYawModeValue = ListValue("AdvancedYawRotations", arrayOf("Offset", "Static", "RoundStatic", "Vanilla", "Round", "MoveDirection", "OffsetMove"), "MoveDirection").displayable { rotationsValue.equals("Advanced") }
     private val advancedPitchModeValue = ListValue("AdvancedPitchRotations", arrayOf("Offset", "Static", "Vanilla"), "Static").displayable { rotationsValue.equals("Advanced") }
@@ -156,7 +156,7 @@ class BlockFly : Module() {
             "Verus",
             "NCP",
             "Matrix",
-            "Hypixel"
+            "Universo"
         ), "Jump"
     )
     private val stopWhenBlockAboveValue = BoolValue("StopTowerWhenBlockAbove", true)
@@ -711,6 +711,16 @@ class BlockFly : Module() {
                     fakeJump()
                     mc.thePlayer.motionY = 0.387565
                     mc.timer.timerSpeed = 1.05f
+                }
+            }
+            "universo" -> {
+                if (mc.thePlayer.onGround) {
+                    fakeJump()
+                    mc.thePlayer.motionY = 0.41999998688698
+                } else if (mc.thePlayer.motionY < 0.19) {
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, truncate(mc.thePlayer.posY), mc.thePlayer.posZ)
+                    mc.thePlayer.onGround = true
+                    mc.thePlayer.motionY = 0.41999998688698
                 }
             }
             "matrix" -> {
@@ -1283,6 +1293,16 @@ class BlockFly : Module() {
                 "test2" -> {
                     Rotation(((MovementUtils.direction * 180f / Math.PI).toFloat() + 135), placeRotation.rotation.pitch)
                 }
+                "backwards" -> {
+                    var calcyaw = ((MovementUtils.movingYaw - 180) / 45).roundToInt() * 45
+                    var calcpitch = 0f
+                    if (calcyaw % 90 == 0) {
+                        calcpitch = 82f
+                    } else {
+                        calcpitch = 78f
+                    }
+                    Rotation(calcyaw.toFloat(), calcpitch)
+                }
                 "custom" -> {
                     Rotation(mc.thePlayer.rotationYaw + customYawValue.get(), customPitchValue.get().toFloat())
                 }
@@ -1325,7 +1345,7 @@ class BlockFly : Module() {
                 "aac" -> {
                     Rotation(mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180) + aacYawValue.get(), placeRotation.rotation.pitch)
                 }
-                "vanilla" -> {
+                "vanilla", "snap", "backsnap" -> {
                     placeRotation.rotation
                 }
                 "ncp" -> {
@@ -1353,6 +1373,16 @@ class BlockFly : Module() {
                 }
                 "test2" -> {
                     Rotation(((MovementUtils.direction * 180f / Math.PI).toFloat() + 135) + changeYaw, placeRotation.rotation.pitch + changePitch)
+                }
+                "backwards" -> {
+                    var calcyaw = ((MovementUtils.movingYaw - 180) / 45).roundToInt() * 45
+                    var calcpitch = 0f
+                    if (calcyaw % 90 == 0) {
+                        calcpitch = 82f
+                    } else {
+                        calcpitch = 78f
+                    }
+                    Rotation(calcyaw.toFloat(), calcpitch)
                 }
                 "custom" -> {
                     Rotation(mc.thePlayer.rotationYaw + customYawValue.get() + changeYaw, customPitchValue.get().toFloat() + changePitch)
@@ -1383,7 +1413,11 @@ class BlockFly : Module() {
             if (silentRotationValue.get()) {
                 val limitedRotation =
                     RotationUtils.limitAngleChange(RotationUtils.serverRotation, lockRotation!!, rotationSpeed)
-                RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
+                if (rotationsValue.equals("Snap") || rotationsValue.equals("BackSnap")) {
+                    RotationUtils.setTargetRotation(limitedRotation, 0)
+                } else {
+                    RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
+                }
             } else {
                 mc.thePlayer.rotationYaw = lockRotation!!.yaw
                 mc.thePlayer.rotationPitch = lockRotation!!.pitch

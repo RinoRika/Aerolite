@@ -27,7 +27,7 @@ import kotlin.math.sqrt
 @ModuleInfo(name = "NoSlow", category = ModuleCategory.MOVEMENT)
 class NoSlow : Module() {
     //Basic settings
-    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "HypixelNew", "NCP", "AAC", "AAC4", "AAC5","SwitchItem", "Matrix", "Vulcan", "Medusa", "GrimAC"), "Vanilla")
+    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "HypixelNew", "NCP", "AAC", "AAC5","SwitchItem", "Matrix", "Vulcan", "Medusa", "GrimAC"), "Vanilla")
     private val onlyGround = BoolValue("OnlyGround", false)
     private val onlyMove = BoolValue("OnlyMove", false)
     //Modify Slowdown / Packets
@@ -48,10 +48,6 @@ class NoSlow : Module() {
     private val customDelayValue = IntegerValue("CustomDelay", 60, 10, 200).displayable { modeValue.equals("Custom") }
     val soulsandValue = BoolValue("SoulSand", true)
     val liquidPushValue = BoolValue("LiquidPush", false)
-    //AACv4
-    private val c07Value = BoolValue("AAC4-C07", true).displayable { modeValue.equals("AAC4") }
-    private val c08Value = BoolValue("AAC4-C08", true).displayable { modeValue.equals("AAC4") }
-    private val groundValue = BoolValue("AAC4-OnGround", true).displayable { modeValue.equals("AAC4") }
     // Slowdown on teleport
     private val teleportValue = BoolValue("Teleport", false)
     private val teleportModeValue = ListValue("TeleportMode", arrayOf("Vanilla", "VanillaNoSetback", "Custom", "Decrease"), "Vanilla").displayable { teleportValue.get() }
@@ -209,10 +205,6 @@ class NoSlow : Module() {
                             onGround = false
                         )
                     }
-                }
-
-                "aac4" -> {
-                    sendPacket(event, c07Value.get(), c08Value.get(), true, 80, groundValue.get())
                 }
 
                 "aac5" -> {

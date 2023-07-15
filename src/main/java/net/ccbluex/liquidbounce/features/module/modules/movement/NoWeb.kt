@@ -129,6 +129,6 @@ class NoWeb : Module() {
         mc.timer.timerSpeed = 1.0F
     }
 
-    override val tag: String?
+    override val tag: String
         get() = modeValue.get()
 }
