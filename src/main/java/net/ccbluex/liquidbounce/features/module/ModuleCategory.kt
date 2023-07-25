@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.module
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.newdropdown.utils.normal.Main
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.newdropdown.utils.objects.Drag
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.newdropdown.utils.render.Scroll
-import oh.yalan.NativeMethod
+
 
 
 enum class ModuleCategory(val displayName: String, val configName: String, val NotiModule: String) {
@@ -27,7 +27,7 @@ enum class ModuleCategory(val displayName: String, val configName: String, val N
 
     private var scroll = Scroll()
 
-    @NativeMethod
+    
     open fun getScroll(): Scroll {
         return scroll
     }
@@ -36,7 +36,7 @@ enum class ModuleCategory(val displayName: String, val configName: String, val N
         posX = 20 + Main.categoryCount * 100
         return Drag(posX.toFloat(), posY.toFloat())
     }
-    @NativeMethod
+    
     open fun getDragNew(moduleCategory: ModuleCategory): Drag {
         if (moduleCategory == COMBAT) return Drag(5f, posY.toFloat())
         else if (moduleCategory == PLAYER) return Drag(125f, posY.toFloat())

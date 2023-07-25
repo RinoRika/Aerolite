@@ -22,11 +22,11 @@ import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.stats.StatList
 import net.minecraft.util.MathHelper
-import oh.yalan.NativeClass
+
 import kotlin.math.cos
 import kotlin.math.sin
 
-@NativeClass
+
 @ModuleInfo(name = "Step", category = ModuleCategory.MOVEMENT)
 class Step : Module() {
 

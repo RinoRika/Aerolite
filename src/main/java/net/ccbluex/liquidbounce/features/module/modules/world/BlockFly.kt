@@ -54,7 +54,6 @@ import kotlin.math.*
 class BlockFly : Module() {
 
     // Delay
-    private val modeValue = ListValue("Mode", arrayOf("Basic", "Jello", "AAC", "NCP", "Matrix", "BuzzTest", "GrimTest"), "Basic")
     private val placeableDelayValue = ListValue("PlaceableDelay", arrayOf("Normal", "Smart", "OFF"), "Normal")
     private val placeDelayTower = BoolValue("TowerPlaceableDelay", true)
     private val maxDelayValue: IntegerValue = object : IntegerValue("MaxDelay", 0, 0, 1000) {
@@ -78,8 +77,8 @@ class BlockFly : Module() {
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
     private val searchValue = BoolValue("Search", true)
     private val downValue = BoolValue("Down", true)
-    private val placeModeValue = ListValue("PlaceTiming", arrayOf("Pre", "Post"), "Pre")
-    private val towerPlaceModeValue = ListValue("TowerPlaceTiming", arrayOf("Pre", "Post"), "Post")
+    private val placeModeValue = ListValue("PlaceTiming", arrayOf("Pre", "Post", "All"), "Pre")
+    private val towerPlaceModeValue = ListValue("TowerPlaceTiming", arrayOf("Pre", "Post", "All"), "Post")
 
     // Eagle
     private val eagleValue = ListValue("Eagle", arrayOf("Silent", "Normal", "OFF"), "OFF")
@@ -514,8 +513,22 @@ class BlockFly : Module() {
         if (event.eventState == EventState.PRE) update()
 
         // Place block
-        if (!towerStatus && placeModeValue.equals(eventState.stateName)) place()
-        if (towerStatus && towerPlaceModeValue.equals(eventState.stateName)) place()
+        if (!towerStatus)
+        {
+            when (placeModeValue.get()) {
+                "Pre" -> if (event.eventState == EventState.PRE) place()
+                "Post" -> if (event.eventState == EventState.POST) place()
+                "All" -> place()
+            }
+        }
+
+        if (towerStatus) {
+            when (towerPlaceModeValue.get()) {
+                "Pre" -> if (event.eventState == EventState.PRE) place()
+                "Post" -> if (event.eventState == EventState.POST) place()
+                "All" -> place()
+            }
+        }
 
         // Reset placeable delay
         if (targetPlace == null && !placeableDelayValue.equals("OFF") && (!placeDelayTower.get() || !towerStatus)) {

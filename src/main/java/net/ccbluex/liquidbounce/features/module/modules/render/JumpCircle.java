@@ -10,12 +10,12 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.FloatValue;
 import net.ccbluex.liquidbounce.value.IntegerValue;
-import oh.yalan.NativeClass;
+;
 import org.lwjgl.opengl.GL11;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@NativeClass
+
 @ModuleInfo(name = "JumpCircle", category = ModuleCategory.RENDER)
 public class JumpCircle extends Module {
     private final IntegerValue redValue = new IntegerValue("Red", 255, 0, 255);

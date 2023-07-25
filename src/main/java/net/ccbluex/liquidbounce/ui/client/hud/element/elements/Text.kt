@@ -22,7 +22,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.Minecraft
 import net.minecraft.util.ChatAllowedCharacters
-import oh.yalan.NativeClass
+
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.text.DecimalFormat
@@ -34,7 +34,7 @@ import kotlin.math.sqrt
  *
  * Allows to draw custom text
  */
-@NativeClass
+
 @ElementInfo(name = "Text", blur = true)
 class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = Side.default()) : Element(x, y, scale, side) {
 

@@ -22,7 +22,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
-import oh.yalan.NativeClass
+
 
 @ModuleInfo(name = "FastUse", category = ModuleCategory.PLAYER)
 class FastUse : Module() {

@@ -4,7 +4,7 @@ import net.ccbluex.liquidbounce.injection.forge.mixins.gui.MixinGuiInGame;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.client.GuiIngameForge;
-import oh.yalan.NativeClass;
+;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 @Mixin(GuiIngameForge.class)

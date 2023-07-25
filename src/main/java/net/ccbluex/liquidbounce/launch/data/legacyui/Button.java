@@ -2,11 +2,11 @@ package net.ccbluex.liquidbounce.launch.data.legacyui;
 
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import oh.yalan.NativeClass;
+;
 
 import java.awt.*;
 
-@NativeClass
+
 public class Button {
     public GuiMainMenuNew parent;
     public String icon;

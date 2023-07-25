@@ -16,9 +16,9 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C0BPacketEntityAction
-import oh.yalan.NativeClass
 
-@NativeClass
+
+
 @ModuleInfo(name = "SuperKnockback", category = ModuleCategory.COMBAT)
 class SuperKnockback : Module() {
 

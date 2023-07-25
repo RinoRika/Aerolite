@@ -4,7 +4,7 @@ class Aerolite {
 
     companion object {
         // 端
-        var version = "5.3.5"
+        var version = "5.4.0"
         // 标题
         var title = LiquidBounce.CLIENT_NAME + " " + LiquidBounce.CLIENT_REAL_VERSION + " | "
 
@@ -15,7 +15,7 @@ class Aerolite {
             "回来吧刺激战场，我最骄傲的信仰", "TECH OTAKUS SAVE THE WORLD", "NULL REFERENCE", "有人需要我删除这些中的一个:(", "titles[0] == I love you!",
             "Stop copy this: 豪弟弟:帮我拉aerolite bmc参", "谁是0?", "拼写错误: 在单词 '***' 中", "Stop copy this: Crazy1101010:我能不回答吗；；",
             "Stop copy this: blockman3063:为什么没有释放在github", "这是我在华军软件园下载的汉化水影b2。", "这是我在拼多多9.9买的汉化FDP。还包邮哦",
-            "喜报:Gradle sync started", "你的jvav技术太差了，我记得mc是用pyothn写的。感觉不如我的Scratch。")
+            "喜报:Gradle sync started", "你的jvav技术太差了，我记得mc是用pyothn写的。感觉不如我的Scratch。", "某个人放弃挣扎吧")
     }
 
 

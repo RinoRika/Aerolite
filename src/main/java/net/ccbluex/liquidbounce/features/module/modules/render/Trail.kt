@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.util.EnumParticleTypes
-import oh.yalan.NativeClass
+
 import java.util.*
 
 

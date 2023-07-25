@@ -5,9 +5,9 @@ package net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.newd
 import net.ccbluex.liquidbounce.cn.Fonts.Module.fonts.api.FontManager;
 import net.ccbluex.liquidbounce.cn.Fonts.Module.fonts.impl.SimpleFontManager;
 import net.ccbluex.liquidbounce.launch.data.legacyui.clickgui.style.styles.newdropdown.SideGui.SideGui;
-import oh.yalan.NativeClass;
+;
 
-@NativeClass
+
 public class WbxMain {
     public static String Name = "Aerolite";
     public static String version = "";

@@ -25,13 +25,13 @@ import net.minecraft.network.play.client.*
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.Vec3
-import oh.yalan.NativeClass
-import oh.yalan.NativeMethod
+
+
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.util.*
 
-@NativeClass
+
 @ModuleInfo(name = "HypDisabler", category = ModuleCategory.ADDIT)
 class HypDisabler : Module(){
     val modeValue = ListValue("Mode",

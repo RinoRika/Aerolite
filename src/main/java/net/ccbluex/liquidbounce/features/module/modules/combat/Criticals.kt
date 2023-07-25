@@ -25,9 +25,9 @@ import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.network.play.server.S0BPacketAnimation
-import oh.yalan.NativeClass
 
-@NativeClass
+
+
 @ModuleInfo(name = "Criticals", category = ModuleCategory.COMBAT)
 class Criticals : Module() {
 

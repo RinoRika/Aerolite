@@ -7,10 +7,10 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.IntegerValue
-import oh.yalan.NativeClass
+
 import java.awt.Color
 
-@NativeClass
+
 @ElementInfo(name = "MinilInfo",blur = true)
 class MinilInfo : Element() {
     var s=0

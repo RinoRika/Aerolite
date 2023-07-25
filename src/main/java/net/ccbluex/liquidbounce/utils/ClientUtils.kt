@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.utils.Metrics.SimplePie
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.minecraft.util.IChatComponent
-import oh.yalan.NativeMethod
+
 import org.apache.logging.log4j.LogManager
 import org.lwjgl.opengl.Display
 import oshi.SystemInfo
@@ -101,17 +101,17 @@ object ClientUtils : MinecraftInstance() {
         logger.debug(msg)
     }
 
-    @NativeMethod
+    
     fun setLoadingTitle() {
         Display.setTitle("${LiquidBounce.CLIENT_NAME}正在注入核心,请稍后!")
     }
 
-    @NativeMethod
+    
     fun setClientTitle() {
         Display.setTitle(Aerolite.title + Aerolite.titles[RandomUtils.nextInt(0, Aerolite.titles.size)])
     }
 
-    @NativeMethod
+    
     fun displayAlert(message: String) {
         displayChatMessage("§8[" + LiquidBounce.COLORED_NAME + "§8] §f" + message)
     }

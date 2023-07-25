@@ -19,7 +19,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StringUtils;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import oh.yalan.NativeClass;
+;
 import org.lwjgl.input.Mouse;
 
 import java.awt.*;

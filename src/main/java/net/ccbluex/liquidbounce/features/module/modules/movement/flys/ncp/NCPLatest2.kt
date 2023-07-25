@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 
 class NCPLatest2 : FlyMode("NCPLatest2") {
-    private val modeValue = ListValue("Mode", arrayOf("Normal", "Clip"), "Normal")
+    private val modeValue = ListValue("${valuePrefix}Mode", arrayOf("Normal", "Clip"), "Normal")
 
     private var offGrounded = false;
     private var moveSpeed = 0.0

@@ -24,7 +24,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S0BPacketAnimation;
 import net.minecraft.network.play.server.S14PacketEntity;
 import net.minecraft.network.play.server.S38PacketPlayerListItem;
-import oh.yalan.NativeClass;
+;
 
 import java.util.ArrayList;
 import java.util.HashMap;

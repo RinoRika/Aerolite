@@ -12,7 +12,7 @@ import net.minecraft.item.ItemTool
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
-import oh.yalan.NativeClass
+
 
 @ModuleInfo(name = "AntiObbyTrap", category = ModuleCategory.PLAYER)
 class AntiObbyTrap : Module() {

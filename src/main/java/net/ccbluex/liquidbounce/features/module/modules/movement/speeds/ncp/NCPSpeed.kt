@@ -10,9 +10,9 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.potion.Potion
-import oh.yalan.NativeClass
 
-@NativeClass
+
+
 class NCPSpeed : SpeedMode("NCP") {
     private val strafeboost = IntegerValue("StrafeBoost", 1, 0, 100)
     private val jumpboost = IntegerValue("JumpBoost", 1, 0, 100)

@@ -33,12 +33,12 @@ import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S07PacketRespawn
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraftforge.event.world.WorldEvent
-import oh.yalan.NativeClass
+
 import java.awt.Color
 import java.util.*
 import java.util.concurrent.LinkedBlockingQueue
 
-@NativeClass
+
 @ModuleInfo(name = "HypDisabler2", category = ModuleCategory.ADDIT)
 class HypDisabler2 : Module() {
     private val banAlert = BoolValue("BanAlert", true)
