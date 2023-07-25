@@ -17,7 +17,7 @@ repositories {
     mavenCentral()
 }
 
-version = "5.2.0"
+version = "5.4.0"
 group = "cn.stars.aerolite"
 archivesBaseName = "Aerolite"
 
@@ -54,7 +54,7 @@ dependencies {
         exclude module: "slf4j-api"
     }
 
-    include 'org.yaml:snakeyaml:1.30'
+    include 'org.yaml:snakeyaml:2.0'
 
     implementation('com.github.half-cambodian-hacker-man:Koffee:d8cee73') {
         exclude module: 'asm-commons'
