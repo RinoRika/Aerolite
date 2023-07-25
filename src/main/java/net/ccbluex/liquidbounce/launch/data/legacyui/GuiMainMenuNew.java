@@ -6,8 +6,10 @@ import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
+import net.ccbluex.liquidbounce.utils.render.ParticleUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.*;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.GuiModList;
 ;
@@ -22,12 +24,7 @@ import java.util.Iterator;
 
 public class GuiMainMenuNew extends GuiScreen {
     public ArrayList<Button> butt = new ArrayList<Button>();
-    ScaledResolution sr;
     public static float scale = 1f;
-    private float currentX;
-    private float currentY;
-    private ResourceLocation logoFile = new ResourceLocation("aerolite/main/m.png");
-//    private final ResourceLocation bigLogo = new ResourceLocation("aerolite/main/m.png");
 
     @Override
     public void initGui() {
@@ -61,23 +58,20 @@ public class GuiMainMenuNew extends GuiScreen {
 
     @Override
     public void updateScreen() {
-        sr = new ScaledResolution(mc);
         super.updateScreen();
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         try {
-        //    mc.getTextureManager().bindTexture(new ResourceLocation("aerolite/main/game.png"));
-        //    Gui.drawModalRectWithCustomSizedTexture(0, 0, 0f, 0f, width, height, width, height);
             drawDefaultBackground();
-            //    GlStateManager.pushMatrix();
+            GlStateManager.pushMatrix();
             if (useParallax) {
                 this.moveMouseEffect(mouseX, mouseY, 7.0F);
             }
 
 
-     //       ParticleUtils.drawParticles(mouseX, mouseY);
+            ParticleUtils.drawParticles(mouseX, mouseY);
             if (RenderUtils.isHovering(mouseX, mouseY, (float) this.width / 2.0F - 80.0F * ((float) this.butt.size() / 2.0F) - 3f, (float) this.height / 2.0F - 100.0F - 3f, (float) this.width / 2.0F + 80.0F * ((float) this.butt.size() / 2.0F) + 3f, (float) this.height / 2.0F + 103.0F))
                 RenderUtils.drawRoundedCornerRect((float) this.width / 2.0F - 80.0F * ((float) this.butt.size() / 2.0F) - 3f, (float) this.height / 2.0F - 100.0F - 3f, (float) this.width / 2.0F + 80.0F * ((float) this.butt.size() / 2.0F) + 3f, (float) this.height / 2.0F + 103.0F, 10, new Color(0, 0, 0, 130).getRGB());
             else
@@ -94,11 +88,10 @@ public class GuiMainMenuNew extends GuiScreen {
                 button.draw(startX, (float) this.height / 2.0F + 20.0F, mouseX, mouseY);
             }
 
-            Fonts.font35.drawCenteredString("Stars 后会有期!", (float) this.width / 2.0f, (float) this.height - 24f, Color.WHITE.getRGB());
+            Fonts.font35.drawCenteredString("Someone stops your foolish behavior because everybody knows you are skidding aerolite ^^", (float) this.width / 2.0f, (float) this.height - 24f, Color.WHITE.getRGB());
             Fonts.font35.drawCenteredString("Made with <3 by " + LiquidBounce.CLIENT_DEV, (float) this.width / 2.0f, (float) this.height - 12f, Color.WHITE.getRGB());
 
-            renderSwitchButton();
-            //    GlStateManager.popMatrix();
+            GlStateManager.popMatrix();
 
         } catch (Exception e) {
             ClientUtils.INSTANCE.logError("Error while loading main menu.", e);
@@ -115,14 +108,6 @@ public class GuiMainMenuNew extends GuiScreen {
             button.mouseClick(mouseX, mouseY, mouseButton);
         }
 
-        if (mouseX < this.width / 2.0 + 50 && mouseX < this.width / 2.0 - 50 && mouseY > this.height - 1 && mouseY < this.height - 13) {
-            try {
-                openWebpage(new URI("https://space.bilibili.com/670866766"));
-            } catch (Exception e) {
-                ClientUtils.INSTANCE.logError("Error while loading main menu.", e);
-            }
-        }
-
         super.mouseClicked(mouseX, mouseY, mouseButton);
     }
     public final void moveMouseEffect(int mouseX, int mouseY, float strength) {
@@ -132,38 +117,5 @@ public class GuiMainMenuNew extends GuiScreen {
         float yDelta = (float)mY / (float)(this.height / 2);
         GL11.glTranslatef(xDelta * strength, yDelta * strength, 0.0F);
     }
-    private float sliderX;
     private static boolean useParallax = true;
-
-    public final void renderSwitchButton() {
-        this.sliderX += useParallax ? 2.0F : -2.0F;
-        if (this.sliderX > 12.0F) {
-            this.sliderX = 12.0F;
-        } else if (this.sliderX < 0.0F) {
-            this.sliderX = 0.0F;
-        }
-
-        Fonts.font35.drawStringWithShadow("Animations", 28.0F, (float)this.height - 25.0F, -1);
-        RenderUtils.drawRoundedCornerRect(4.0F, (float)this.height - 24.0F, 22.0F, (float)this.height - 18.0F, 3.0F, useParallax ? (new Color(0, 111, 255, 255)).getRGB() : (new Color(140, 140, 140, 255)).getRGB());
-        float var10000 = 2.0F + this.sliderX;
-        float var10001 = (float)this.height - 26.0F;
-        float var10002 = 12.0F + this.sliderX;
-        float var10003 = (float)this.height - 16.0F;
-        Color var10005 = Color.white;
-      //  Intrinsics.checkNotNullExpressionValue(var10005, "Color.white");
-        RenderUtils.drawRoundedCornerRect(var10000, var10001, var10002, var10003, 5.0F, var10005.getRGB());
-    }
-
-    public static boolean openWebpage(final URI uri) {
-        final Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
-        if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
-            try {
-                desktop.browse(uri);
-                return true;
-            } catch (final Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
-    }
 }

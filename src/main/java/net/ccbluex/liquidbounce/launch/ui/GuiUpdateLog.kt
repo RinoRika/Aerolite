@@ -26,8 +26,11 @@ class GuiUpdateLog : GuiScreen(), GuiYesNoCallback {
 
     override fun initGui() {
         this.buttonList.add(GuiButton(0, this.width / 2 - 50, 460, 100, 20, "Back"))
-        text.add("[+] NCPLatest2 Fly")
-        text.add("[*] Performance improvement")
+        text.add("[+] Grim Fly")
+        text.add("[*] Fix Scaffold Timing")
+        text.add("[-] Delete shit")
+        text.add("[+] New Aimbot")
+        text.add("[*] Fix NCP Speed")
     }
 
     override fun drawScreen(p_drawScreen_1_: Int, p_drawScreen_2_: Int, p_drawScreen_3_: Float) {
@@ -38,12 +41,12 @@ class GuiUpdateLog : GuiScreen(), GuiYesNoCallback {
         GlStateManager.disableAlpha()
         RenderUtils.drawImage(logoFile, sr.scaledWidth / 2 - 35, 30, 70,70)
         GlStateManager.enableAlpha()
-        RenderUtils.drawRoundedCornerRect(sr.scaledWidth / 2 - 300f, 110f, sr.scaledWidth / 2 + 300f, 430f, 5f, Color(255,255,255,200).rgb)
-        RenderUtils.drawRect(sr.scaledWidth_double / 2 - 300.0, 130.0, sr.scaledWidth_double / 2 + 300.0, 132.5, ColorMixer.getMixedColor(3000, 3).rgb)
+        RenderUtils.drawRoundedCornerRect(sr.scaledWidth / 2 - 300f, 110f, sr.scaledWidth / 2 + 300f, 430f, 5f, Color(10, 10, 10,120).rgb)
+        RenderUtils.drawRect(sr.scaledWidth_double / 2 - 300.0, 130.0, sr.scaledWidth_double / 2 + 300.0, 131.0, ColorMixer.getMixedColor(3000, 3).rgb)
         // Text
         val fontLeft = sr.scaledWidth / 2 - 297f
         var startY = 130f
-        Fonts.gs40.drawCenteredString("Update Log (v4.0.0 Final 2)", width / 2f, 115f, Color(0,0,0,200).rgb)
+        Fonts.gs40.drawCenteredString("Skid Log (5.4.0)", width / 2f, 115f, Color(0,0,0,200).rgb)
         text.forEach {
             startY += 10f
             Fonts.gs35.drawString(it, fontLeft, startY, Color(0,0,0,175).rgb)

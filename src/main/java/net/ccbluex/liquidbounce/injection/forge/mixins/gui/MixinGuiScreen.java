@@ -114,39 +114,19 @@ public abstract class MixinGuiScreen {
                 instance.draw();
 
                 BackgroundShader.BACKGROUND_SHADER.stopShader(); */
-           //     mc.getTextureManager().bindTexture(new ResourceLocation("aerolite/main/game.png"));
-           //     Gui.drawScaledCustomSizeModalRect(0, 0, 0.0F, 0.0F, width, height, width, height, width, height);
-            if (ClientSettings.INSTANCE.getShaderBackGround().get()) {
-                BackgroundShader.BACKGROUND_SHADER.startShader();
-                //   if (!Display.isActive() && !mc.inGameHasFocus) { BackgroundShader.BACKGROUND_SHADER.stopShader(); } else { BackgroundShader.BACKGROUND_SHADER.startShader(); }
-                final Tessellator instance = Tessellator.getInstance();
-                final WorldRenderer worldRenderer = instance.getWorldRenderer();
-                worldRenderer.begin(7, DefaultVertexFormats.POSITION);
-                worldRenderer.pos(0, height, 0.0D).endVertex();
-                worldRenderer.pos(width, height, 0.0D).endVertex();
-                worldRenderer.pos(width, 0, 0.0D).endVertex();
-                worldRenderer.pos(0, 0, 0.0D).endVertex();
-                instance.draw();
-                BackgroundShader.BACKGROUND_SHADER.stopShader();
+                mc.getTextureManager().bindTexture(new ResourceLocation("aerolite/main/game.png"));
+                Gui.drawScaledCustomSizeModalRect(0, 0, 0.0F, 0.0F, width, height, width, height, width, height);
             } else {
                 mc.getTextureManager().bindTexture(new ResourceLocation("aerolite/main/game.png"));
                 Gui.drawScaledCustomSizeModalRect(0, 0, 0.0F, 0.0F, width, height, width, height, width, height);
             }
-          /*  } else{
-                final ScaledResolution scaledResolution = new ScaledResolution(mc);
-                final int width = scaledResolution.getScaledWidth();
-                final int height = scaledResolution.getScaledHeight();
-
-                mc.getTextureManager().bindTexture(new ResourceLocation("aerolite/main/game.png"));
-                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-                Gui.drawScaledCustomSizeModalRect(0, 0, 0.0F, 0.0F, width, height, width, height, width, height);
-            } */
 
             if (GuiBackground.Companion.getParticles())
                 ParticleUtils.drawParticles(Mouse.getX() * width / mc.displayWidth, height - Mouse.getY() * height / mc.displayHeight - 1);
+
             callbackInfo.cancel();
-        }
-    }    @Inject(method = "drawBackground", at = @At("RETURN"))
+    }
+    @Inject(method = "drawBackground", at = @At("RETURN"))
     private void drawParticles(final CallbackInfo callbackInfo) {
         if(GuiBackground.Companion.getParticles())
             ParticleUtils.drawParticles(Mouse.getX() * width / mc.displayWidth, height - Mouse.getY() * height / mc.displayHeight - 1);

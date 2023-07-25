@@ -14,48 +14,49 @@ import net.minecraft.potion.Potion
 
 
 class NCPSpeed : SpeedMode("NCP") {
-    private val strafeboost = IntegerValue("StrafeBoost", 1, 0, 100)
-    private val jumpboost = IntegerValue("JumpBoost", 1, 0, 100)
+    private val strafeBoost = FloatValue("StrafeBoost", 1.0f, 0.0f, 10.0f)
+    private val jumpBoost = FloatValue("JumpBoost", 1.0f, 0.0f, 100.0f)
     private val potionBoost = BoolValue("PotionBoost", false)
     private val veloBoost = BoolValue("VelocityBoost", false)
     private val boostCount = IntegerValue("BoostCount", 30, 1, 100).displayable { potionBoost.get() }
     private val timer = FloatValue("NCPTimer", 1.05f, 1f, 1.3f)
 
-    var deSt = strafeboost.get() * 0.01
-    var deJu = jumpboost.get() * 0.01
-    val mstimer = MSTimer()
+    private var strafeAdd = strafeBoost.get() * 0.01f
+    private var jumpAdd = jumpBoost.get() * 0.01f
+    private val msTimer = MSTimer()
     override fun onUpdate() {
-        if (mstimer.hasTimePassed(1000L)) {
-            deSt = strafeboost.get() * 0.01
-            deJu = jumpboost.get() * 0.01
-            mstimer.reset()
+        if (msTimer.hasTimePassed(1000L)) {
+            strafeAdd = strafeBoost.get() * 0.01f
+            jumpAdd = jumpBoost.get() * 0.01f
+            msTimer.reset()
         }
         if (!mc.thePlayer.isInWeb && !mc.thePlayer.isInLava && !mc.thePlayer.isInWater && !mc.thePlayer.isOnLadder && mc.thePlayer.ridingEntity == null) {
             if (MovementUtils.isMoving()) {
                 mc.gameSettings.keyBindJump.pressed = false
+
                 if (mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
-                    MovementUtils.strafe(0.48f + deSt.toFloat() + getPotionAmplifier())
+                    MovementUtils.strafe(0.48f + strafeAdd + getPotionAmplifier())
                     mc.thePlayer.jumpMovementFactor = 0.02f
                 }
-                MovementUtils.strafe(RandomUtils.nextFloat(MovementUtils.getSpeed() - 0.02f, MovementUtils.getSpeed() + deSt.toFloat() + getPotionAmplifier()))
+                MovementUtils.strafe(RandomUtils.nextFloat(MovementUtils.getSpeed() - 0.04f, MovementUtils.getSpeed() + strafeAdd + getPotionAmplifier()))
             }
-            if (mc.thePlayer.fallDistance > 0.7) {
-                mc.thePlayer.jumpMovementFactor = 0.02f + deJu.toFloat()
+            if (mc.thePlayer.fallDistance > 0.6) {
+                mc.thePlayer.jumpMovementFactor = 0.02f + jumpAdd
             }
-            mc.timer.timerSpeed = RandomUtils.nextFloat(1.0f, timer.get())
+            mc.timer.timerSpeed = RandomUtils.nextFloat(0.95f, timer.get())
         }
     }
 
     override fun onPacket(event: PacketEvent) {
-        if (event.packet is S12PacketEntityVelocity && veloBoost.get()) {
-            deSt = deJu * 1.2
+        if (event.packet is S12PacketEntityVelocity && veloBoost.get() && event.packet.entityID == mc.thePlayer.entityId) {
+            strafeAdd *= 1.1f
         }
     }
 
     private fun getPotionAmplifier(): Float {
         if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-            return 0.06f + (boostCount.get() * 0.01f)
+            return 0.04f + (boostCount.get() * 0.01f)
         } else return 0.0f
     }
 
