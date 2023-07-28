@@ -7,7 +7,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
-import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
@@ -18,16 +18,18 @@ import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.client.*
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
-import net.minecraft.network.play.server.S30PacketWindowItems
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
+import net.minecraft.util.MovingObjectPosition
 import java.util.*
+import javax.vecmath.Vector2f
 import kotlin.math.sqrt
+
 
 @ModuleInfo(name = "NoSlow", category = ModuleCategory.MOVEMENT)
 class NoSlow : Module() {
     //Basic settings
-    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "HypixelNew", "NCP", "AAC", "AAC5","SwitchItem", "Matrix", "Vulcan", "Medusa", "GrimAC"), "Vanilla")
+    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "Watchdog2", "Hypixel", "NCP", "AAC", "AAC5","SwitchItem", "Matrix", "Vulcan", "Medusa", "GrimAC"), "Vanilla")
     private val onlyGround = BoolValue("OnlyGround", false)
     private val onlyMove = BoolValue("OnlyMove", false)
     //Modify Slowdown / Packets
@@ -134,6 +136,22 @@ class NoSlow : Module() {
         }
     }
 
+    private fun sendUseItem(mouse: MovingObjectPosition) {
+        val facingX = (mouse.hitVec.xCoord - mouse.blockPos.x.toDouble()).toFloat()
+        val facingY = (mouse.hitVec.yCoord - mouse.blockPos.y.toDouble()).toFloat()
+        val facingZ = (mouse.hitVec.zCoord - mouse.blockPos.z.toDouble()).toFloat()
+        PacketUtils.sendPacketNoEvent(
+            C08PacketPlayerBlockPlacement(
+                mouse.blockPos,
+                mouse.sideHit.index,
+                mc.thePlayer.heldItem,
+                facingX,
+                facingY,
+                facingZ
+            )
+        )
+    }
+
     @EventTarget
     fun onMotion(event: MotionEvent) {
         if(mc.thePlayer == null || mc.theWorld == null)
@@ -157,13 +175,21 @@ class NoSlow : Module() {
             }
         }
 
-        if (  (blockModifyValue.get() && (mc.thePlayer.isBlocking || killAura.blockingStatus) && heldItem is ItemSword)
+        if ( (blockModifyValue.get() && (mc.thePlayer.isBlocking || killAura.blockingStatus) && heldItem is ItemSword)
             || (bowModifyValue.get() && mc.thePlayer.isUsingItem && heldItem is ItemBow && bowPacketValue.equals("Packet"))
             || (consumeModifyValue.get() && mc.thePlayer.isUsingItem && (heldItem is ItemFood || heldItem is ItemPotion || heldItem is ItemBucketMilk) && consumePacketValue.equals("Packet") )
         ) {
             when (modeValue.get().lowercase()) {
                 "liquidbounce" -> {
                     sendPacket(event, sendC07 = true, sendC08 = true, delay = false, delayValue = 0, onGround = false)
+                }
+                "hypixel" -> {
+                    if (event.eventState == EventState.PRE) {
+                        if (mc.thePlayer.isUsingItem && mc.thePlayer.heldItem != null && MovementUtils.isMoving()) {
+                            PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1))
+                            PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                        }
+                    }
                 }
                 "watchdog2" -> {
                     if (event.eventState == EventState.PRE) {
@@ -309,8 +335,23 @@ class NoSlow : Module() {
             return
         val packet = event.packet
 
-        if (modeValue.equals("HypixelNew") && packet is S30PacketWindowItems && (mc.thePlayer.isUsingItem || mc.thePlayer.isBlocking)) {
-            event.cancelEvent()
+        if (modeValue.equals("Hypixel")) {
+            if (packet is C08PacketPlayerBlockPlacement) {
+                if (mc.gameSettings.keyBindUseItem.isKeyDown && mc.thePlayer.heldItem != null && (mc.thePlayer.heldItem.item is ItemFood || mc.thePlayer.heldItem.item is ItemBucketMilk || mc.thePlayer.heldItem.item is ItemPotion && !ItemPotion.isSplash(
+                        mc.thePlayer.heldItem.metadata
+                    ) || mc.thePlayer.heldItem.item is ItemBow)) {
+                    if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && packet.position != BlockPos(-1, -1, -1)) return
+                    event.cancelEvent()
+                    val position: MovingObjectPosition = EntityUtils.rayTraceCustom(
+                        mc.playerController.blockReachDistance.toDouble(),
+                        mc.thePlayer.rotationYaw,
+                        90f
+                    )
+                        ?: return
+                 //   RotationComponent.setRotations(Vector2f(mc.thePlayer.rotationYaw, 90f), 10, MovementFix.OFF)
+                    sendUseItem(position)
+                }
+            }
         }
 
         if (modeValue.equals("Medusa")) {

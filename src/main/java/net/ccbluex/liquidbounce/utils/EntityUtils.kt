@@ -28,8 +28,25 @@ import net.minecraft.entity.passive.EntitySquid
 import net.minecraft.entity.passive.EntityVillager
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.scoreboard.ScorePlayerTeam
+import net.minecraft.util.MovingObjectPosition
+import net.minecraft.util.Vec3
+
 
 object EntityUtils : MinecraftInstance() {
+
+    fun rayTraceCustom(blockReachDistance: Double, yaw: Float, pitch: Float): MovingObjectPosition? {
+        val vec3: Vec3 = mc.thePlayer.getPositionEyes(1.0f)
+        val vec31: Vec3 = getLookCustom(yaw, pitch)
+        val vec32: Vec3 = vec3.addVector(
+            vec31.xCoord * blockReachDistance,
+            vec31.yCoord * blockReachDistance,
+            vec31.zCoord * blockReachDistance
+        )
+        return mc.thePlayer.worldObj.rayTraceBlocks(vec3, vec32, false, false, true)
+    }
+    fun getLookCustom(yaw: Float, pitch: Float): Vec3 {
+        return mc.thePlayer.getVectorForRotation(pitch, yaw)
+    }
     fun isSelected(entity: Entity, canAttackCheck: Boolean): Boolean {
         if (entity is EntityLivingBase && (deadValue.get() || entity.isEntityAlive()) && entity !== mc.thePlayer) {
             if (invisibleValue.get() || !entity.isInvisible()) {

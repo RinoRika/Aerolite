@@ -158,6 +158,7 @@ class NameTags : Module() {
 
                         mc.renderItem.zLevel = -147F
                         mc.renderItem.renderItemAndEffectIntoGUI(entity.getEquipmentInSlot(index), -50 + index * 20, -22)
+                        entity.getEquipmentInSlot(index).enchantmentTagList
                     }
 
                     enableAlpha()
