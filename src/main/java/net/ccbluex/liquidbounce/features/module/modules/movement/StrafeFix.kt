@@ -1,6 +1,5 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.LiquidBounce
 import net.ccbluex.liquidbounce.event.StrafeEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.EventTarget
@@ -10,20 +9,11 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.minecraft.util.MathHelper
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.math.sqrt
 
 @ModuleInfo(name = "StrafeFix", category = ModuleCategory.MOVEMENT)
-class StrafeFix : Module() {
+object StrafeFix : Module() {
 
     val silentFixVaule = BoolValue("Silent", true)
-
-    /**
-     * Strafe Fix
-     * Code by Co Dynamic
-     * Date: 2023/02/15
-     */
 
     var silentFix = false
     var doFix = false
@@ -63,12 +53,9 @@ class StrafeFix : Module() {
         var friction = event.friction
         var factor = strafe * strafe + forward * forward
 
-        var angleDiff =
-            ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - yaw - 22.5f - 135.0f) + 180.0).toDouble() / (45.0).toDouble()).toInt()
+        var angleDiff = ((MathHelper.wrapAngleTo180_float(mc.thePlayer.rotationYaw - yaw - 22.5f - 135.0f) + 180.0).toDouble() / (45.0).toDouble()).toInt()
         //alert("Diff: " + angleDiff + " friction: " + friction + " factor: " + factor);
-        var calcYaw = if (isSilent) {
-            yaw + 45.0f * angleDiff.toFloat()
-        } else yaw
+        var calcYaw = if(isSilent) { yaw + 45.0f * angleDiff.toFloat() } else yaw
 
         var calcMoveDir = Math.max(Math.abs(strafe), Math.abs(forward)).toFloat()
         calcMoveDir = calcMoveDir * calcMoveDir
@@ -77,10 +64,7 @@ class StrafeFix : Module() {
         if (isSilent) {
             when (angleDiff) {
                 1, 3, 5, 7, 9 -> {
-                    if ((Math.abs(forward) > 0.005 || Math.abs(strafe) > 0.005) && !(Math.abs(forward) > 0.005 && Math.abs(
-                            strafe
-                        ) > 0.005)
-                    ) {
+                    if ((Math.abs(forward) > 0.005 || Math.abs(strafe) > 0.005) && !(Math.abs(forward) > 0.005 && Math.abs(strafe) > 0.005)) {
                         friction = friction / calcMultiplier
                     } else if (Math.abs(forward) > 0.005 && Math.abs(strafe) > 0.005) {
                         friction = friction * calcMultiplier

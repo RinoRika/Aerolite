@@ -47,7 +47,7 @@ class GuiUpdateLog : GuiScreen(), GuiYesNoCallback {
         Fonts.gs40.drawCenteredString("Skid Log (5.5.0)", width / 2f, 115f, Color(0,0,0,200).rgb)
         text.forEach {
             startY += 10f
-            Fonts.gs35.drawString(it, fontLeft, startY, Color(0,0,0,175).rgb)
+            Fonts.gs35.drawString(it, fontLeft, startY, Color(250,250,250,175).rgb)
         }
         super.drawScreen(p_drawScreen_1_, p_drawScreen_2_, p_drawScreen_3_)
     }

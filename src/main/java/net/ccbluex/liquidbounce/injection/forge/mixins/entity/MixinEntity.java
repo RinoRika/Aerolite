@@ -8,6 +8,8 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 import net.ccbluex.liquidbounce.LiquidBounce;
 import net.ccbluex.liquidbounce.event.StrafeEvent;
 import net.ccbluex.liquidbounce.features.module.modules.combat.HitBox;
+import net.ccbluex.liquidbounce.features.module.modules.movement.NoFluid;
+import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -178,10 +180,29 @@ public abstract class MixinEntity {
             return;
 
         final StrafeEvent strafeEvent = new StrafeEvent(strafe, forward, friction);
+        final StrafeFix strafeFix = LiquidBounce.moduleManager.getModule(StrafeFix.class);
+        //alert("Strafe: " + strafe + " Forward: " + forward + " Factor: " + friction + " DoFix: " + strafeFix.getDoFix());
         LiquidBounce.eventManager.callEvent(strafeEvent);
+        if (strafeFix.getDoFix()) { //Run StrafeFix process on Post Strafe 2023/02/15
+            strafeFix.runStrafeFixLoop(strafeFix.getSilentFix(), strafeEvent);
+        }
 
         if (strafeEvent.isCancelled())
             callbackInfo.cancel();
+    }
+
+    @Inject(method = "isInWater", at = @At("HEAD"), cancellable = true)
+    private void isInWater(final CallbackInfoReturnable<Boolean> cir) {
+        if (NoFluid.INSTANCE.getState() && NoFluid.INSTANCE.getWaterValue().get()) {
+            cir.setReturnValue(false);
+        }
+    }
+
+    @Inject(method = "isInLava", at = @At("HEAD"), cancellable = true)
+    private void isInLava(final CallbackInfoReturnable<Boolean> cir) {
+        if (NoFluid.INSTANCE.getState() && NoFluid.INSTANCE.getLavaValue().get()) {
+            cir.setReturnValue(false);
+        }
     }
 
     @Inject(method = "getCollisionBorderSize", at = @At("HEAD"), cancellable = true)
