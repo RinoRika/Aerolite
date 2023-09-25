@@ -1,3 +1,7 @@
+# Maintenance Ended
+Thank you for supporting me, thank you for using aerolite.As I lost the joy of developing, aerolite came into the end.
+This archive will not receive any update now. All developers have exited the group. Thanks for your support.
+Best wishes, Stars.
 # Aerolite
 警告:本仓库遵守GPL3开源协议，使用本仓库代码意味着你遵守该协议。来源于本仓库的代码应该保持开源！
 ## 构建
